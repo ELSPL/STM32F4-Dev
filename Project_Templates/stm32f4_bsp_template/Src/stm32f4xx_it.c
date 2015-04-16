@@ -38,6 +38,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "stm32f4_global.h"
+#include "stm32f4_discovery.h" // Comment it when On board PB is not used
 
 #ifdef USE_STM32F4_ASK25
 #include "stm32f4_ask25.h"
@@ -72,6 +73,28 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /* USER CODE BEGIN 1 */
+
+#ifdef USE_STM32F4_DISCO
+/**
+* @brief This function handles EXTI Line0 interrupt.
+*/
+void EXTI0_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+}
+
+/**
+ * @brief User GPIO Interrupt Callback
+ * @param GPIO_Pin  This parameter determines interrupt pin.
+ */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if(GPIO_Pin == GPIO_PIN_0)
+  {
+    HAL_GPIO_TogglePin(GPIOD, (1<<12));
+  }
+}
+#endif
 
 #ifdef USE_STM32F4_ASK25
 
