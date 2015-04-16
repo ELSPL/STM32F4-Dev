@@ -1,3 +1,3 @@
 # STM32F4-Dev
 
-## Setup Requirement
+## Setup Pre-requisite
