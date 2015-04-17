@@ -6,11 +6,11 @@
 *         -   Understand the GPIO functions \n
 *         -   Study the programs related to the various patterns of LED flashing
 *
-* @section section2 Example2 :
-*    Objective: Write a program to glow all LEDs on and off.
+* @section section2 Example1 :
+*    Objective: Write a program to glow single LED on and off.
 *
 * @section section3 Program Description:
-*    This program demonstrates blinking of all LEDs on ASK-25.
+*    This program demonstrates blinking of single LED on ASK-25.
 *
 * @section section4 Included Files:
 *
@@ -21,19 +21,15 @@
 *   | @ref stm32f4_ask25.h   	  | @ref stm32f4_ask25.c   	  |
 *   |                           | @ref main.c               |
 *
+*
+*
+
 * \n
 * @section section5 Pin Assignments
 *
-*   | STM32F407 Reference | Device(ASK-25) |
+*   | STM32F407 Reference | Device (ASK25) |
 *   | :------------------:| :-------------:|
-*   | P1.26               | LED1           |
-*   | P1.27               | LED2           |
-*   | P1.28               | LED3           |
-*   | P1.29               | LED4           |
-*   | P1.30               | LED5           |
-*   | P1.31               | LED6           |
-*   | P1.32               | LED7           |
-*   | P1.33               | LED8           |
+*   |  GPIO E.8(P1.26)    | LED1           |
 *
 * @section section6 Connection
 *   | STM32F407 Reference | Device          |
@@ -41,11 +37,12 @@
 *   | J6                  | ASK-25 (PL8)    |
 *
 * @section section7 Program Folder Location
-*       <Eg2>
+*       <Eg1>
 *
 *
 * @section section8 Part List
 *   - STM32F4Discovery Board \n
+*   - 9V Power supply \n
 *   - Flat cable \n
 *   - USB cable \n
 *   - Eclipse IDE \n
@@ -63,7 +60,7 @@
 
 *
 * @section section10 Output:
-*    LED1 to LED8 blinks on ASK25.
+*    LED1 blinks on ASK25.
 *\n
 *\n
 *******************************************************************************/
