@@ -66,6 +66,45 @@ typedef enum
   ABUTTON_MODE_GPIO = 0,
   ABUTTON_MODE_EXTI = 1
 } AButtonMode_TypeDef;
+
+typedef enum
+{
+  Asegment1 = 1,
+  Asegment2 = 2
+} A7Segment_typedef;
+
+/******************************************************************************/
+/*                         Seven Segment Specification                        */
+/******************************************************************************/
+
+#define   a     0x01
+#define   b     0x02
+#define   c     0x04
+#define   d     0x08
+#define   e     0x10
+#define   f     0x20
+#define   g     0x40
+#define   dot   0x80
+#define   all   0xFF
+
+/******************************************************************************/
+/*              Seven Segment Display Character Specifications                */
+/******************************************************************************/
+
+#define   ZERO    a+b+c+d+e+f
+#define   ONE     b+c
+#define   TWO     a+b+d+e+g
+#define   THREE   a+b+c+d+g
+#define   FOUR    b+c+f+g
+#define   FIVE    a+c+d+f+g
+#define   SIX     a+c+d+e+f+g
+#define   SEVEN   a+b+c
+#define   EIGHT   a+b+c+d+e+f+g
+#define   NINE    a+b+c+d+f+g
+
+#define   TOTAL_SEGMENTS        2     // Define number of Segments to be connected maximum up to 4
+#define   COMMON_ANODE_SEG   ON   // Define type of Segmnent connections
+#define   COMMON_CATHODE_SEG  OFF
 /**
   * @}
   */
@@ -121,7 +160,10 @@ void ASK25_Relay_Init(void);
 /* DC Motor Functions */
 void ASK25_DCMotor_Init(void);
 
-
+/* 7 Segment function */
+void ASK25_7Segment_Init(void);
+void ASK25_7Segment_Display_Digit (uint8_t Digit, uint8_t Seg);
+void ASK25_7Segment_Display_Data (uint16_t Number);
 /**
   * @}
   */

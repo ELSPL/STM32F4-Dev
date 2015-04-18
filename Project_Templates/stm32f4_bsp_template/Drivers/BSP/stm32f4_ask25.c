@@ -190,7 +190,7 @@ void ASK25_Relay_Init(void)
 
   __GPIOB_CLK_ENABLE();
 
-  /* Configure the GPIO_ALED pin */
+  /* Configure the GPIO_Relay pin */
   GPIO_InitStruct.Pin = RELAY_PIN;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
@@ -198,7 +198,7 @@ void ASK25_Relay_Init(void)
 
   HAL_GPIO_Init(RELAY_PORT, &GPIO_InitStruct);
 
-  HAL_GPIO_WritePin(RELAY_PORT, RELAY_PIN, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(RELAY_PORT, RELAY_PIN, GPIO_PIN_SET);
 }
 
 /**
@@ -217,7 +217,7 @@ void ASK25_DCMotor_Init(void)
 {
   GPIO_InitTypeDef  GPIO_InitStruct;
 
-  /* Enable the GPIO_Relay Clock */
+  /* Enable the DCMotor Clock */
 
   __GPIOB_CLK_ENABLE();
 
@@ -233,9 +233,109 @@ void ASK25_DCMotor_Init(void)
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
 }
 
+
+/**@defgroup STM32F4_ASK25_7Segment_Functions
+ * @{
+ */
+
+/**
+ * @brief Initialize 7segment on ASK25
+ * @return none
+ */
+void ASK25_7Segment_Init(void)
+{
+  GPIO_InitTypeDef  GPIO_InitStruct;
+
+  /* Enable the 7Segment clock */
+  __GPIOB_CLK_ENABLE();
+  __GPIOE_CLK_ENABLE();
+
+ /* Configure 7 Segment Data pin */
+  GPIO_InitStruct.Pin = 0xFF << 8;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+  /* Enable the 7 Segment selection and gate pin */
+  GPIO_InitStruct.Pin =  GPIO_PIN_4 | GPIO_PIN_5;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET);// Select first Segment
+  HAL_GPIO_WritePin(GPIOE, 0xFF << 8, GPIO_PIN_SET); // Common anode so 0xFF clears display
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET); // gate signal high
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // latch signal on falling edge
+
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET); // Select second Segment
+  HAL_GPIO_WritePin(GPIOE, 0xFF << 8, GPIO_PIN_SET); // Common anode so 0xFF clears display
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET); // gate signal high
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // latch signal on falling edge
+}
+
+
+/**
+ * @brief To display digit on 7 Segment
+ * @param Digit: specifies which digit display on 7 Segment
+ *      This parameter should be any number from ZERO to NINE
+ * @param Seg: specifies which Segment to be selected
+ *      This parameter should be Asegment1 or Asegment2
+ * @return none
+ */
+void ASK25_7Segment_Display_Digit (uint8_t Digit, uint8_t Seg)
+{
+  uint8_t Number[16]= {ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE};
+
+  /* Select segment */
+  if(Seg == Asegment1)
+  {
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET);// Select first Segment
+  }
+  else if(Seg == Asegment2)
+  {
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET); // Select second Segment
+  }
+
+  HAL_GPIO_WritePin(GPIOE, 0xFF << 8, GPIO_PIN_SET); //  clears display
+  HAL_GPIO_WritePin(GPIOE, Number[Digit] << 8, GPIO_PIN_RESET);
+
+  /* Latch data */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET); // gate signal high
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // latch signal on falling edge
+}
+
+/**
+ * @brief To display 2 digit data using both 7 Segment
+ * @param Number: specifies which digit to display
+ *        can be any digit from 00 to 99
+ * @return none
+ */
+void ASK25_7Segment_Display_Data (uint16_t Number)
+{
+  uint16_t i=0;
+  uint16_t j=TOTAL_SEGMENTS-1;
+  uint16_t Digits[TOTAL_SEGMENTS];
+  while(1)
+  {
+    Digits[i] = Number % 10; //Store unit value
+    Display_Digit(Digits[i], TOTAL_SEGMENTS - j);
+    j--;
+    i++;
+    Number = Number / 10; //Trim a unit value
+    if(i >= TOTAL_SEGMENTS)
+    {
+      break;
+    }
+  }
+}
 /**
   * @}
   */
+
 
 /**
   * @}
