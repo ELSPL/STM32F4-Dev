@@ -283,7 +283,7 @@ void ASK25_7Segment_Init(void)
  * @param Digit: specifies which digit display on 7 Segment
  *      This parameter should be any number from ZERO to NINE
  * @param Seg: specifies which Segment to be selected
- *      This parameter should be Asegment1 or Asegment2
+ *      This parameter should be ASEGMENT1 or ASEGMENT2
  * @return none
  */
 void ASK25_7Segment_Display_Digit (uint8_t Digit, uint8_t Seg)
@@ -291,11 +291,11 @@ void ASK25_7Segment_Display_Digit (uint8_t Digit, uint8_t Seg)
   uint8_t Number[16]= {ZERO,ONE,TWO,THREE,FOUR,FIVE,SIX,SEVEN,EIGHT,NINE};
 
   /* Select segment */
-  if(Seg == Asegment1)
+  if(Seg == ASEGMENT1)
   {
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_RESET);// Select first Segment
   }
-  else if(Seg == Asegment2)
+  else if(Seg == ASEGMENT2)
   {
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET); // Select second Segment
   }

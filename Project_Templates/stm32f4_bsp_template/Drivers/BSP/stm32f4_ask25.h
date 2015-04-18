@@ -69,8 +69,8 @@ typedef enum
 
 typedef enum
 {
-  Asegment1 = 1,
-  Asegment2 = 2
+  ASEGMENT1 = 1,
+  ASEGMENT2 = 2
 } A7Segment_typedef;
 
 /******************************************************************************/
