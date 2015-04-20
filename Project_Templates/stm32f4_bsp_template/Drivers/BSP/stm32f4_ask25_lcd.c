@@ -389,9 +389,9 @@ void ASK25_LCD_Display_String (uint8_t *String, uint16_t LineNum, uint16_t Posit
  * @param p   Custom Character array
  * @retval  None
  */
-void ASK25_LCD_CGRAM_CharGen (uint16_t loc,uint16_t *p)
+void ASK25_LCD_CGRAM_CharGen (uint8_t loc,uint8_t *p)
 {
-  uint16_t i;
+  uint8_t i;
 
   if(loc<8)                             // If valid
   {
