@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_it.c
-  * @date    10/04/2015 14:34:26
+  * @date    20/04/2015 17:22:47
   * @brief   Interrupt Service Routines.
   ******************************************************************************
   *
@@ -48,6 +48,9 @@
 #include "stm32f4_discovery_uart.h"
 #endif
 
+#ifdef USE_STM32F4_VCP
+#include "stm32f4_discovery_vcp.h"
+#endif
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -75,6 +78,14 @@ void SysTick_Handler(void)
 /* USER CODE BEGIN 1 */
 
 #ifdef USE_STM32F4_DISCO
+
+#ifdef USE_STM32F4_VCP
+void OTG_FS_IRQHandler(void)
+{
+    HAL_PCD_IRQHandler(&hpcd);
+}
+#endif
+
 /**
 * @brief This function handles EXTI Line0 interrupt.
 */

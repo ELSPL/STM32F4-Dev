@@ -16,14 +16,14 @@
   *
   *        http://www.st.com/software_license_agreement_liberty_v2
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   * See the License for the specific language governing permissions and
   * limitations under the License.
   *
   ******************************************************************************
-  */ 
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_cdc_if_template.h"
@@ -33,34 +33,47 @@
   */
 
 
-/** @defgroup USBD_CDC 
+/** @defgroup USBD_CDC
   * @brief usbd core module
   * @{
-  */ 
+  */
 
 /** @defgroup USBD_CDC_Private_TypesDefinitions
   * @{
-  */ 
+  */
+
+char g_VCPInitialized;
+USBD_HandleTypeDef USBD_Device;
+
+static struct
+{
+    uint8_t Buffer[CDC_DATA_HS_OUT_PACKET_SIZE];
+    int Position, Size;
+    char ReadDone;
+} s_RxBuffer;
+
+
+
 /**
   * @}
-  */ 
+  */
 
 
 /** @defgroup USBD_CDC_Private_Defines
   * @{
-  */ 
+  */
 /**
   * @}
-  */ 
+  */
 
 
 /** @defgroup USBD_CDC_Private_Macros
   * @{
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 
 /** @defgroup USBD_CDC_Private_FunctionPrototypes
@@ -72,7 +85,7 @@ static int8_t TEMPLATE_DeInit   (void);
 static int8_t TEMPLATE_Control  (uint8_t cmd, uint8_t* pbuf, uint16_t length);
 static int8_t TEMPLATE_Receive  (uint8_t* pbuf, uint32_t *Len);
 
-USBD_CDC_ItfTypeDef USBD_CDC_Template_fops = 
+USBD_CDC_ItfTypeDef USBD_CDC_Template_fops =
 {
   TEMPLATE_Init,
   TEMPLATE_DeInit,
@@ -99,8 +112,11 @@ USBD_CDC_LineCodingTypeDef linecoding =
 static int8_t TEMPLATE_Init(void)
 {
   /*
-     Add your initialization code here 
-  */  
+     Add your initialization code here
+  */
+  USBD_CDC_SetRxBuffer(&USBD_Device, s_RxBuffer.Buffer);
+  g_VCPInitialized = 1;
+
   return (0);
 }
 
@@ -113,8 +129,8 @@ static int8_t TEMPLATE_Init(void)
 static int8_t TEMPLATE_DeInit(void)
 {
   /*
-     Add your deinitialization code here 
-  */  
+     Add your deinitialization code here
+  */
   return (0);
 }
 
@@ -122,13 +138,13 @@ static int8_t TEMPLATE_DeInit(void)
 /**
   * @brief  TEMPLATE_Control
   *         Manage the CDC class requests
-  * @param  Cmd: Command code            
+  * @param  Cmd: Command code
   * @param  Buf: Buffer containing command data (request parameters)
   * @param  Len: Number of data to be sent (in bytes)
   * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
   */
 static int8_t TEMPLATE_Control  (uint8_t cmd, uint8_t* pbuf, uint16_t length)
-{ 
+{
   switch (cmd)
   {
   case CDC_SEND_ENCAPSULATED_COMMAND:
@@ -157,7 +173,7 @@ static int8_t TEMPLATE_Control  (uint8_t cmd, uint8_t* pbuf, uint16_t length)
     linecoding.format     = pbuf[4];
     linecoding.paritytype = pbuf[5];
     linecoding.datatype   = pbuf[6];
-    
+
     /* Add your code here */
     break;
 
@@ -168,8 +184,8 @@ static int8_t TEMPLATE_Control  (uint8_t cmd, uint8_t* pbuf, uint16_t length)
     pbuf[3] = (uint8_t)(linecoding.bitrate >> 24);
     pbuf[4] = linecoding.format;
     pbuf[5] = linecoding.paritytype;
-    pbuf[6] = linecoding.datatype;     
-    
+    pbuf[6] = linecoding.datatype;
+
     /* Add your code here */
     break;
 
@@ -179,8 +195,8 @@ static int8_t TEMPLATE_Control  (uint8_t cmd, uint8_t* pbuf, uint16_t length)
 
   case CDC_SEND_BREAK:
      /* Add your code here */
-    break;    
-    
+    break;
+
   default:
     break;
   }
@@ -190,37 +206,102 @@ static int8_t TEMPLATE_Control  (uint8_t cmd, uint8_t* pbuf, uint16_t length)
 
 /**
   * @brief  TEMPLATE_Receive
-  *         Data received over USB OUT endpoint are sent over CDC interface 
+  *         Data received over USB OUT endpoint are sent over CDC interface
   *         through this function.
-  *           
+  *
   *         @note
-  *         This function will issue a NAK packet on any OUT packet received on 
+  *         This function will issue a NAK packet on any OUT packet received on
   *         USB endpoint untill exiting this function. If you exit this function
   *         before transfer is complete on CDC interface (ie. using DMA controller)
-  *         it will result in receiving more data while previous ones are still 
+  *         it will result in receiving more data while previous ones are still
   *         not sent.
-  *                 
+  *
   * @param  Buf: Buffer of data to be received
   * @param  Len: Number of data received (in bytes)
   * @retval Result of the operation: USBD_OK if all operations are OK else USBD_FAIL
   */
 static int8_t TEMPLATE_Receive (uint8_t* Buf, uint32_t *Len)
 {
- 
+  s_RxBuffer.Position = 0;
+  s_RxBuffer.Size = *Len;
+  s_RxBuffer.ReadDone = 1;
   return (0);
+}
+
+
+/**
+ * @brief This function reads data array from USB VCP
+ * @param pBuffer   Buffer pointer
+ * @param size      Size of Buffer
+ * @return  status  length of data
+ */
+int VCP_Read(void *pBuffer, int size)
+{
+  if (!s_RxBuffer.ReadDone)
+      return 0;
+
+  int remaining = s_RxBuffer.Size - s_RxBuffer.Position;
+  int todo = MIN(remaining, size);
+  if (todo <= 0)
+      return 0;
+
+  memcpy(pBuffer, s_RxBuffer.Buffer + s_RxBuffer.Position, todo);
+  s_RxBuffer.Position += todo;
+  if (s_RxBuffer.Position >= s_RxBuffer.Size)
+  {
+    s_RxBuffer.ReadDone = 0;
+    USBD_CDC_ReceivePacket(&USBD_Device);
+  }
+
+  return todo;
+}
+
+
+/**
+ * @brief This function writes data array to USB VCP
+ * @param pBuffer Buffer pointer
+ * @param size    Buffer size
+ * @return  status length written
+ */
+int VCP_Write(const void *pBuffer, int size)
+{
+  if (size > CDC_DATA_HS_OUT_PACKET_SIZE)
+  {
+    int offset;
+    for (offset = 0; offset < size; offset++)
+    {
+      int todo = MIN(CDC_DATA_HS_OUT_PACKET_SIZE,
+                     size - offset);
+      int done = VCP_Write(((char *)pBuffer) + offset, todo);
+      if (done != todo)
+          return offset + done;
+    }
+
+    return size;
+  }
+
+  USBD_CDC_HandleTypeDef *pCDC = (USBD_CDC_HandleTypeDef *)USBD_Device.pClassData;
+  while(pCDC->TxState) { } //Wait for previous transfer
+
+  USBD_CDC_SetTxBuffer(&USBD_Device, (uint8_t *)pBuffer, size);
+  if (USBD_CDC_TransmitPacket(&USBD_Device) != USBD_OK)
+      return 0;
+
+  while(pCDC->TxState) { } //Wait until transfer is done
+  return size;
 }
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /**
   * @}
-  */ 
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

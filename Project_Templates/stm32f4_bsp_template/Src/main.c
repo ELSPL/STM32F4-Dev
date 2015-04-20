@@ -1,11 +1,36 @@
-/******************************************************************//**
-* @file		main.c
-* @brief	BSP Sample
-* @version	v1.0
-* @date		Apr 16, 2015
-* @author	Bhavin R. Darji
-**********************************************************************/
-
+/**
+  ******************************************************************************
+  * File Name          : main.c
+  * Date               : 20/04/2015 17:22:47
+  * Description        : Main program body
+  ******************************************************************************
+  *
+  * COPYRIGHT(c) 2015 STMicroelectronics
+  *
+  * Redistribution and use in source and binary forms, with or without modification,
+  * are permitted provided that the following conditions are met:
+  *   1. Redistributions of source code must retain the above copyright notice,
+  *      this list of conditions and the following disclaimer.
+  *   2. Redistributions in binary form must reproduce the above copyright notice,
+  *      this list of conditions and the following disclaimer in the documentation
+  *      and/or other materials provided with the distribution.
+  *   3. Neither the name of STMicroelectronics nor the names of its contributors
+  *      may be used to endorse or promote products derived from this software
+  *      without specific prior written permission.
+  *
+  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+  * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  *
+  ******************************************************************************
+  */
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
@@ -14,8 +39,12 @@
 /* USER CODE BEGIN Includes */
 #include "stm32f4_global.h"
 #include "stm32f4_discovery_uart.h"
+#include "stm32f4_discovery_vcp.h"
 //#include "stm32f4_discovery.h"
 //#include "stm32f4_ask25.h"
+
+
+
 
 /* USER CODE END Includes */
 
@@ -40,7 +69,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  char byte, read[10];
+  int check;
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -58,6 +88,10 @@ int main(void)
   BSP_UART_Init(115200);
 
   trace_printf("Hello\n");
+
+  BSP_VCP_Init();
+
+  vgetche(BLOCKING); // Dummy read to get the VCP Connected
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -68,6 +102,10 @@ int main(void)
 
   /* USER CODE BEGIN 3 */
 
+    vuprintf("Hello %d02 %x02 %s %c",50,50,"world",'A');
+    HAL_Delay(500);
+    vget_line(read, 10);
+    vuprintf(read);
   }
   /* USER CODE END 3 */
 
@@ -89,10 +127,10 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 5;
-  RCC_OscInitStruct.PLL.PLLN = 210;
+  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLN = 336;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
+  RCC_OscInitStruct.PLL.PLLQ = 7;
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1

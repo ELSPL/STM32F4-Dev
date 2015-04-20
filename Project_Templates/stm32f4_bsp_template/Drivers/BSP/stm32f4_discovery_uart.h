@@ -104,8 +104,8 @@ void BSP_UART_Init(uint32_t Baudrate);
 void BSP_UART_MspDeInit(UART_HandleTypeDef* huart);
 
 HAL_StatusTypeDef uprintf(const char *format, ...);
-uint8_t getche(TRANSFER_BLOCK_Type mode);
-uint8_t get_line(int8_t s[], uint8_t lim);
+uint8_t ugetche(TRANSFER_BLOCK_Type mode);
+uint8_t uget_line(int8_t s[], uint8_t lim);
 
 /**
   * @}
