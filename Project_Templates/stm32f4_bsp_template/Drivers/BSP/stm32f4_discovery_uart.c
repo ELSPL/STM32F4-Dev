@@ -248,7 +248,16 @@ void BSP_UART_MspDeInit(UART_HandleTypeDef* huart)
 }
 
 
-uint8_t getche(TRANSFER_BLOCK_Type mode)
+/**
+ * @brief The ugetche() function returns the next character read from the
+ *        console and echoes that character to the screen.Characters from
+ *        space(20hex) to (7E) are echo to the screen.The ugetche() function
+ *        is not define by the ANSI C standard.
+ * @param mode  @arg  NONE_BLOCKING
+ *              @arg  BLOCKING
+ * @return Character or format
+ */
+uint8_t ugetche(TRANSFER_BLOCK_Type mode)
 {
   uint8_t key[1];
   HAL_StatusTypeDef status=HAL_ERROR;
@@ -294,7 +303,13 @@ uint8_t getche(TRANSFER_BLOCK_Type mode)
 }
 
 
-uint8_t get_line(int8_t s[], uint8_t lim)
+/**
+ * @brief One line editor
+ * @param s     Pointer to Received buffer
+ * @param lim   Length of Received buffer
+ * @return  Character count
+ */
+uint8_t uget_line(int8_t s[], uint8_t lim)
 {
   int8_t kb;                 /* input character */
 
@@ -356,6 +371,20 @@ uint8_t get_line(int8_t s[], uint8_t lim)
 }
 
 
+/**
+ * @brief Modified version of Standard Printf statement
+ * @paragraph Supports standard formats "%c %s %d %x"
+ *            "%d" and "%x" requires non-standard qualifiers,"%dfn, %xfn":-
+ *            f supplies a fill character
+ *            n supplies a field width
+ *
+ *        Supports custom formats  "%b  %u %t %y %a"
+ *        "%b"  prints a 2 digit BCD value with leading zero
+ *        "%u"  prints the 16 bit unsigned integer in hex format
+ * @param format  Character format
+ * @param ...     <multiple argument>
+ * @return  return with valid character or nothing
+ */
 HAL_StatusTypeDef uprintf(const char *format, ...)
 {
   uint8_t hex[]= "0123456789ABCDEF";
