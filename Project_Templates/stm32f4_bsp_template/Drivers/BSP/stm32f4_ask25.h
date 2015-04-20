@@ -163,7 +163,7 @@ void ASK25_DCMotor_Init(void);
 /* 7 Segment function */
 void ASK25_7Segment_Init(void);
 void ASK25_7Segment_Display_Digit (uint8_t Digit, uint8_t Seg);
-void ASK25_7Segment_Display_Data (uint16_t Number);
+void ASK25_7Segment_Display_Data (uint8_t Number);
 /**
   * @}
   */

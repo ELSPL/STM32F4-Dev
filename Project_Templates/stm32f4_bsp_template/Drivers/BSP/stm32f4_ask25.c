@@ -281,7 +281,7 @@ void ASK25_7Segment_Init(void)
 /**
  * @brief To display digit on 7 Segment
  * @param Digit: specifies which digit display on 7 Segment
- *      This parameter should be any number from ZERO to NINE
+ *      This parameter should be any number from 0 to 9
  * @param Seg: specifies which Segment to be selected
  *      This parameter should be ASEGMENT1 or ASEGMENT2
  * @return none
@@ -314,11 +314,12 @@ void ASK25_7Segment_Display_Digit (uint8_t Digit, uint8_t Seg)
  *        can be any digit from 00 to 99
  * @return none
  */
-void ASK25_7Segment_Display_Data (uint16_t Number)
+void ASK25_7Segment_Display_Data (uint8_t Number)
 {
-  uint16_t i=0;
-  uint16_t j=TOTAL_SEGMENTS-1;
-  uint16_t Digits[TOTAL_SEGMENTS];
+  uint8_t i=0;
+  uint8_t j=TOTAL_SEGMENTS-1;
+  uint8_t Digits[TOTAL_SEGMENTS];
+
   while(1)
   {
     Digits[i] = Number % 10; //Store unit value
