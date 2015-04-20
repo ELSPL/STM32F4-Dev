@@ -1,6 +1,6 @@
 /******************************************************************//**
 * @file		main.c
-* @brief	Program to display Dot on Default Position
+* @brief	Program to display Edutech Logo
 * @version	v1.0
 * @date		Apr 16, 2015
 * @author	Bhavin R. Darji
@@ -41,7 +41,15 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  uint8_t Character1[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x10,0x00};
+  uint8_t Character1[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1};
+  uint8_t Character2[8] = {0x0, 0x0, 0x1, 0x3, 0x7, 0xf, 0x1f, 0x1f};
+  uint8_t Character3[8] = {0x7, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f};
+  uint8_t Character4[8] = {0x18, 0x1c, 0x1e, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f};
+
+  uint8_t Character5[8] = {0x3, 0x7, 0xf, 0xf, 0x1f, 0x1f, 0x1f, 0x1e};
+  uint8_t Character6[8] = {0x1e, 0x1f, 0x1b, 0x03, 0x1b, 0x1f, 0x1e,0x00};
+  uint8_t Character7[8] = {0x13, 0x1b, 0x1b, 0x1b, 0x1b, 0x1b, 0x18,0x1c};
+  uint8_t Character8[8] = {0x07, 0x0f, 0x0f, 0x0e, 0x0e, 0x0c, 0x0c,0x18};
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -61,9 +69,27 @@ int main(void)
   /* initialize LCD */
   ASK25_LCD_Init(Inc, DispShiftOff);
 
-  /* Display dot */
+  /* Generate Logo */
   ASK25_LCD_CGRAM_CharGen(0, Character1);
-  ASK25_LCD_Write_Data(0x00);
+  ASK25_LCD_CGRAM_CharGen(1, Character2);
+  ASK25_LCD_CGRAM_CharGen(2, Character3);
+  ASK25_LCD_CGRAM_CharGen(3, Character4);
+  ASK25_LCD_CGRAM_CharGen(4, Character5);
+  ASK25_LCD_CGRAM_CharGen(5, Character6);
+  ASK25_LCD_CGRAM_CharGen(6, Character7);
+  ASK25_LCD_CGRAM_CharGen(7, Character8);
+
+  /* Display EDUTECH Logo */
+  ASK25_LCD_Display_Character(0x00,1,1,Off);
+  ASK25_LCD_Display_Character(0x01,1,2,Off);
+  ASK25_LCD_Display_Character(0x02,1,3,Off);
+  ASK25_LCD_Display_Character(0x03,1,4,Off);
+
+  ASK25_LCD_Display_Character(0x04,2,1,Off);
+  ASK25_LCD_Display_Character(0x05,2,2,Off);
+  ASK25_LCD_Display_Character(0x06,2,3,Off);
+  ASK25_LCD_Display_Character(0x07,2,4,Off);
+
 
   trace_printf("Hello\n");
   /* USER CODE END 2 */

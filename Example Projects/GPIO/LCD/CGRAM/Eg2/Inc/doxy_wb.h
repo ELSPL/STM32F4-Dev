@@ -6,11 +6,11 @@
 *         -   Understand the GPIO functions \n
 *         -   Study the programs related to the LCD Display.
 *
-* @section section2 Example1 :
-*    Objective: Program to display Dot on Default Position.
+* @section section2 Example2 :
+*    Objective: Program to display Horizontal Line for only one character.
 *
 * @section section3 Program Description:
-*    This program demonstrates interfacing of LCD display and display single dot on it
+*    This program demonstrates interfacing of LCD display and display line on it
 *
 * @section section4 Included Files:
 *
@@ -45,7 +45,7 @@
 *   | J6                  | ASK-25 (PL3)    |
 *
 * @section section7 Program Folder Location
-*       <Eg1>
+*       <Eg2>
 *
 *
 * @section section8 Part List
@@ -67,7 +67,7 @@
 
 *
 * @section section10 Output:
-*    On LCD display you will see a single dot on starting location
+*    On LCD display you will see a line for only one character on starting location
 *\n
 *\n
 *******************************************************************************/

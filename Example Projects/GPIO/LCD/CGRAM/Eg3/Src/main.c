@@ -1,6 +1,6 @@
 /******************************************************************//**
 * @file		main.c
-* @brief	Program to display Dot on Default Position
+* @brief	Program to display vertical Line for only one character
 * @version	v1.0
 * @date		Apr 16, 2015
 * @author	Bhavin R. Darji
@@ -41,7 +41,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  uint8_t Character1[8] = {0x00,0x00,0x00,0x00,0x00,0x00,0x10,0x00};
+  uint8_t Character1[8] = {0x04,0x04,0x04,0x04,0x04,0x04,0x04,0x04};
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -61,7 +61,7 @@ int main(void)
   /* initialize LCD */
   ASK25_LCD_Init(Inc, DispShiftOff);
 
-  /* Display dot */
+  /* Display vertical line */
   ASK25_LCD_CGRAM_CharGen(0, Character1);
   ASK25_LCD_Write_Data(0x00);
 
