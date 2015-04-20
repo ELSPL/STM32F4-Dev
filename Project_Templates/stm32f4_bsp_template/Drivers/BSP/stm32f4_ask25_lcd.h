@@ -135,7 +135,6 @@ typedef enum
 /******************************************************************************/
 /*                       LCD Interface Mode                                   */
 /******************************************************************************/
-#define     LCD_DATA_START_PIN  0    // Specify the starting pin number of port
 
 #define     FOUR_BIT        DISABLE  // Specify the type of interface
 #define     EIGHT_BIT       ENABLE
@@ -149,11 +148,13 @@ typedef enum
 
 #if FOUR_BIT
     #define LCD_4BIT
+    #define     LCD_DATA_START_PIN  4    // Specify the starting pin number of port
     #if (LCD_DATA_START_PIN > 4)
         #error Datalines not correctly defined
     #endif
 #elif EIGHT_BIT
     #define LCD_8BIT
+    #define     LCD_DATA_START_PIN  0    // Specify the starting pin number of port
     #if (LCD_DATA_START_PIN > 8)
         #error Datalines not correctly defined
     #endif
@@ -176,7 +177,7 @@ void ASK25_LCD_Write_Data (uint8_t Character);
 void ASK25_LCD_Set_Cursor (uint16_t LineNum, uint16_t Position, CursorType_e CursorType);
 void ASK25_LCD_Display_Character (uint8_t Character, uint16_t LineNum, uint16_t Position, CursorType_e CursorType);
 void ASK25_LCD_Display_String (uint8_t *String, uint16_t LineNum, uint16_t Position, CursorType_e CursorType);
-void ASK25_LCD_CGRAM_CharGen (uint16_t loc,uint16_t *p);
+void ASK25_LCD_CGRAM_CharGen (uint8_t loc, uint8_t *p);
 //void ASK25_LCD_Display_Decimal (uint16_t VarData, uint16_t Row, uint16_t Col);
 //void ASK25_LCD_Display_Hex (uint16_t VarData, uint16_t Row, uint16_t Col);
 
