@@ -348,7 +348,6 @@ void ASK25_7Segment_Display_Data (uint8_t Number)
  * @{
  */
 
-
 /**
  * @brief Matrix key pin assignment function
  * @return None
@@ -375,6 +374,7 @@ void ASK25_MatKey_Config (void)
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 }
 
+
 /**
  * @brief This function initializes matrix keyboard.
  *              Make ROWs as o/p & Columns as an i/p.
@@ -387,6 +387,7 @@ void ASK25_MatKey_Init (void)
   ASK25_MatKey_Col_High();
   ASK25_MatKey_Row_Low();
 }
+
 
 /**
  * @brief This function will scan whether any key is pressed or not
@@ -409,6 +410,7 @@ uint8_t ASK25_MatKey_Scan_Key (void)
     return(0);
 }
 
+
 /**
  * @brief This function detects whether any key is pressed or
  *        not also returns its its location
@@ -423,6 +425,7 @@ uint8_t ASK25_MatKey_Detect_Key(void)
   Key = Col + (10 * Row);
   return(Key);
 }
+
 
 /**
  * @brief This function will find the column from where key is pressed
@@ -455,6 +458,7 @@ uint8_t ASK25_MatKey_Find_Column(void)
   #endif
 }
 
+
 /**
  * @brief This function will find the row from where key is pressed
  * @return Return row index
@@ -485,6 +489,7 @@ uint8_t ASK25_MatKey_Find_Row(void)
   return 0;
 }
 
+
 /**
  * @brief This function will set all columns
  * @return None
@@ -494,6 +499,7 @@ void ASK25_MatKey_Col_High (void)
   HAL_GPIO_WritePin(GPIOE,_SBF(6,0x03),GPIO_PIN_SET);  // COL1 & COL2 High
 }
 
+
 /**
  * @brief This function will set all Rows
  * @return None
@@ -502,6 +508,7 @@ void ASK25_MatKey_Row_High (void)
 {
   HAL_GPIO_WritePin(GPIOE,_SBF(4,0x03),GPIO_PIN_SET);  // ROW1 & ROW2 High
 }
+
 
 /**
  * @brief This function will clear all Rows
