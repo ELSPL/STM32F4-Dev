@@ -373,7 +373,6 @@ void ASK25_MatKey_Config (void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
 
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
 }
 
 /**
@@ -401,13 +400,13 @@ uint8_t ASK25_MatKey_Scan_Key (void)
   col2 = HAL_GPIO_ReadPin(GPIOE,_BIT(7));
 
   #if MATKB_2X2
-      ReadValue = (col1 ^ col2);
+    ReadValue = (col1 ^ col2);
   #endif
 
   if((ReadValue != 0))  //check if both key is pressed
-      return(1);
+    return(1);
   else
-      return(0);
+    return(0);
 }
 
 /**
@@ -435,7 +434,7 @@ uint8_t ASK25_MatKey_Find_Column(void)
 
   if (ASK25_MatKey_Scan_Key() != 1)
   {
-      return(0);
+    return(0);
   }
 
   #if MATKB_2X2
@@ -462,28 +461,28 @@ uint8_t ASK25_MatKey_Find_Column(void)
  */
 uint8_t ASK25_MatKey_Find_Row(void)
 {
-   uint8_t i;
+  uint8_t i;
 
-    for(i = 1; i <= ROW ;i++)
+  for(i = 1; i <= ROW ;i++)
+  {
+    ASK25_MatKey_Row_High();
+    switch (i)
     {
-      ASK25_MatKey_Row_High();
-      switch (i)
-      {
-        case 1:
-          HAL_GPIO_WritePin(GPIOE,_BIT(4),GPIO_PIN_RESET); // ROW1
-          break;
+      case 1:
+        HAL_GPIO_WritePin(GPIOE,_BIT(4),GPIO_PIN_RESET); // ROW1
+        break;
 
-        case 2:
-          HAL_GPIO_WritePin(GPIOE,_BIT(5),GPIO_PIN_RESET); // ROW2
-          break;
-      }
-      if (ASK25_MatKey_Scan_Key() == 1)
-      {
-        ASK25_MatKey_Row_Low();
-        return(i);
-      }
+      case 2:
+        HAL_GPIO_WritePin(GPIOE,_BIT(5),GPIO_PIN_RESET); // ROW2
+        break;
     }
-    return 0;
+    if (ASK25_MatKey_Scan_Key() == 1)
+    {
+      ASK25_MatKey_Row_Low();
+      return(i);
+    }
+  }
+  return 0;
 }
 
 /**
@@ -512,6 +511,7 @@ void ASK25_MatKey_Row_Low (void)
 {
   HAL_GPIO_WritePin(GPIOE,_SBF(4,0x03),GPIO_PIN_RESET);  // ROW1 & ROW2 Low
 }
+
 /**
   * @}
   */

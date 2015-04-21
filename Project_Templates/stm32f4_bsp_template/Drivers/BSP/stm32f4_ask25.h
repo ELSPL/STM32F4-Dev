@@ -201,6 +201,7 @@ void ASK25_7Segment_Display_Data (uint8_t Number);
 /* MAT-KEY Functions */
 void ASK25_MatKey_Init (void);
 uint8_t ASK25_MatKey_Detect_Key(void);
+
 /**
   * @}
   */
