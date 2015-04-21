@@ -105,6 +105,39 @@ typedef enum
 #define   TOTAL_SEGMENTS        2     // Define number of Segments to be connected maximum up to 4
 #define   COMMON_ANODE_SEG   ON   // Define type of Segmnent connections
 #define   COMMON_CATHODE_SEG  OFF
+
+/******************************************************************************/
+/*                           MAT_KB Selection                                 */
+/******************************************************************************/
+#define   MATKB_2X2     ENABLE
+#define   MATKB_3X3     DISABLE
+#define   MATKB_4X4     DISABLE
+#define   MATKB_5X5     DISABLE
+#define   MATKB_6X6     DISABLE
+#define   MATKB_7X7     DISABLE
+#define   MATKB_8X8     DISABLE
+
+/******************************************************************************/
+/*                           MAT_KB Selection                                 */
+/******************************************************************************/
+#if MATKB_2X2
+  #define ROW   2
+  #undef ROW3
+  #undef ROW4
+  #undef ROW5
+  #undef ROW6
+  #undef ROW7
+  #undef ROW8
+
+  #undef COL3
+  #undef COL4
+  #undef COL5
+  #undef COL6
+  #undef COL7
+  #undef COL8
+#endif
+
+
 /**
   * @}
   */
@@ -164,6 +197,10 @@ void ASK25_DCMotor_Init(void);
 void ASK25_7Segment_Init(void);
 void ASK25_7Segment_Display_Digit (uint8_t Digit, uint8_t Seg);
 void ASK25_7Segment_Display_Data (uint8_t Number);
+
+/* MAT-KEY Functions */
+void ASK25_MatKey_Init (void);
+uint8_t ASK25_MatKey_Detect_Key(void);
 /**
   * @}
   */
