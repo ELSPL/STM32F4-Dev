@@ -65,15 +65,14 @@ extern I2C_HandleTypeDef hi2c1_at24c16;
   */
 /* I2C Initialization Functions */
 void ASK25_I2C1_Init(void);
-void ASK25_I2C1_MspInit(I2C_HandleTypeDef* hi2c);
 void ASK25_I2C1_MspDeInit(I2C_HandleTypeDef* hi2c);
 
 HAL_StatusTypeDef ASK25_AT24C16_Write_Byte (uint16_t eep_address, uint8_t byte_data);
 HAL_StatusTypeDef ASK25_AT24C16_Write (uint16_t eep_address, uint8_t* byte_data, uint16_t length);
 uint8_t ASK25_AT24C16_Read_Byte (uint16_t eep_address);
 HAL_StatusTypeDef ASK25_AT24C16_Read (uint16_t eep_address, uint8_t* buf_data, uint16_t length);
-void Display_Eeprom_Array (uint8_t *string, uint16_t length);
-void Display_Eeprom_Loc (uint16_t mem_start_address, uint16_t mem_end_address);
+void ASK25_AT24C16_Display_Array (uint8_t *string, uint16_t length);
+void ASK25_AT24C16_Display_Loc (uint16_t mem_start_address, uint16_t mem_end_address);
 
 
 /**

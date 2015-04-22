@@ -35,19 +35,43 @@ I2C_HandleTypeDef hi2c1_at24c16;
   * @}
   */
 
-
-/** @defgroup STM32F4_ASK25_AT24C16_Private_FunctionPrototypes
-  * @{
-  */
-
-
-/**
-  * @}
-  */
-
 /** @defgroup STM32F4_ASK25_AT24C16_Private_Functions
   * @{
   */
+
+/**
+ * @brief This function is support function for ASK25_I2C1_Init
+ *        This function configures GPIO of I2C1
+ * @param hi2c  Provide I2C handle
+ *      @arg  &hi2c1_at24c16
+ * @retval None
+ */
+static void ASK25_I2C1_MspInit(I2C_HandleTypeDef* hi2c)
+{
+  GPIO_InitTypeDef GPIO_InitStruct;
+  if(hi2c->Instance==I2C1)
+  {
+    /**I2C1 GPIO Configuration
+    PB6     ------> I2C1_SCL
+    PB9     ------> I2C1_SDA
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_9;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+    GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    /* Peripheral clock enable */
+    __I2C1_CLK_ENABLE();
+
+    /* Peripheral interrupt init*/
+    HAL_NVIC_SetPriority(I2C1_ER_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(I2C1_ER_IRQn);
+    HAL_NVIC_SetPriority(I2C1_EV_IRQn, 5, 0);
+    HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
+  }
+}
 
 
 /**
@@ -78,41 +102,6 @@ void ASK25_I2C1_Init(void)
 
   ASK25_I2C1_MspInit(&hi2c1_at24c16);
   HAL_I2C_Init(&hi2c1_at24c16);
-}
-
-
-/**
- * @brief This function is support function for ASK25_I2C1_Init
- *        This function configures GPIO of I2C1
- * @param hi2c  Provide I2C handle
- *      @arg  &hi2c1_at24c16
- * @retval None
- */
-void ASK25_I2C1_MspInit(I2C_HandleTypeDef* hi2c)
-{
-  GPIO_InitTypeDef GPIO_InitStruct;
-  if(hi2c->Instance==I2C1)
-  {
-    /**I2C1 GPIO Configuration
-    PB6     ------> I2C1_SCL
-    PB9     ------> I2C1_SDA
-    */
-    GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_9;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-    GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    /* Peripheral clock enable */
-    __I2C1_CLK_ENABLE();
-
-    /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(I2C1_ER_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(I2C1_ER_IRQn);
-    HAL_NVIC_SetPriority(I2C1_EV_IRQn, 5, 0);
-    HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
-  }
 }
 
 
@@ -271,7 +260,7 @@ HAL_StatusTypeDef ASK25_AT24C16_Read (uint16_t eep_address, uint8_t* buf_data, u
  * @param string  Buffer (uint8_t size)
  * @param length  Length of Buffer
  */
-void Display_Eeprom_Array (uint8_t *string, uint16_t length)
+void ASK25_AT24C16_Display_Array (uint8_t *string, uint16_t length)
 {
   while(length)
   {
@@ -287,7 +276,7 @@ void Display_Eeprom_Array (uint8_t *string, uint16_t length)
  * @param mem_end_address     ending address of EEPROM
  * @retval None
  */
-void Display_Eeprom_Loc (uint16_t mem_start_address, uint16_t mem_end_address)
+void ASK25_AT24C16_Display_Loc (uint16_t mem_start_address, uint16_t mem_end_address)
 {
   uint8_t line=0,count=0;
   uint8_t dat;
