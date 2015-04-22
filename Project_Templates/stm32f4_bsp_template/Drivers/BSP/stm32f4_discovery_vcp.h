@@ -72,12 +72,21 @@ extern uint8_t vEscFlag;
   * @{
   */
 
+/* VCP Initilization function */
 void BSP_VCP_Init (void);
 
+/* VCP Stdio functions */
 HAL_StatusTypeDef vuprintf(const char *format, ...);
 uint8_t vgetche(TRANSFER_BLOCK_Type mode);
 uint8_t vget_line(int8_t s[], uint8_t lim);
 
+/* VCP utility functions */
+void vcp_clr_scr_rst_cur (void);
+void vErase_Char (void);
+void vErase_Char_With_UnderScore (void);
+void vErase_Backslash (void);
+void vErase_SemiColon (void);
+void vErase_And_RingTheBell (void);
 /**
   * @}
   */

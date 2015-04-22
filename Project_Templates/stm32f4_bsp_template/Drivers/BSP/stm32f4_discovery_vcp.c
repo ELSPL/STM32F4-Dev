@@ -37,6 +37,34 @@ uint8_t vEscFlag = 0;
   */
 
 
+/** @defgroup STM32F4_DISCOVERY_VCP_Private_Functions
+  * @{
+  */
+
+/**
+ * @brief VT100- code to set cursor to Home
+ * @return None
+ */
+static void vcp_reset_cursor (void)
+{
+  vuprintf("\x1b[H");   /* escape sequence for vt220 ^[H sets cursor to Home */
+}
+
+
+/**
+ * @brief VT100- code to Clear Screen
+ * @return  None
+ */
+static void vcp_clear_screen (void)
+{
+  vuprintf("\x1b[2J");   /* escape sequence for vt220 ESC[2J clears screen */
+}
+
+/**
+  * @}
+  */
+
+
 /** @defgroup STM32F4_DISCOVERY_VCP_Functions
   * @{
   */
@@ -295,6 +323,90 @@ HAL_StatusTypeDef vuprintf(const char *format, ...)
     }/* end of switch statement */
   }
   return(HAL_OK);
+}
+
+
+/********************************************************************//**
+* @brief VCP Utility functions
+**********************************************************************/
+
+/**
+ * @brief VT100- code to Clear Screen and Reset Cursor
+ * @return  None
+ */
+void vcp_clr_scr_rst_cur (void)
+{
+  vcp_clear_screen();
+  vcp_reset_cursor();
+}
+
+
+/**
+ * @brief Erase Character
+ * @return  None
+ */
+void vErase_Char (void)
+{
+  vuprintf("%c", Out_BACKSPACE);
+  vuprintf("%c", Out_SPACE);
+  vuprintf("%c", Out_BACKSPACE);
+}
+
+
+/**
+ * @brief Erase Character with Underscore '_'
+ * @return  None
+ */
+void vErase_Char_With_UnderScore (void)
+{
+  vuprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  vuprintf("_");                       /* and write '_' on the screen */
+  vuprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+}
+
+
+/**
+ * @brief Erase Backslash
+ * @return None
+ */
+void vErase_Backslash (void)
+{
+  vuprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  vuprintf("/");                       /* and write '/' on the screen */
+  vuprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  vuprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  vuprintf("_");                       /* and write '_' on the screen */
+  vuprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+}
+
+
+/**
+ * @brief Erase Semicolon
+ * @return  None
+ */
+void vErase_SemiColon (void)
+{
+  vuprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  vuprintf(":");                       /* and write ':' on the screen */
+  vuprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  vuprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  vuprintf("_");                       /* and write '_' on the screen */
+  vuprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+}
+
+
+/**
+ * @brief Erase and Ring the Bell
+ * @return  None
+ */
+void vErase_And_RingTheBell (void)
+{
+  vuprintf("%c", Out_BACKSPACE);         /* back space */
+  vuprintf("_");                         /* erase 1st char on the screen */
+  vuprintf("%c", Out_BACKSPACE);         /* back space */
+  vuprintf("_");                         /* erase 2nd char on the screen */
+  vuprintf("%c", Out_BACKSPACE);         /* back space */
+  vuprintf("\7");                        /* ring the bell */
 }
 
 /**

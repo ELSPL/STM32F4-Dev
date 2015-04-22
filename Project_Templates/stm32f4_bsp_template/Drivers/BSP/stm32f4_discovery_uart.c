@@ -175,6 +175,25 @@ static HAL_StatusTypeDef UART_Receive(uint8_t *data_buf, uint16_t size, uint32_t
 
 
 /**
+ * @brief VT100- code to set cursor to Home
+ * @return None
+ */
+static void uart_reset_cursor (void)
+{
+  uprintf("\x1b[H");   /* escape sequence for vt220 ^[H sets cursor to Home */
+}
+
+
+/**
+ * @brief VT100- code to Clear Screen
+ * @return  None
+ */
+static void uart_clear_screen (void)
+{
+  uprintf("\x1b[2J");   /* escape sequence for vt220 ESC[2J clears screen */
+}
+
+/**
   * @}
   */
 
@@ -493,6 +512,90 @@ HAL_StatusTypeDef uprintf(const char *format, ...)
     }/* end of switch statement */
   }
   return(HAL_OK);
+}
+
+
+/********************************************************************//**
+* @brief UART Utility functions
+**********************************************************************/
+
+/**
+ * @brief VT100- code to Clear Screen and Reset Cursor
+ * @return  None
+ */
+void uart_clr_scr_rst_cur (void)
+{
+  uart_clear_screen();
+  uart_reset_cursor();
+}
+
+
+/**
+ * @brief Erase Character
+ * @return  None
+ */
+void uErase_Char (void)
+{
+  uprintf("%c", Out_BACKSPACE);
+  uprintf("%c", Out_SPACE);
+  uprintf("%c", Out_BACKSPACE);
+}
+
+
+/**
+ * @brief Erase Character with Underscore '_'
+ * @return  None
+ */
+void uErase_Char_With_UnderScore (void)
+{
+  uprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  uprintf("_");                       /* and write '_' on the screen */
+  uprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+}
+
+
+/**
+ * @brief Erase Backslash
+ * @return None
+ */
+void uErase_Backslash (void)
+{
+  uprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  uprintf("/");                       /* and write '/' on the screen */
+  uprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  uprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  uprintf("_");                       /* and write '_' on the screen */
+  uprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+}
+
+
+/**
+ * @brief Erase Semicolon
+ * @return  None
+ */
+void uErase_SemiColon (void)
+{
+  uprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  uprintf(":");                       /* and write ':' on the screen */
+  uprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  uprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+  uprintf("_");                       /* and write '_' on the screen */
+  uprintf("%c", Out_BACKSPACE);       /* erase character on the screen */
+}
+
+
+/**
+ * @brief Erase and Ring the Bell
+ * @return  None
+ */
+void uErase_And_RingTheBell (void)
+{
+  uprintf("%c", Out_BACKSPACE);         /* back space */
+  uprintf("_");                         /* erase 1st char on the screen */
+  uprintf("%c", Out_BACKSPACE);         /* back space */
+  uprintf("_");                         /* erase 2nd char on the screen */
+  uprintf("%c", Out_BACKSPACE);         /* back space */
+  uprintf("\7");                        /* ring the bell */
 }
 
 /**

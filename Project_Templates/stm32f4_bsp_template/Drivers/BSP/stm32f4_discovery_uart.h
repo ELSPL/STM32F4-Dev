@@ -100,12 +100,24 @@ extern uint8_t UartReady;
   * @{
   */
 
+/* UART Init and De-Init functions */
 void BSP_UART_Init(uint32_t Baudrate);
 void BSP_UART_MspDeInit(UART_HandleTypeDef* huart);
 
+/* UART Stdio functions */
 HAL_StatusTypeDef uprintf(const char *format, ...);
 uint8_t ugetche(TRANSFER_BLOCK_Type mode);
 uint8_t uget_line(int8_t s[], uint8_t lim);
+
+/* UART utility functions */
+void uart_clr_scr_rst_cur (void);
+void uErase_Char (void);
+void uErase_Char_With_UnderScore (void);
+void uErase_Backslash (void);
+void uErase_SemiColon (void);
+void uErase_And_RingTheBell (void);
+
+
 
 /**
   * @}
