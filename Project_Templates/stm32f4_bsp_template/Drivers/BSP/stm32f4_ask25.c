@@ -33,7 +33,7 @@ uint8_t ASK25_MatKey_Find_Row(void);
 void ASK25_MatKey_Row_Low (void);
 void ASK25_MatKey_Row_High (void);
 void ASK25_MatKey_Col_High (void);
-void ASK25_SM_Send_Sequence(StMotorDirection_Typedef StMotorDirection, uint8_t Delay);
+void ASK25_SM_Send_Sequence(MotorDirection_Typedef StMotorDirection, uint8_t Delay);
 
 /** @defgroup STM32F4_ASK25_LOW_LEVEL_LED_Functions
   * @{
@@ -242,21 +242,23 @@ void ASK25_DCMotor_Init(void)
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
 }
 /**
- * @brief DC Motor Clockwise Rotation Function
+ * @brief DC Motor rotation function
+ * @param DCMotorDirection specifies the rotation direction
+ *        @arg 1 MotorClockwise
+ *        @arg 2 MotorAntiClockwise
  */
-void ASK25_DCMotor_Clk(void)
+void ASK25_DCMotor_Rotate(MotorDirection_Typedef DCMotorDirection)
 {
-  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
-}
-
-/**
- * @brief DC Motor Anticlockwise Rotation Function
- */
-void ASK25_DCMotor_AntiClk(void)
-{
-  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_RESET);
+  if (DCMotorDirection == MotorClockwise)
+  {
+    HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_RESET);
+  }
+  else if (DCMotorDirection == MotorAntiClockwise)
+  {
+    HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
+  }
 }
 /**
   * @}
@@ -569,7 +571,7 @@ void ASK25_SM_Init(void)
  * @param Angle specifies rotation angle
  * @param Delay specifies delay between steps
  */
-void ASK25_SM_Rotate (StMotorDirection_Typedef StMotorDirection, uint8_t Angle, uint8_t Delay)
+void ASK25_SM_Rotate (MotorDirection_Typedef StMotorDirection, uint16_t Angle, uint8_t Delay)
 {
   uint16_t i,Count;
   Count = ((Angle*10) / CAL_ANGLE);
@@ -586,7 +588,7 @@ void ASK25_SM_Rotate (StMotorDirection_Typedef StMotorDirection, uint8_t Angle, 
  *                                  StMotorAntiClockwise
  * @param Delay specifies delay between steps
  */
-void ASK25_SM_Send_Sequence(StMotorDirection_Typedef StMotorDirection, uint8_t Delay)
+void ASK25_SM_Send_Sequence(MotorDirection_Typedef StMotorDirection, uint8_t Delay)
 {
 
   #ifdef General_SM
@@ -599,12 +601,12 @@ void ASK25_SM_Send_Sequence(StMotorDirection_Typedef StMotorDirection, uint8_t D
   uint8_t SmClk[4] = {0x22,0xA0,0x88,0x0A};
   #endif
 
-  if(StMotorDirection == StMotorClockwise)
+  if(StMotorDirection == MotorClockwise)
   {
     HAL_GPIO_WritePin(GPIOE,_SBF(8,0xAA),GPIO_PIN_RESET);
     HAL_GPIO_WritePin(GPIOE,_SBF(8,SmClk[temp]),GPIO_PIN_SET);
   }
-  if(StMotorDirection == StMotorAntiClockwise)
+  if(StMotorDirection == MotorAntiClockwise)
   {
     HAL_GPIO_WritePin(GPIOE,_SBF(8,0xAA),GPIO_PIN_RESET);
     HAL_GPIO_WritePin(GPIOE,_SBF(8,SmAntClk[temp]),GPIO_PIN_SET);
