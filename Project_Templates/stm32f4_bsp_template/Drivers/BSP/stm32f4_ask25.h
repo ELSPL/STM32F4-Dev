@@ -39,6 +39,8 @@
   * @{
   */
 
+extern uint8_t temp;
+
 typedef enum
 {
   ALED1 = 0x01,
@@ -73,6 +75,11 @@ typedef enum
   ASEGMENT2 = 2
 } A7Segment_typedef;
 
+typedef enum
+{
+  StMotorClockwise = 0,
+  StMotorAntiClockwise
+}StMotorDirection_Typedef;
 /******************************************************************************/
 /*                         Seven Segment Specification                        */
 /******************************************************************************/
@@ -102,8 +109,8 @@ typedef enum
 #define   EIGHT   a+b+c+d+e+f+g
 #define   NINE    a+b+c+d+f+g
 
-#define   TOTAL_SEGMENTS        2     // Define number of Segments to be connected maximum up to 4
-#define   COMMON_ANODE_SEG   ON   // Define type of Segmnent connections
+#define   TOTAL_SEGMENTS      2     // Define number of Segments to be connected maximum up to 4
+#define   COMMON_ANODE_SEG    ON   // Define type of Segmnent connections
 #define   COMMON_CATHODE_SEG  OFF
 
 /******************************************************************************/
@@ -137,6 +144,17 @@ typedef enum
   #undef COL8
 #endif
 
+/******************************************************************************/
+/*                      Stepper Motor Selection                               */
+/******************************************************************************/
+#define GENERAL_SM_SEL           DISABLE
+#define STM_601_SEL              ENABLE
+
+/******************************************************************************/
+/*                      Stepper Motor Calibration                             */
+/******************************************************************************/
+
+#define   CAL_ANGLE     7.2     // Stepper motor calibration angle
 
 /**
   * @}
@@ -173,6 +191,25 @@ typedef enum
   * @}
   */
 
+/** @addtogroup STM32F4_ASK25_Stepper_Motor
+  * @{
+  */
+#if GENERAL_SM_SEL && STM_601_SEL
+  #error Stepper Motor is not properly selected
+#endif
+
+#if STM_601_SEL
+  #define STM_601
+  #define   CAL_ANGLE     18     // Stepper motor calibration angle
+#endif
+
+#if GENERAL_SM_SEL
+  #define GENERAL_SM
+  #define   CAL_ANGLE     72     // Stepper motor calibration angle
+#endif
+/**
+  * @}
+  */
 
 /** @defgroup STM32F4_ASK25_LOW_LEVEL_Exported_Functions
   * @{
@@ -192,6 +229,8 @@ void ASK25_Relay_Init(void);
 
 /* DC Motor Functions */
 void ASK25_DCMotor_Init(void);
+void ASK25_DCMotor_Clk(void);
+void ASK25_DCMotor_AntiClk(void);
 
 /* 7 Segment function */
 void ASK25_7Segment_Init(void);
@@ -202,6 +241,9 @@ void ASK25_7Segment_Display_Data (uint8_t Number);
 void ASK25_MatKey_Init (void);
 uint8_t ASK25_MatKey_Detect_Key(void);
 
+/* Stepper Motor Functions */
+void ASK25_SM_Init(void);
+void ASK25_SM_Rotate (StMotorDirection_Typedef StMotorDirection, uint8_t Angle, uint8_t Delay);
 /**
   * @}
   */
