@@ -77,9 +77,9 @@ typedef enum
 
 typedef enum
 {
-  StMotorClockwise = 0,
-  StMotorAntiClockwise
-}StMotorDirection_Typedef;
+  MotorClockwise = 0,
+  MotorAntiClockwise
+}MotorDirection_Typedef;
 /******************************************************************************/
 /*                         Seven Segment Specification                        */
 /******************************************************************************/
@@ -149,12 +149,6 @@ typedef enum
 /******************************************************************************/
 #define GENERAL_SM_SEL           DISABLE
 #define STM_601_SEL              ENABLE
-
-/******************************************************************************/
-/*                      Stepper Motor Calibration                             */
-/******************************************************************************/
-
-#define   CAL_ANGLE     7.2     // Stepper motor calibration angle
 
 /**
   * @}
@@ -229,8 +223,7 @@ void ASK25_Relay_Init(void);
 
 /* DC Motor Functions */
 void ASK25_DCMotor_Init(void);
-void ASK25_DCMotor_Clk(void);
-void ASK25_DCMotor_AntiClk(void);
+void ASK25_DCMotor_Rotate(MotorDirection_Typedef DCMotorDirection);
 
 /* 7 Segment function */
 void ASK25_7Segment_Init(void);
@@ -243,7 +236,7 @@ uint8_t ASK25_MatKey_Detect_Key(void);
 
 /* Stepper Motor Functions */
 void ASK25_SM_Init(void);
-void ASK25_SM_Rotate (StMotorDirection_Typedef StMotorDirection, uint8_t Angle, uint8_t Delay);
+void ASK25_SM_Rotate (MotorDirection_Typedef StMotorDirection, uint16_t Angle, uint8_t Delay);
 /**
   * @}
   */
