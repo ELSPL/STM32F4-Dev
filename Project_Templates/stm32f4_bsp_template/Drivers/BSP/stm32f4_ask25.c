@@ -24,6 +24,8 @@
   *        available on STM32F4-ASK25 Kit from Edutech.
   * @{
   */
+/* Private Variable */
+uint8_t temp = 0 ;
 
 /* Private Functions */
 uint8_t ASK25_MatKey_Find_Column(void);
@@ -31,6 +33,7 @@ uint8_t ASK25_MatKey_Find_Row(void);
 void ASK25_MatKey_Row_Low (void);
 void ASK25_MatKey_Row_High (void);
 void ASK25_MatKey_Col_High (void);
+void ASK25_SM_Send_Sequence(StMotorDirection_Typedef StMotorDirection, uint8_t Delay);
 
 /** @defgroup STM32F4_ASK25_LOW_LEVEL_LED_Functions
   * @{
@@ -227,7 +230,7 @@ void ASK25_DCMotor_Init(void)
 
   __GPIOB_CLK_ENABLE();
 
-  /* Configure the GPIO_ALED pin */
+  /* Configure the GPIO_DCMoter pin */
   GPIO_InitStruct.Pin = GPIO_PIN_0 | GPIO_PIN_1;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
@@ -238,7 +241,26 @@ void ASK25_DCMotor_Init(void)
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
 }
+/**
+ * @brief DC Motor Clockwise Rotation Function
+ */
+void ASK25_DCMotor_Clk(void)
+{
+  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_RESET);
+}
 
+/**
+ * @brief DC Motor Anticlockwise Rotation Function
+ */
+void ASK25_DCMotor_AntiClk(void)
+{
+  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,GPIO_PIN_SET);
+  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_0,GPIO_PIN_RESET);
+}
+/**
+  * @}
+  */
 
 /**@defgroup STM32F4_ASK25_7Segment_Functions
  * @{
@@ -517,6 +539,80 @@ void ASK25_MatKey_Row_Low (void)
   */
 
 
+/**
+ * @defgroup STM32F4_ASK25_Stepper_Motor_Function
+ * @{
+ */
+/**
+ * @brief Stepper Motor initialization
+ */
+void ASK25_SM_Init(void)
+{
+   GPIO_InitTypeDef  GPIO_InitStruct;
+
+   /* Enable the GPIO_SM Clock */
+  __GPIOE_CLK_ENABLE();
+
+  /* Configure the GPIO_SM pin */
+  GPIO_InitStruct.Pin = _SBF(8,0xAA);
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
+
+  HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+}
+/**
+ * @brief This function rotates stepper motor in desired direction and angle
+ * @param StMotorDirection specifies direction of rotation
+ *        This parameter should be: StMotorClockwise
+ *                                  StMotorAntiClockwise
+ * @param Angle specifies rotation angle
+ * @param Delay specifies delay between steps
+ */
+void ASK25_SM_Rotate (StMotorDirection_Typedef StMotorDirection, uint8_t Angle, uint8_t Delay)
+{
+  uint16_t i,Count;
+  Count = ((Angle*10) / CAL_ANGLE);
+  for(i=0;i < Count;i++)
+  {
+    ASK25_SM_Send_Sequence(StMotorDirection,Delay);
+  }
+}
+
+/**
+ * @brief This function will send sequence to Stepper motor
+ * @param StMotorDirection specifies direction of rotation
+ *        This parameter should be: StMotorClockwise
+ *                                  StMotorAntiClockwise
+ * @param Delay specifies delay between steps
+ */
+void ASK25_SM_Send_Sequence(StMotorDirection_Typedef StMotorDirection, uint8_t Delay)
+{
+
+  #ifdef General_SM
+  uint8_t SmAntClk[4]= {0x80,0x08,0x20,0x02};
+  uint8_t SmClk[4]= {0x02,0x20,0x08,0x80};
+  #endif
+
+  #ifdef STM_601
+  uint8_t SmAntClk[4] = {0x0A,0x88,0xA0,0x22};
+  uint8_t SmClk[4] = {0x22,0xA0,0x88,0x0A};
+  #endif
+
+  if(StMotorDirection == StMotorClockwise)
+  {
+    HAL_GPIO_WritePin(GPIOE,_SBF(8,0xAA),GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOE,_SBF(8,SmClk[temp]),GPIO_PIN_SET);
+  }
+  if(StMotorDirection == StMotorAntiClockwise)
+  {
+    HAL_GPIO_WritePin(GPIOE,_SBF(8,0xAA),GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOE,_SBF(8,SmAntClk[temp]),GPIO_PIN_SET);
+  }
+  HAL_Delay(Delay);
+  temp++;
+  if(temp>3) temp = 0;
+}
 
 
 /**
