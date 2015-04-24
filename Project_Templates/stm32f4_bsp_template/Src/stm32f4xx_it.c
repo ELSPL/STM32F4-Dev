@@ -165,6 +165,7 @@ void I2C1_ER_IRQHandler(void)
   HAL_I2C_ER_IRQHandler(&hi2c1_at24c16);
 }
 
+
 /**
 * @brief This function handles I2C1 event interrupt.
 */
@@ -173,7 +174,16 @@ void I2C1_EV_IRQHandler(void)
   HAL_I2C_EV_IRQHandler(&hi2c1_at24c16);
 }
 
+
+/**
+* @brief This function handles SPI1 global interrupt.
+*/
+void SPI1_IRQHandler(void)
+{
+  HAL_SPI_IRQHandler(&hspi1_25aa160a);
+}
 #endif
+
 
 #ifdef USE_STM32F4_UART
 
