@@ -282,34 +282,33 @@ void ASK25_AT24C16_Display_Loc (uint16_t mem_start_address, uint16_t mem_end_add
   uint8_t dat;
   uint16_t addr;
 
-  trace_printf("EEPROM Range = 0x000 - 0x7FF \r\n");
+  vuprintf("EEPROM Range = 0x000 - 0x7FF \r\n");
 
-//  clr_scr_rst_cur(LPC_UART0);
-  trace_printf("Start: %03x   End: %03x \r\n",mem_start_address,mem_end_address);
+  vcp_clr_scr_rst_cur();
+  vuprintf("Start: %x03   End: %x03 \r\n",mem_start_address,mem_end_address);
 
   for(addr=mem_start_address; addr<mem_end_address+1; addr++)
   {
-    if(count == 0) trace_printf("%03x   ",addr);
+    if(count == 0) vuprintf("%x03   ",addr);
 
     dat = ASK25_AT24C16_Read_Byte(addr);   // read byte from address
 
-    trace_printf("%02x  ",dat);
+    vuprintf("%x02  ",dat);
     count++;
 
     if(count == 16)                    // check for last digit entered
     {
       line++;
       count = 0;
-      trace_printf("\r\n");
+      vuprintf("\r\n");
     }
 
     if(line == 20 || addr == mem_end_address)
     {
-      trace_printf("\x1b[24;01HPress any key to continue.");
+      vuprintf("\x1b[24;01HPress any key to continue.");
       line = 0;
-//      getche(LPC_UART0);
-      while(1);
-//      clr_scr_rst_cur(LPC_UART0);
+      vgetche(BLOCKING);
+      vcp_clr_scr_rst_cur();
     }
   }
 }
