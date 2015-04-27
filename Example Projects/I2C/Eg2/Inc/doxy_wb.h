@@ -59,7 +59,7 @@
 
 *
 * @section section10 Output:
-*    The data you have entered in EEPROM will be shown on Com-port
+*    The data on the EEPROM will be shown on Com-port
 *\n
 *\n
 *******************************************************************************/
