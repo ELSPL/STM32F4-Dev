@@ -1,6 +1,6 @@
 /******************************************************************//**
 * @file   main.c
-* @brief  Write a program to Write and Read Byte of I2C based EEPROM (ASK-25A)
+* @brief  Write a program to Write and Read array of I2C based EEPROM (ASK-25A)
 * @version  v1.0
 * @date   Apr 16, 2015
 * @author Bhavin R. Darji
