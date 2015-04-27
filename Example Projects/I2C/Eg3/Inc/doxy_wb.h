@@ -4,7 +4,7 @@
 * @section section1 Introduction:
 *         Having studied this LAB you will able to: \n
 *         -   Understand the GPIO functions \n
-*         -   Study the programs related to the Stepper Motor.
+*         -   Study the programs related to EEPROM interface using I2C.
 *
 * @section section2 Example3 :
 *    Objective:  Write a program to Write and Read Page of I2C based EEPROM (ASK-25A).
