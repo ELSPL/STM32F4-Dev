@@ -16,7 +16,7 @@
 #include "stm32f4_discovery_uart.h"
 #include "stm32f4_discovery_vcp.h"
 //#include "stm32f4_discovery.h"
-#include "stm32f4_ask25.h"
+//#include "stm32f4_ask25.h"
 
 
 
@@ -44,7 +44,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  char byte, read[10];
+  int check;
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
