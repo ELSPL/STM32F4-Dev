@@ -264,7 +264,7 @@ void ASK25_AT24C16_Display_Array (uint8_t *string, uint16_t length)
 {
   while(length)
   {
-    vuprintf("%02x  ",*string++);
+    vuprintf("%x02  ",*string++);
     length--;
   }
 }
