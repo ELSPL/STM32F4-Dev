@@ -338,7 +338,7 @@ uint8_t uget_line(int8_t s[], uint8_t lim)
 
   while(1)
   {
-    kb = getche(BLOCKING);
+    kb = ugetche(BLOCKING);
 
     if (kb == In_ESC)                /* if ESCAPE pressed then exit */
     {
