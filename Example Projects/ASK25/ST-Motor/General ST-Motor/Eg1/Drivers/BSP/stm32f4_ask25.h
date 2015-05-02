@@ -22,7 +22,7 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4_ask25_lcd.h"
 #include "stm32f4_ask25_at24c16.h"
-
+#include "stm32f4_ask25_25aa160a.h"
 /** @addtogroup BSP
   * @{
   */
