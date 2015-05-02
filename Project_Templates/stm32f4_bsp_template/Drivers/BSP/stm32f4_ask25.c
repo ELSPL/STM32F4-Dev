@@ -353,7 +353,7 @@ void ASK25_7Segment_Display_Data (uint8_t Number)
   while(1)
   {
     Digits[i] = Number % 10; //Store unit value
-    Display_Digit(Digits[i], TOTAL_SEGMENTS - j);
+    ASK25_7Segment_Display_Digit(Digits[i], TOTAL_SEGMENTS - j);
     j--;
     i++;
     Number = Number / 10; //Trim a unit value
