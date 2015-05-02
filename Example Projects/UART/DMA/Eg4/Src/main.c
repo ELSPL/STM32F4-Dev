@@ -44,7 +44,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  uint8_t Data;
+  uint8_t Data[10];
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
