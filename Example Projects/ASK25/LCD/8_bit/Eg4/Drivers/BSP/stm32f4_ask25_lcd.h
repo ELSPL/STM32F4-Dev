@@ -177,7 +177,7 @@ void ASK25_LCD_Write_Data (uint8_t Character);
 void ASK25_LCD_Set_Cursor (uint16_t LineNum, uint16_t Position, CursorType_e CursorType);
 void ASK25_LCD_Display_Character (uint8_t Character, uint16_t LineNum, uint16_t Position, CursorType_e CursorType);
 void ASK25_LCD_Display_String (uint8_t *String, uint16_t LineNum, uint16_t Position, CursorType_e CursorType);
-void ASK25_LCD_CGRAM_CharGen (uint8_t loc, uint8_t *p);
+void ASK25_LCD_CGRAM_CharGen (uint8_t loc,uint8_t *p);
 void ASK25_LCD_Display_Decimal (uint8_t VarData, uint8_t Row, uint8_t Col);
 //void ASK25_LCD_Display_Hex (uint16_t VarData, uint16_t Row, uint16_t Col);
 
