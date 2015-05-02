@@ -417,8 +417,8 @@ void ASK25_LCD_Display_Decimal (uint8_t VarData, uint8_t Row, uint8_t Col)
     DivValue/=BaseValue;
   }
 }
-
-
+//
+//
 //void ASK25_LCD_Display_Hex (uint16_t VarData, uint16_t Row, uint16_t Col)
 //{
 //  uint16_t Character[18]={"0123456789ABCDEF"};
