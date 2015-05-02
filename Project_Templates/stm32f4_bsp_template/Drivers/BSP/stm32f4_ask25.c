@@ -591,7 +591,7 @@ void ASK25_SM_Rotate (MotorDirection_Typedef StMotorDirection, uint16_t Angle, u
 void ASK25_SM_Send_Sequence(MotorDirection_Typedef StMotorDirection, uint8_t Delay)
 {
 
-  #ifdef General_SM
+  #ifdef GENERAL_SM
   uint8_t SmAntClk[4]= {0x80,0x08,0x20,0x02};
   uint8_t SmClk[4]= {0x02,0x20,0x08,0x80};
   #endif
