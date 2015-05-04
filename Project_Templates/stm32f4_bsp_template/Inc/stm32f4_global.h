@@ -142,7 +142,7 @@
 * @brief Bit-Banding Macro Functions
 **********************************************************************/
 /******************************************************************************/
-/*                      Bit Banding declarations */
+/*                      Bit Banding declarations                              */
 /******************************************************************************/
 /* The processor memory map includes two bit-band regions. These occupy the lowest
 * 1MB of the SRAM and peripheral memory regions respectively.
@@ -188,6 +188,75 @@
 #define BITBAND_Peri_GetBit(VarAddr,bitnumber) (*(__IO uint32_t *) (BITBAND_Peri(VarAddr,bitnumber)))
 
 
+
+/*******************************************************************************//**
+* @brief MPU Macro Functions
+***********************************************************************************/
+/**********************************************************************************/
+/*                                Memory Regions                                  */
+/**********************************************************************************/
+/*
+
+Region 0 - Code:            Flash               0x0800 0000 - 0x080F FFFF       1MB
+Region 1 - On chip SRAM :   SRAM                0x2000 0000 - 0x2001 FFFF       128KB
+Region 2 - On chip SRAM:                        0x2000 2000 - 0x2000 2020       32B (unaccessible)
+Region 3 - APB Peripherals:                     0x4000 0000 - 0x4001 FFFF       128KB
+
+*/
+
+/** MPU region size definition */
+
+#define MPU_DEFS_RASR_SIZE_32B (0x04 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_64B (0x05 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_128B (0x06 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_256B (0x07 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_512B (0x08 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_1KB (0x09 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_2KB (0x0A << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_4KB (0x0B << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_8KB (0x0C << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_16KB (0x0D << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_32KB (0x0E << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_64KB (0x0F << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_128KB (0x10 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_256KB (0x11 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_512KB (0x12 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_1MB (0x13 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_2MB (0x14 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_4MB (0x15 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_8MB (0x16 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_16MB (0x17 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_32MB (0x18 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_64MB (0x19 << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_128MB (0x1A << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_256MB (0x1B << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_512MB (0x1C << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_1GB (0x1D << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_2GB (0x1E << MPU_RASR_SIZE_Pos)
+#define MPU_DEFS_RASR_SIZE_4GB (0x1F << MPU_RASR_SIZE_Pos)
+
+/** Region Definition */
+
+//Region 1
+#define FLASH_ADDRESS_START                      (0x08000000)
+#define FLASH_SIZE                               (0x27UL << 0UL)
+//Region 2
+#define RAM1_ADDRESS_START                       (0x20000000UL)
+#define RAM1_SIZE                                (0x19UL << 0UL)
+//Region 3
+#define RAM2_ADDRESS_START                       (0x20002000UL)
+#define RAM2_SIZE                                (0x09UL << 0UL)
+//Region 4
+#define PERIPH_ADDRESS_START                     (0x40000000)
+#define PERIPH_SIZE                              (0x19UL << 0UL)
+
+/** Region Access Definition */
+
+#define MPU_NO_ACCESS                            (0x00UL << MPU_RASR_AP_Pos)
+#define MPU_REGION_PRIVILEGED_READ_WRITE         (0x01UL << MPU_RASR_AP_Pos)
+#define MPU_REGION_READ_WRITE                    (0x03UL << MPU_RASR_AP_Pos)
+#define MPU_REGION_PRIVILEGED_READ_ONLY          (0x05UL << MPU_RASR_AP_Pos)
+#define MPU_REGION_READ_ONLY                     (0x06UL << MPU_RASR_AP_Pos)
 
 /**
 * @}
@@ -246,7 +315,13 @@ uint32_t Bitband_Getbit(uint32_t Address, uint8_t pin);
 void Bitband_Setbit(uint32_t Address, uint8_t pin);
 void Bitband_clearbit(uint32_t Address, uint8_t pin);
 
-
+/********************************************************************//**
+* @brief MPU Function Declaration
+**********************************************************************/
+void mpu_enable(void);
+void mpu_disable(void);
+void mpu_region_config(uint8_t region_num, uint32_t addr, uint32_t size, uint32_t attr);
+void MPU_Config(void);
 
 /**
  * @} GLOBAL_Public_Functions End
