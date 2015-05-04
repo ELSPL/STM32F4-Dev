@@ -16,8 +16,6 @@
  * @{
  */
 
-
-
 /**
  * @} STM32F4_GLOBAL_Variables End
  */
@@ -108,6 +106,85 @@ void Bitband_clearbit(uint32_t Address, uint8_t pin)
     {
         BITBAND_Peri_ClearBit(Address, pin);
     }
+}
+
+/*********************************************************************************/
+/* @brief MPU Functions */
+/**********************************************************************************/
+
+/**
+ * @brief MPU enable function
+ */
+void mpu_enable(void)
+{
+    MPU->CTRL = MPU_CTRL_ENABLE_Msk|MPU_CTRL_PRIVDEFENA_Msk ;
+}
+
+
+/**
+ * @brief MPU disable function
+ */
+void mpu_disable(void)
+{
+    __DMB();       // Make sure outstanding transfers are done
+    MPU->CTRL = 0; // Disable the MPU
+}
+
+/**********************************************************************************/
+/*                                Memory Regions                                  */
+/**********************************************************************************/
+/*
+
+Region 0 - Code:            Flash               0x0800 0000 - 0x080F FFFF       1MB
+Region 1 - On chip SRAM :   SRAM                0x2000 0000 - 0x2001 FFFF       128KB
+Region 2 - On chip SRAM:    SRAM                0x2000 2000 - 0x2000 2020       32B (unaccessible)
+Region 3 - APB Peripherals:                     0x4000 0000 - 0x4001 FFFF       128KB
+
+*/
+
+/**
+  * @brief This function creates MPU region
+  * @param region_num  provide region number, From 0 to 7(Maximum)
+  * @param addr        This is the starting address of specified region
+  * @param size        This is size of the region that is used in MPU.
+  * @param attr        Specify attribute of the region
+  *         @arg1       MPU_NO_ACCESS
+            @arg2       MPU_REGION_PRIVILEGED_READ_WRITE
+            @arg3       MPU_REGION_READ_WRITE
+            @arg4       MPU_REGION_PRIVILEGED_READ_ONLY
+            @arg5       MPU_REGION_READ_ONLY
+  */
+void mpu_region_config(uint8_t region_num, uint32_t addr, uint32_t size, uint32_t attr)
+{
+    MPU->RNR = region_num;
+    MPU->RBAR = addr;
+    MPU->RASR = size | attr;
+}
+/**
+ * @brief MPU region configuration function
+ */
+void MPU_Config(void)
+{
+  mpu_disable();
+
+  /* Configure FLASH region as REGION N0, 1MB of size and R/W region */
+  mpu_region_config(0,FLASH_ADDRESS_START,FLASH_SIZE,MPU_REGION_PRIVILEGED_READ_WRITE);
+
+  /* Configure RAM region as Region N1, 128kB of size and R/W region */
+  mpu_region_config(1,RAM1_ADDRESS_START,RAM1_SIZE,MPU_REGION_PRIVILEGED_READ_WRITE);
+
+  /* Configure small RAM region as REGION N2, 32Byte of size, no access region and Execute Never region */
+  mpu_region_config(2,RAM2_ADDRESS_START,RAM2_SIZE,MPU_NO_ACCESS);
+
+  /* Configure Peripheral region as REGION N3, 128KB of size, R/W region */
+  mpu_region_config(3,PERIPH_ADDRESS_START,PERIPH_SIZE,MPU_REGION_PRIVILEGED_READ_WRITE);
+
+
+  /* Enable the memory fault exception */
+  SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;
+
+  /* Enable MPU */
+  mpu_enable();
 }
 
 /**
