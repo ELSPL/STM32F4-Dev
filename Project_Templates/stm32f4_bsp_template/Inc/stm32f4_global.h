@@ -318,9 +318,9 @@ void Bitband_clearbit(uint32_t Address, uint8_t pin);
 /********************************************************************//**
 * @brief MPU Function Declaration
 **********************************************************************/
-void mpu_enable(void);
-void mpu_disable(void);
-void mpu_region_config(uint8_t region_num, uint32_t addr, uint32_t size, uint32_t attr);
+void MPU_Enable(void);
+void MPU_Disable(void);
+void MPU_Region_Config(uint8_t region_num, uint32_t addr, uint32_t size, uint32_t attr);
 void MPU_Config(void);
 
 /**
