@@ -51,6 +51,10 @@
 #ifdef USE_STM32F4_VCP
 #include "stm32f4_discovery_vcp.h"
 #endif
+
+#ifdef USE_STM32F4_TFT
+#include "stm32f4_discovery_tsc.h"
+#endif
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -182,6 +186,25 @@ void SPI1_IRQHandler(void)
 {
   HAL_SPI_IRQHandler(&hspi1_25aa160a);
 }
+
+#ifdef USE_STM32F4_TFT
+/**
+* @brief This function handles DMA1 Stream6 global interrupt.
+*/
+void DMA1_Stream6_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_i2c1_tx);
+}
+
+/**
+* @brief This function handles DMA1 Stream0 global interrupt.
+*/
+void DMA1_Stream0_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_i2c1_rx);
+}
+#endif
+
 #endif
 
 

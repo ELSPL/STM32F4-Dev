@@ -59,7 +59,7 @@ int main(void)
   BSP_UART_Init(115200);
 
   /* Initialize GPIOE.8 to 15 as data pin and GPIOB.4 - 5 as Segment selection and gate pin */
-  ASK25_7_Segment_init();
+  ASK25_7Segment_Init();
 
   trace_printf("Hello\n");
   /* USER CODE END 2 */
