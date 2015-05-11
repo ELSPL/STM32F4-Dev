@@ -43,7 +43,7 @@
 TS_STATE TS_State;              /*<! The global structure holding the TS state */
 uint32_t IOE_TimeOut = TIMEOUT_MAX; /*<! Value of Timeout when I2C communication fails */
 
-I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c1_tsc;
 DMA_HandleTypeDef hdma_i2c1_tx;
 DMA_HandleTypeDef hdma_i2c1_rx;
 /**
@@ -135,18 +135,18 @@ void MX_I2C1_Init(void)
 
   __GPIOB_CLK_ENABLE();
 
-  hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
-  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c1.Init.OwnAddress1 = 0;
-  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLED;
-  hi2c1.Init.OwnAddress2 = 0;
-  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLED;
-  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLED;
+  hi2c1_tsc.Instance = I2C1;
+  hi2c1_tsc.Init.ClockSpeed = 100000;
+  hi2c1_tsc.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1_tsc.Init.OwnAddress1 = 0;
+  hi2c1_tsc.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1_tsc.Init.DualAddressMode = I2C_DUALADDRESS_DISABLED;
+  hi2c1_tsc.Init.OwnAddress2 = 0;
+  hi2c1_tsc.Init.GeneralCallMode = I2C_GENERALCALL_DISABLED;
+  hi2c1_tsc.Init.NoStretchMode = I2C_NOSTRETCH_DISABLED;
 
-  HAL_I2C_MspInit(&hi2c1);
-  HAL_I2C_Init(&hi2c1);
+  HAL_I2C_MspInit(&hi2c1_tsc);
+  HAL_I2C_Init(&hi2c1_tsc);
 }
 
 void HAL_I2C_MspDeInit(I2C_HandleTypeDef* hi2c)
@@ -761,7 +761,7 @@ uint8_t I2C_WriteDeviceRegister(uint8_t DeviceAddr, uint8_t RegisterAddr, uint8_
   HAL_StatusTypeDef status = HAL_OK;
   uint8_t read_verif = 0;
 
-  status = HAL_I2C_Mem_Write_DMA(&hi2c1, DeviceAddr, RegisterAddr, I2C_MEMADD_SIZE_8BIT, &RegisterValue, 1);
+  status = HAL_I2C_Mem_Write_DMA(&hi2c1_tsc, DeviceAddr, RegisterAddr, I2C_MEMADD_SIZE_8BIT, &RegisterValue, 1);
   HAL_Delay(1);
 
 #ifdef VERIFY_WRITTENDATA
@@ -788,7 +788,7 @@ uint8_t I2C_ReadDeviceRegister(uint8_t DeviceAddr, uint8_t RegisterAddr)
   HAL_StatusTypeDef status = HAL_OK;
   uint8_t IOE_BufferRX[2] = {0x00, 0x00};
 
-  status = HAL_I2C_Mem_Read_DMA(&hi2c1, DeviceAddr, RegisterAddr, I2C_MEMADD_SIZE_8BIT, IOE_BufferRX, 1);
+  status = HAL_I2C_Mem_Read_DMA(&hi2c1_tsc, DeviceAddr, RegisterAddr, I2C_MEMADD_SIZE_8BIT, IOE_BufferRX, 1);
   HAL_Delay(1);
   if (status == HAL_OK)
   {
@@ -814,7 +814,7 @@ uint16_t I2C_ReadDataBuffer(uint8_t DeviceAddr, uint8_t RegisterAddr)
   HAL_StatusTypeDef status = HAL_OK;
   uint8_t IOE_BufferRX[2] = {0x00, 0x00};
 
-  status = HAL_I2C_Mem_Read_DMA(&hi2c1, DeviceAddr, RegisterAddr, I2C_MEMADD_SIZE_8BIT, IOE_BufferRX, 2);
+  status = HAL_I2C_Mem_Read_DMA(&hi2c1_tsc, DeviceAddr, RegisterAddr, I2C_MEMADD_SIZE_8BIT, IOE_BufferRX, 2);
   HAL_Delay(1);
   if (status == HAL_OK)
   {
