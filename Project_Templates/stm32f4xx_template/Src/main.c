@@ -61,7 +61,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  trace_printf("Hello\n\r");
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -91,7 +91,7 @@ int main(void)
       HAL_GPIO_TogglePin(GPIOD, (1<<14));
       HAL_GPIO_TogglePin(GPIOD, (1<<15));
       HAL_Delay(1000);
-      trace_printf("Hello\n\r");
+      
   }
   /* USER CODE END 3 */
 
