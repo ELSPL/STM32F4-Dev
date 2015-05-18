@@ -20,7 +20,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx.h"
 #include "fonts.h"
-#include "stm32f4_global.h"
 #include "stm32f4xx_hal.h"
 
 /** @addtogroup STM32F4_DISCOVERY
@@ -44,6 +43,16 @@ typedef struct
   * @}
   */
 
+
+/** @defgroup STM32F4_DISCOVERY_LCD_Exported_Constants
+  * @{
+  */
+
+/* Note: LCD /CS is NE1 - Bank 1 of NOR/SRAM Bank 1~4 */
+#define  LCD_BASE_DATA               ((uint32_t)(0x60000000|0x00100000))
+#define  LCD_BASE_ADDR               ((uint32_t)(0x60000000|0x00000000))
+#define  LCD_CMD                     (*(uint16_t *)LCD_BASE_ADDR)
+#define  LCD_DATA                    (*(uint16_t *)LCD_BASE_DATA)
 
 /**
   * @brief Various internal SD2119 registers name labels
@@ -86,7 +95,7 @@ typedef struct
 #define SSD2119_Y_RAM_ADDR_REG        0x4F
 
 #define ENTRY_MODE_DEFAULT 0x6830
-#define ENTRY_MODE_BMP 	   0x6810
+#define ENTRY_MODE_BMP     0x6810
 #define MAKE_ENTRY_MODE(x) ((ENTRY_MODE_DEFAULT & 0xFF00) | (x))
 
 /**
@@ -125,10 +134,6 @@ typedef struct
 #define MAPPED_X(x, y) (x)
 #define MAPPED_Y(x, y) (y)
 #endif
-
-/** @defgroup STM32F4_DISCOVERY_LCD_Exported_Constants
-  * @{
-  */
 
 /**
   * @brief  LCD color
