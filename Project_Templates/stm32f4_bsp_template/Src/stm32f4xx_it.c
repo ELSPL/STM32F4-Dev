@@ -55,6 +55,10 @@
 #ifdef USE_STM32F4_TFT
 #include "stm32f4_discovery_tsc.h"
 #endif
+
+#ifdef USE_STM32F4_CAMERA
+#include "stm32f4_discovery_camera.h"
+#endif
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -253,5 +257,24 @@ void DMA2_Stream1_IRQHandler(void)
 #endif
 
 #endif
+
+#ifdef USE_STM32F4_CAMERA
+/**
+* @brief This function handles DCMI global interrupt.
+*/
+void DCMI_IRQHandler(void)
+{
+  HAL_DCMI_IRQHandler(&hdcmi_camera);
+}
+
+/**
+* @brief This function handles DMA2 Stream1 global interrupt.
+*/
+void DMA2_Stream1_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_dcmi);
+}
+#endif
+
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -36,12 +36,6 @@
 #define LCD_PWM_PIN                  (GPIO_PIN_13)
 #define LCD_PWM_PORT                 (GPIOD)
 
-/* Note: LCD /CS is NE1 - Bank 1 of NOR/SRAM Bank 1~4 */
-#define  LCD_BASE_Data               ((uint32_t)(0x60000000|0x00100000))
-#define  LCD_BASE_Addr               ((uint32_t)(0x60000000|0x00000000))
-#define  LCD_CMD                     (*(uint16_t *)LCD_BASE_Addr)
-#define  LCD_Data                    (*(uint16_t *)LCD_BASE_Data)
-
 #define MAX_POLY_CORNERS             200
 #define POLY_Y(Z)                    ((int32_t)((Points + Z)->X))
 #define POLY_X(Z)                    ((int32_t)((Points + Z)->Y))
@@ -385,7 +379,7 @@ void LCD_WriteReg(uint8_t LCD_Reg, uint16_t LCD_RegValue)
   /* Write 16-bit Index, then Write Reg */
   LCD_CMD = LCD_Reg;
   /* Write 16-bit Reg */
-  LCD_Data = LCD_RegValue;
+  LCD_DATA = LCD_RegValue;
 }
 
 /**
@@ -398,7 +392,7 @@ uint16_t LCD_ReadReg(uint8_t LCD_Reg)
   /* Write 16-bit Index (then Read Reg) */
   LCD_CMD = LCD_Reg;
   /* Read 16-bit Reg */
-  return (LCD_Data);
+  return (LCD_DATA);
 }
 
 /**
@@ -419,7 +413,7 @@ void LCD_WriteRAM_Prepare(void)
 void LCD_WriteRAM(uint16_t RGB_Code)
 {
   /* Write 16-bit GRAM Reg */
-  LCD_Data = RGB_Code;
+  LCD_DATA = RGB_Code;
 }
 
 /**
@@ -432,7 +426,7 @@ uint16_t LCD_ReadRAM(void)
   /* Write 16-bit Index (then Read Reg) */
 //  LCD_CMD = SSD2119_RAM_DATA_REG; /* Select GRAM Reg */
   /* Read 16-bit Reg */
-  return LCD_Data;
+  return LCD_DATA;
 }
 
 /**
@@ -449,19 +443,19 @@ void LCD_RGB_Test(void)
     /* R */
   for(index = 0; index < (LCD_PIXEL_HEIGHT*LCD_PIXEL_WIDTH)/3; index++)
   {
-    LCD_Data = LCD_COLOR_RED;
+    LCD_DATA = LCD_COLOR_RED;
   }
 
   /* G */
   for(;index < 2*(LCD_PIXEL_HEIGHT*LCD_PIXEL_WIDTH)/3; index++)
   {
-    LCD_Data = LCD_COLOR_GREEN;
+    LCD_DATA = LCD_COLOR_GREEN;
   }
 
     /* B */
   for(; index < LCD_PIXEL_HEIGHT*LCD_PIXEL_WIDTH; index++)
   {
-    LCD_Data = LCD_COLOR_BLUE;
+    LCD_DATA = LCD_COLOR_BLUE;
   }
 }
 
@@ -581,7 +575,7 @@ void LCD_Clear(uint16_t Color)
   LCD_WriteRAM_Prepare(); /* Prepare to write GRAM */
   for(index = 0; index < LCD_PIXEL_HEIGHT*LCD_PIXEL_WIDTH; index++)
   {
-    LCD_Data = Color;
+    LCD_DATA = Color;
   }
 }
 

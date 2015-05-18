@@ -107,6 +107,9 @@ uint32_t SpixTimeout = SPIx_TIMEOUT_MAX;    /*<! Value of Timeout when SPI commu
 
 static SPI_HandleTypeDef    SpiHandle;
 static I2C_HandleTypeDef    I2cHandle;
+
+DCMI_HandleTypeDef hdcmi_camera;
+DMA_HandleTypeDef hdma_dcmi;
 /**
   * @}
   */
@@ -122,7 +125,7 @@ static I2C_HandleTypeDef    I2cHandle;
   * @{
   */
 static void     I2Cx_Init(void);
-static void     I2Cx_WriteData(uint8_t Addr, uint8_t Reg, uint8_t Value);
+static HAL_StatusTypeDef I2Cx_WriteData(uint8_t Addr, uint8_t Reg, uint8_t Value);
 static uint8_t  I2Cx_ReadData(uint8_t Addr, uint8_t Reg);
 static void     I2Cx_MspInit(void);
 static void     I2Cx_Error(uint8_t Addr);
@@ -142,6 +145,13 @@ void            ACCELERO_IO_Read(uint8_t *pBuffer, uint8_t ReadAddr, uint16_t Nu
 void            AUDIO_IO_Init(void);
 void            AUDIO_IO_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
 uint8_t         AUDIO_IO_Read(uint8_t Addr, uint8_t Reg);
+
+/* Camera IO functions */
+void              CAMERA_IO_Init(void);
+HAL_StatusTypeDef CAMERA_IO_Write(uint8_t Addr, uint8_t Reg, uint8_t Value);
+uint8_t           CAMERA_IO_Read(uint8_t Addr, uint8_t Reg);
+void              CAMERA_Delay(uint32_t Delay);
+
 /**
   * @}
   */
@@ -427,7 +437,7 @@ static void I2Cx_Init(void)
   * @param  Value: The target register value to be written
   * @retval HAL status
   */
-static void I2Cx_WriteData(uint8_t Addr, uint8_t Reg, uint8_t Value)
+static HAL_StatusTypeDef I2Cx_WriteData(uint8_t Addr, uint8_t Reg, uint8_t Value)
 {
   HAL_StatusTypeDef status = HAL_OK;
 
@@ -439,6 +449,8 @@ static void I2Cx_WriteData(uint8_t Addr, uint8_t Reg, uint8_t Value)
     /* Execute user timeout callback */
     I2Cx_Error(Addr);
   }
+
+  return status;
 }
 
 /**
@@ -515,8 +527,12 @@ static void I2Cx_MspInit(void)
   HAL_NVIC_EnableIRQ(DISCOVERY_I2Cx_ER_IRQn);
 }
 
+/***************************** I2C Routines for Camera ************************/
+
+
+
 /*******************************************************************************
-                            LINK OPERATIONS
+                               LINK OPERATIONS
 *******************************************************************************/
 
 /***************************** LINK ACCELEROMETER *****************************/
@@ -701,6 +717,57 @@ uint8_t AUDIO_IO_Read(uint8_t Addr, uint8_t Reg)
 {
   return I2Cx_ReadData(Addr, Reg);
 }
+
+
+/***************************** LINK CAMERA ************************************/
+/**
+  * @brief  Initializes Camera low level.
+  * @param  None
+  * @retval None
+  */
+void CAMERA_IO_Init(void)
+{
+  I2Cx_Init();
+}
+
+/**
+  * @brief  Camera writes single data.
+  * @param  Addr: I2C address
+  * @param  Reg: Reg address
+  * @param  Value: Data to be written
+  * @retval status
+  */
+HAL_StatusTypeDef CAMERA_IO_Write(uint8_t Addr, uint8_t Reg, uint8_t Value)
+{
+  HAL_StatusTypeDef status = HAL_OK;
+
+  status = I2Cx_WriteData(Addr, Reg, Value);
+
+  /* If operation is OK, return 0 */
+  return status;
+}
+
+/**
+  * @brief  Camera reads single data.
+  * @param  Addr: I2C address
+  * @param  Reg: Reg address
+  * @retval Read data
+  */
+uint8_t CAMERA_IO_Read(uint8_t Addr, uint8_t Reg)
+{
+  return I2Cx_ReadData(Addr, Reg);
+}
+
+/**
+  * @brief  Camera delay.
+  * @param  Delay: Delay in ms
+  * @retval None
+  */
+void CAMERA_Delay(uint32_t Delay)
+{
+  HAL_Delay(Delay);
+}
+
 
 /**
   * @}
