@@ -291,7 +291,6 @@ void     ov9655_Init(uint16_t DeviceAddr, uint32_t resolution);
 void     ov9655_Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value, uint32_t BR_value);
 uint16_t ov9655_ReadID(uint16_t DeviceAddr);
 void ov9655_Reset(uint16_t DeviceAddr);
-void ov9655_BrightnessConfig(uint16_t DeviceAddr, uint8_t Brightness);
 
 void              CAMERA_IO_Init(void);
 HAL_StatusTypeDef CAMERA_IO_Write(uint8_t addr, uint8_t reg, uint8_t value);

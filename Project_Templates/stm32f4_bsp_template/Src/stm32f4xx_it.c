@@ -84,7 +84,7 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /* USER CODE BEGIN 1 */
-
+/********************************************************************************************/
 #ifdef USE_STM32F4_DISCO
 
 #ifdef USE_STM32F4_VCP
@@ -92,7 +92,7 @@ void OTG_FS_IRQHandler(void)
 {
     HAL_PCD_IRQHandler(&hpcd);
 }
-#endif
+#endif  /* USE_STM32F4_VCP */
 
 /**
 * @brief This function handles EXTI Line0 interrupt.
@@ -113,7 +113,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     HAL_GPIO_TogglePin(GPIOD, (1<<12));
   }
 }
-#endif
+#endif  /*USE_STM32F4_DISCO*/
+/********************************************************************************************/
+
 
 #ifdef USE_STM32F4_ASK25
 
@@ -161,9 +163,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
     HAL_GPIO_TogglePin(GPIOE,(1<<11));
   }
 }
-
 #endif
-
 
 /**
 * @brief This function handles I2C1 error interrupt.
@@ -173,7 +173,6 @@ void I2C1_ER_IRQHandler(void)
   HAL_I2C_ER_IRQHandler(&hi2c1_at24c16);
 }
 
-
 /**
 * @brief This function handles I2C1 event interrupt.
 */
@@ -182,7 +181,6 @@ void I2C1_EV_IRQHandler(void)
   HAL_I2C_EV_IRQHandler(&hi2c1_at24c16);
 }
 
-
 /**
 * @brief This function handles SPI1 global interrupt.
 */
@@ -190,26 +188,8 @@ void SPI1_IRQHandler(void)
 {
   HAL_SPI_IRQHandler(&hspi1_25aa160a);
 }
-
-#ifdef USE_STM32F4_TFT
-/**
-* @brief This function handles DMA1 Stream6 global interrupt.
-*/
-void DMA1_Stream6_IRQHandler(void)
-{
-  HAL_DMA_IRQHandler(&hdma_i2c1_tx);
-}
-
-/**
-* @brief This function handles DMA1 Stream0 global interrupt.
-*/
-void DMA1_Stream0_IRQHandler(void)
-{
-  HAL_DMA_IRQHandler(&hdma_i2c1_rx);
-}
-#endif
-
-#endif
+#endif  /* USE_STM32F4_ASK25 */
+/********************************************************************************************/
 
 
 #ifdef USE_STM32F4_UART
@@ -233,9 +213,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   UartReady = 1;
 }
-
-#endif
-
+#endif  /* Interrupt Mode */
 
 #ifdef DMA_MODE
 /**
@@ -254,9 +232,31 @@ void DMA2_Stream1_IRQHandler(void)
   HAL_DMA_IRQHandler(&hdma_usart6_rx);
 //  HAL_UART_Transmit_DMA(&huart6, &read , 1);
 }
-#endif
+#endif  /* DMA Mode */
 
-#endif
+#endif  /* USE_STM32F4_UART */
+/********************************************************************************************/
+
+
+#ifdef USE_STM32F4_TFT
+/**
+* @brief This function handles DMA1 Stream6 global interrupt.
+*/
+void DMA1_Stream6_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_i2c1_tx);
+}
+
+/**
+* @brief This function handles DMA1 Stream0 global interrupt.
+*/
+void DMA1_Stream0_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_i2c1_rx);
+}
+#endif  /* USE_STM32F4_TFT */
+/********************************************************************************************/
+
 
 #ifdef USE_STM32F4_CAMERA
 /**
@@ -274,7 +274,59 @@ void DMA2_Stream1_IRQHandler(void)
 {
   HAL_DMA_IRQHandler(&hdma_dcmi);
 }
-#endif
 
+/**
+  * @brief  Error DCMI callback.
+  * @param  hdcmi: pointer to a DCMI_HandleTypeDef structure that contains
+  *                the configuration information for DCMI.
+  * @retval None
+  */
+void HAL_DCMI_ErrorCallback(DCMI_HandleTypeDef *hdcmi)
+{
+  /* NOTE : This function Should not be modified, when the callback is needed,
+            the HAL_DCMI_ErrorCallback could be implemented in the user file
+   */
+}
+
+/**
+  * @brief  Line Event callback.
+  * @param  hdcmi: pointer to a DCMI_HandleTypeDef structure that contains
+  *                the configuration information for DCMI.
+  * @retval None
+  */
+void HAL_DCMI_LineEventCallback(DCMI_HandleTypeDef *hdcmi)
+{
+  /* NOTE : This function Should not be modified, when the callback is needed,
+            the HAL_DCMI_LineEventCallback could be implemented in the user file
+   */
+}
+
+/**
+  * @brief  VSYNC Event callback.
+  * @param  hdcmi: pointer to a DCMI_HandleTypeDef structure that contains
+  *                the configuration information for DCMI.
+  * @retval None
+  */
+void HAL_DCMI_VsyncEventCallback(DCMI_HandleTypeDef *hdcmi)
+{
+  /* NOTE : This function Should not be modified, when the callback is needed,
+            the HAL_DCMI_VsyncEventCallback could be implemented in the user file
+   */
+}
+
+/**
+  * @brief  Frame Event callback.
+  * @param  hdcmi: pointer to a DCMI_HandleTypeDef structure that contains
+  *                the configuration information for DCMI.
+  * @retval None
+  */
+void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
+{
+  /* NOTE : This function Should not be modified, when the callback is needed,
+            the HAL_DCMI_FrameEventCallback could be implemented in the user file
+   */
+}
+#endif /* USE_STM32F4_CAMERA */
+/********************************************************************************************/
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
