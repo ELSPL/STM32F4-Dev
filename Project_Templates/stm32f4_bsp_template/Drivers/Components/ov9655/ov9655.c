@@ -444,15 +444,12 @@ void ov9655_Init(uint16_t DeviceAddr, uint32_t resolution)
   * @param  brightness_value: Brightness value to be configured
   * @retval None
   */
-void ov9655_Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value, uint32_t brightness_value)
+void ov9655_Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value, uint32_t BR_value)
 {
-  uint8_t value1, value2;
+  uint8_t value1, value2, value3;
+  uint16_t temp_val;
   uint32_t value_tmp;
   uint32_t br_value;
-
-  /* Convert the input value into ov2640 parameters */
-//  value_tmp = ov2640_ConvertValue(feature, value);
-//  br_value = ov2640_ConvertValue(CAMERA_CONTRAST_BRIGHTNESS, brightness_value);
 
   switch(feature)
   {
@@ -468,16 +465,24 @@ void ov9655_Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value, uint32
     }
   case CAMERA_CONTRAST_BRIGHTNESS:
     {
-      value1 = (uint8_t)(value_tmp);
-      value2 = (uint8_t)(value_tmp >> 8);
-      CAMERA_IO_Write(DeviceAddr, 0xff, 0x00);
-      CAMERA_IO_Write(DeviceAddr, 0x7c, 0x00);
-      CAMERA_IO_Write(DeviceAddr, 0x7d, 0x04);
-      CAMERA_IO_Write(DeviceAddr, 0x7c, 0x07);
-      CAMERA_IO_Write(DeviceAddr, 0x7d, br_value);
-      CAMERA_IO_Write(DeviceAddr, 0x7d, value1);
-      CAMERA_IO_Write(DeviceAddr, 0x7d, value2);
-      CAMERA_IO_Write(DeviceAddr, 0x7d, 0x06);
+      if(BR_value > 50)
+      {
+        value1 = (0xFF*(BR_value-50))/100;   //value in percentage
+      }
+      else if(BR_value <= 50)
+      {
+        value1 = (0xFF*BR_value)/100;        //value in percentage
+        value1 = ~value1+1;
+      }
+
+      temp_val = ((0x7FFF*value)/100);       //value in percentage
+      value2 = (temp_val>>8);                //Extract MSB
+      value3 = temp_val;                     //Extract LSB
+
+      CAMERA_IO_Write(DeviceAddr, OV9655_BRTN, value1);   //Brightness [0xFF to 0x80 and 0x01 to 0x7F]
+      CAMERA_IO_Write(DeviceAddr, OV9655_CNST1, value2);  //Contrast MSB [00 to FF]
+      CAMERA_IO_Write(DeviceAddr, OV9655_CNST2, value3);  //Contrast LSB [00 to FF]
+
       break;
     }
   case CAMERA_COLOR_EFFECT:
@@ -490,6 +495,15 @@ void ov9655_Config(uint16_t DeviceAddr, uint32_t feature, uint32_t value, uint32
       CAMERA_IO_Write(DeviceAddr, 0x7c, 0x05);
       CAMERA_IO_Write(DeviceAddr, 0x7d, value1);
       CAMERA_IO_Write(DeviceAddr, 0x7d, value2);
+      break;
+    }
+  case CAMERA_MIRROR_FLIP:
+    {
+      if(value>0) value =1;
+      if(BR_value>0) BR_value=1;
+      value1 = ((value<<5)|(BR_value<<4));
+      CAMERA_IO_Write(DeviceAddr, OV9655_MVFP, value1);
+
       break;
     }
   default:
@@ -524,168 +538,6 @@ void ov9655_Reset(uint16_t DeviceAddr)
   CAMERA_IO_Write(DeviceAddr, OV9655_COM7, 0x80);
 }
 
-
-/**
-  * @brief  Configures the OV9655 camera brightness.
-  * @param  Brightness: Brightness value, where Brightness can be:
-  *         positively (0x01 ~ 0x7F) and negatively (0x80 ~ 0xFF)
-  * @retval None
-  */
-void ov9655_BrightnessConfig(uint16_t DeviceAddr, uint8_t Brightness)
-{
-    CAMERA_IO_Write(DeviceAddr, OV9655_BRTN, Brightness);
-}
-
-/******************************************************************************
-                            Static Functions
-*******************************************************************************/
-/**
-  * @brief  Convert input values into ov9655 parameters.
-  * @param  feature: Camera feature to be configured
-  * @param  value: Value to be configured
-  * @retval The converted value
-  */
-//static uint32_t ov9655_ConvertValue(uint32_t feature, uint32_t value)
-//{
-//  uint32_t ret = 0;
-//
-//  switch(feature)
-//  {
-//  case CAMERA_BLACK_WHITE:
-//    {
-//      switch(value)
-//      {
-//      case CAMERA_BLACK_WHITE_BW:
-//        {
-//          ret =  OV9655_BLACK_WHITE_BW;
-//          break;
-//        }
-//      case CAMERA_BLACK_WHITE_NEGATIVE:
-//        {
-//          ret =  OV2640_BLACK_WHITE_NEGATIVE;
-//          break;
-//        }
-//      case CAMERA_BLACK_WHITE_BW_NEGATIVE:
-//        {
-//          ret =  OV2640_BLACK_WHITE_BW_NEGATIVE;
-//          break;
-//        }
-//      case CAMERA_BLACK_WHITE_NORMAL:
-//        {
-//          ret =  OV2640_BLACK_WHITE_NORMAL;
-//          break;
-//        }
-//      default:
-//        {
-//          ret =  OV2640_BLACK_WHITE_NORMAL;
-//          break;
-//        }
-//      }
-//      break;
-//    }
-//  case CAMERA_CONTRAST_BRIGHTNESS:
-//    {
-//      switch(value)
-//      {
-//      case CAMERA_BRIGHTNESS_LEVEL0:
-//        {
-//          ret =  OV2640_BRIGHTNESS_LEVEL0;
-//          break;
-//        }
-//      case CAMERA_BRIGHTNESS_LEVEL1:
-//        {
-//          ret =  OV2640_BRIGHTNESS_LEVEL1;
-//          break;
-//        }
-//      case CAMERA_BRIGHTNESS_LEVEL2:
-//        {
-//          ret =  OV2640_BRIGHTNESS_LEVEL2;
-//          break;
-//        }
-//      case CAMERA_BRIGHTNESS_LEVEL3:
-//        {
-//          ret =  OV2640_BRIGHTNESS_LEVEL3;
-//          break;
-//        }
-//      case CAMERA_BRIGHTNESS_LEVEL4:
-//        {
-//          ret =  OV2640_BRIGHTNESS_LEVEL4;
-//          break;
-//        }
-//      case CAMERA_CONTRAST_LEVEL0:
-//        {
-//          ret =  OV2640_CONTRAST_LEVEL0;
-//          break;
-//        }
-//      case CAMERA_CONTRAST_LEVEL1:
-//        {
-//          ret =  OV2640_CONTRAST_LEVEL1;
-//          break;
-//        }
-//      case CAMERA_CONTRAST_LEVEL2:
-//        {
-//          ret =  OV2640_CONTRAST_LEVEL2;
-//          break;
-//        }
-//      case CAMERA_CONTRAST_LEVEL3:
-//        {
-//          ret =  OV2640_CONTRAST_LEVEL3;
-//          break;
-//        }
-//      case CAMERA_CONTRAST_LEVEL4:
-//        {
-//          ret =  OV2640_CONTRAST_LEVEL4;
-//          break;
-//        }
-//      default:
-//        {
-//          ret =  OV2640_CONTRAST_LEVEL0;
-//          break;
-//        }
-//      }
-//      break;
-//    }
-//  case CAMERA_COLOR_EFFECT:
-//    {
-//      switch(value)
-//      {
-//      case CAMERA_COLOR_EFFECT_ANTIQUE:
-//        {
-//          ret =  OV2640_COLOR_EFFECT_ANTIQUE;
-//          break;
-//        }
-//      case CAMERA_COLOR_EFFECT_BLUE:
-//        {
-//          ret =  OV2640_COLOR_EFFECT_BLUE;
-//          break;
-//        }
-//      case CAMERA_COLOR_EFFECT_GREEN:
-//        {
-//          ret =  OV2640_COLOR_EFFECT_GREEN;
-//          break;
-//        }
-//      case CAMERA_COLOR_EFFECT_RED:
-//        {
-//          ret =  OV2640_COLOR_EFFECT_RED;
-//          break;
-//        }
-//      default:
-//        {
-//          ret =  OV2640_COLOR_EFFECT_RED;
-//          break;
-//        }
-//      }
-//      break;
-//    default:
-//      {
-//        ret = 0;
-//        break;
-//      }
-//    }
-//  }
-//
-//  return ret;
-//}
 
 /**
   * @}

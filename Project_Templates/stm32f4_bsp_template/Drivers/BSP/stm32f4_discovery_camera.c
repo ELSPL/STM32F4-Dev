@@ -314,7 +314,7 @@ void BSP_CAMERA_SnapshotStart(uint8_t *buff)
 void BSP_CAMERA_Suspend(void)
 {
   /* Disable the DMA */
-  __HAL_DMA_DISABLE(hdcmi_camera.DMA_Handle);
+  __HAL_DMA_DISABLE(&hdma_dcmi);
   /* Disable the DCMI */
   __HAL_DCMI_DISABLE(&hdcmi_camera);
 }
@@ -329,7 +329,7 @@ void BSP_CAMERA_Resume(void)
   /* Enable the DCMI */
   __HAL_DCMI_ENABLE(&hdcmi_camera);
   /* Enable the DMA */
-  __HAL_DMA_ENABLE(hdcmi_camera.DMA_Handle);
+  __HAL_DMA_ENABLE(&hdma_dcmi);
 }
 
 /**
@@ -387,7 +387,34 @@ static uint32_t GetSize(uint32_t resolution)
 }
 
 
+/**
+  * @brief  Configures the Camera contrast and brightness.
+  * @param  contrast_level: Contrast level 0% to 100%
+  * @param  brightness_level: Brightness level 0% to 100%
+  * @retval None
+  */
+void BSP_CAMERA_ContrastBrightnessConfig(uint8_t contrast_level, uint8_t brightness_level)
+{
+  if(camera_drv->Config != NULL)
+  {
+    camera_drv->Config(CAMERA_I2C_ADDRESS, CAMERA_CONTRAST_BRIGHTNESS, contrast_level, brightness_level);
+  }
+}
 
+
+/**
+ * @brief This function is used to mirror and vertical flip the output
+ * @param mirror_state  Enter parameter as ENABLE/DISABLE
+ * @param flip_state    Enter parameter as ENABLE/DISABLE
+ * @retval  None
+ */
+void BSP_CAMERA_MirrorFlipConfig(uint8_t mirror_state, uint8_t flip_state)
+{
+  if(camera_drv->Config != NULL)
+  {
+    camera_drv->Config(CAMERA_I2C_ADDRESS, CAMERA_MIRROR_FLIP, mirror_state, flip_state);
+  }
+}
 
 /**
   * @}

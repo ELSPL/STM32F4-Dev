@@ -74,13 +74,10 @@ void    BSP_CAMERA_SnapshotStart(uint8_t *buff);
 void    BSP_CAMERA_Suspend(void);
 void    BSP_CAMERA_Resume(void);
 uint8_t BSP_CAMERA_Stop(void);
-//void    BSP_CAMERA_LineEventCallback(void);
-//void    BSP_CAMERA_VsyncEventCallback(void);
-//void    BSP_CAMERA_FrameEventCallback(void);
-//void    BSP_CAMERA_ErrorCallback(void);
 
 ///* Camera features functions prototype */
-//void    BSP_CAMERA_ContrastBrightnessConfig(uint32_t contrast_level, uint32_t brightness_level);
+void    BSP_CAMERA_ContrastBrightnessConfig(uint8_t contrast_level, uint8_t brightness_level);
+void BSP_CAMERA_MirrorFlipConfig(uint8_t mirror_state, uint8_t flip_state);
 //void    BSP_CAMERA_BlackWhiteConfig(uint32_t Mode);
 //void    BSP_CAMERA_ColorEffectConfig(uint32_t Effect);
 
