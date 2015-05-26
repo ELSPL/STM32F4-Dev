@@ -38,6 +38,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "stm32f4_global.h"
+#include "stm32f4_discovery_timer.h"
 #include "stm32f4_discovery.h" // Comment it when On board PB is not used
 
 #ifdef USE_STM32F4_ASK25
@@ -328,5 +329,99 @@ void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
 }
 #endif /* USE_STM32F4_CAMERA */
 /********************************************************************************************/
+
+/**
+* @brief This function handles TIM1 Trigger and Commutation interrupts and TIM11 global interrupt.
+*/
+void TIM1_TRG_COM_TIM11_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim1_mcpwm);
+}
+
+/**
+* @brief This function handles TIM1 Break interrupt and TIM9 global interrupt.
+*/
+void TIM1_BRK_TIM9_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim1_mcpwm);
+}
+
+/**
+* @brief This function handles TIM1 Update interrupt and TIM10 global interrupt.
+*/
+void TIM1_UP_TIM10_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim1_mcpwm);
+}
+
+
+/**
+* @brief This function handles TIM2 global interrupt.
+*/
+void TIM2_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim2_gen);
+}
+
+/**
+* @brief This function handles TIM3 global interrupt.
+*/
+void TIM3_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim3_gen);
+}
+
+/**
+* @brief This function handles TIM4 global interrupt.
+*/
+void TIM4_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim4_gen);
+}
+
+/**
+* @brief This function handles TIM5 global interrupt.
+*/
+void TIM5_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim5_gen);
+}
+
+/**
+* @brief This function handles TIM7 global interrupt.
+*/
+void TIM7_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim7_basic);
+}
+
+
+/**
+* @brief This function handles TIM8 Trigger and Commutation interrupts and TIM14 global interrupt.
+*/
+void TIM8_TRG_COM_TIM14_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim8_mcpwm);
+}
+
+/**
+* @brief This function handles TIM8 Break interrupt and TIM12 global interrupt.
+*/
+void TIM8_BRK_TIM12_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim8_mcpwm);
+}
+
+/**
+* @brief This function handles TIM8 Update interrupt and TIM13 global interrupt.
+*/
+void TIM8_UP_TIM13_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim8_mcpwm);
+}
+
+
+/********************************************************************************************/
+
 /* USER CODE END 1 */
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+/******END OF FILE*******/
