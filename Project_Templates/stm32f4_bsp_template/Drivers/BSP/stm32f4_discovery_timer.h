@@ -87,15 +87,19 @@ typedef enum
 /** @defgroup STM32F4_DISCOVERY_TIMER_Public_Functions
  * @{
  */
+/* Basic and General Timer functions */
 void BSP_TIM_Basic_Config(TIM_HandleTypeDef* htim_base, float period_us);
 void BSP_TIM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t freq_hz, TIM_OC_MODE_OPT hw_toggle);
 
+/* PWM and MCPWM Timer functions */
 void BSP_PWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t freq_hz, float pulsewidth_us, PWM_ALIGN_MODE pwm_mode);
 void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t freq_hz, float pulsewidth_us, uint8_t deadtime, PWM_ALIGN_MODE pwm_mode);
 
+/* Timer and PWM capture functions */
 void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, uint32_t capFreq_hz);
 void BSP_PWM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t capFreq_hz);
 
+/* Timer De-Initialization function */
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base);
 
 /**

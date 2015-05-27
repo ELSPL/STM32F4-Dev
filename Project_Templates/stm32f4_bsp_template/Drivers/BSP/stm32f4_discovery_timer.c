@@ -543,6 +543,10 @@ void BSP_TIM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
   TIM_MasterConfigTypeDef sMasterConfig;
   TIM_OC_InitTypeDef sConfigOC;
 
+  __GPIOA_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
+  __GPIOD_CLK_ENABLE();
+
   if(htim_base == &htim2_gen)
     htim_base->Instance = TIM2;
   else if(htim_base == &htim3_gen)
@@ -635,6 +639,10 @@ void BSP_PWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
   TIM_ClockConfigTypeDef sClockSourceConfig;
   TIM_MasterConfigTypeDef sMasterConfig;
   TIM_OC_InitTypeDef sConfigOC;
+
+  __GPIOA_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
+  __GPIOD_CLK_ENABLE();
 
   if(htim_base == &htim2_gen)
     htim_base->Instance = TIM2;
@@ -746,6 +754,11 @@ void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t
   TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig;
   TIM_OC_InitTypeDef sConfigOC;
 
+  __GPIOA_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
+  __GPIOC_CLK_ENABLE();
+  __GPIOE_CLK_ENABLE();
+
   if(htim_base == &htim1_mcpwm)
     htim_base->Instance = TIM1;
   else if(htim_base == &htim8_mcpwm)
@@ -835,10 +848,27 @@ void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t
 }
 
 
-
+/**
+ * @brief This is Timer Capture configuration function
+ *        Capture Channel Pins
+ *        TIM10   PB8
+ *        TIM11   PB9
+ *        TIM13   PA6
+ *        TIM14   PA7
+ * @param htim_base   Timer Handler
+ *        @arg  htim10_cap
+ *        @arg  htim11_cap
+ *        @arg  htim13_cap
+ *        @arg  htim14_cap
+ * @param capFreq_hz  <provide description>
+ * @return  None
+ */
 void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, uint32_t capFreq_hz)
 {
   TIM_IC_InitTypeDef sConfigIC;
+
+  __GPIOA_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
 
   if(htim_base == &htim10_cap)
     htim_base->Instance = TIM10;
@@ -869,16 +899,26 @@ void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, uint32_t capFreq_hz)
 
 
 /**
- *
- * @param htim_base
- * @param tim_ch
- * @param capFreq_hz
+ * @brief This is PWM Capture Configuration function
+ * @param htim_base   Timer Handler
+ *        @arg  htim9_pcap
+ *        @arg  htim12_pcap
+ * @param tim_ch        Select Hardware channel or use without channel
+ *        @arg  None      No channel        TIM9   TIM12
+ *                                          ------------
+ *        @arg  TIM_CH1   Timer Channel 1   PE5    PB14
+ *        @arg  TIM_CH2   Timer Channel 2   PE6    PB15
+ * @param capFreq_hz    <provide description>
+ * @return  None
  */
 void BSP_PWM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t capFreq_hz)
 {
   TIM_ClockConfigTypeDef sClockSourceConfig;
   TIM_SlaveConfigTypeDef sSlaveConfig;
   TIM_IC_InitTypeDef sConfigIC;
+
+  __GPIOE_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
 
   if(htim_base == &htim9_pcap)
     htim_base->Instance = TIM9;
