@@ -151,7 +151,7 @@ static void BSP_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_c
     }
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM2_IRQn, 0, 2);
+    HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(TIM2_IRQn);
   }
   else if(htim_base->Instance==TIM3)
@@ -373,7 +373,7 @@ static void BSP_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_c
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 0, 1);
+    HAL_NVIC_SetPriority(TIM1_UP_TIM10_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(TIM1_UP_TIM10_IRQn);
   }
   else if(htim_base->Instance==TIM11)
