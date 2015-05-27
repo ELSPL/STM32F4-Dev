@@ -77,6 +77,14 @@ typedef enum
   PWM_CENTER_ALIGN_MODE3   /*!< Toggle external output pin if match */
 }PWM_ALIGN_MODE;
 
+/** @brief Capture Polarity Type */
+typedef enum
+{
+  TIM_CAP_RISING_EDGE = 0, /*!< Capture at Rising Edge */
+  TIM_CAP_FALLING_EDGE,    /*!< Capture at Falling Edge */
+  TIM_CAP_BOTH_EDGE        /*!< Capture at both Rising and Falling Edge */
+}TIM_CAP_POLARITY_Type;
+
 /**
  * @} STM32F4_DISCOVERY_TIMER_Public_Types End
  */
@@ -96,7 +104,7 @@ void BSP_PWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
 void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t freq_hz, float pulsewidth_us, uint8_t deadtime, PWM_ALIGN_MODE pwm_mode);
 
 /* Timer and PWM capture functions */
-void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, uint32_t capFreq_hz);
+void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, uint32_t capFreq_hz, TIM_CAP_POLARITY_Type capEdge);
 void BSP_PWM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t capFreq_hz);
 
 /* Timer De-Initialization function */
