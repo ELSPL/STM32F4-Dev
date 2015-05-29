@@ -512,6 +512,11 @@ void BSP_TIM_Basic_Config(TIM_HandleTypeDef* htim_base, float period_us)
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   HAL_TIMEx_MasterConfigSynchronization(htim_base, &sMasterConfig);
+
+  if(htim_base->Instance == TIM6)
+    HAL_TIM_Base_Start(htim_base);
+  else if(htim_base->Instance == TIM7)
+    HAL_TIM_Base_Start_IT(htim_base);
 }
 
 
@@ -543,6 +548,10 @@ void BSP_TIM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
   TIM_MasterConfigTypeDef sMasterConfig;
   TIM_OC_InitTypeDef sConfigOC;
 
+  __GPIOA_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
+  __GPIOD_CLK_ENABLE();
+
   if(htim_base == &htim2_gen)
     htim_base->Instance = TIM2;
   else if(htim_base == &htim3_gen)
@@ -555,17 +564,17 @@ void BSP_TIM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
   if(freq_hz <= 1000) // 1HZ to 1KHZ
   {
     htim_base->Init.Prescaler = SystemCoreClock/132000;
-    htim_base->Init.Period = 65000/2*freq_hz;
+    htim_base->Init.Period = 32500/freq_hz;
   }
   else if (freq_hz <=200000) //1KHZ to 200 KHZ
   {
     htim_base->Init.Prescaler = SystemCoreClock/168000000;
-    htim_base->Init.Period = 41900000/2*freq_hz;
+    htim_base->Init.Period = 20950000/freq_hz;
   }
   else if (freq_hz <= 2000000) //200KHZ to 2MHz
   {
     htim_base->Init.Prescaler = 0;
-    htim_base->Init.Period = 83800000/2*freq_hz;
+    htim_base->Init.Period = 41900000/freq_hz;
   }
 
   htim_base->Init.CounterMode = TIM_COUNTERMODE_UP;
@@ -597,13 +606,25 @@ void BSP_TIM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 
   if(tim_ch == TIM_CH1)
+  {
     HAL_TIM_OC_ConfigChannel(htim_base, &sConfigOC, TIM_CHANNEL_1);
+    HAL_TIM_OC_Start_IT(htim_base, TIM_CHANNEL_1);
+  }
   else if(tim_ch == TIM_CH2)
+  {
     HAL_TIM_OC_ConfigChannel(htim_base, &sConfigOC, TIM_CHANNEL_2);
+    HAL_TIM_OC_Start_IT(htim_base, TIM_CHANNEL_2);
+  }
   else if(tim_ch == TIM_CH3)
+  {
     HAL_TIM_OC_ConfigChannel(htim_base, &sConfigOC, TIM_CHANNEL_3);
+    HAL_TIM_OC_Start_IT(htim_base, TIM_CHANNEL_3);
+  }
   else if(tim_ch == TIM_CH4)
+  {
     HAL_TIM_OC_ConfigChannel(htim_base, &sConfigOC, TIM_CHANNEL_4);
+    HAL_TIM_OC_Start_IT(htim_base, TIM_CHANNEL_4);
+  }
 }
 
 
@@ -636,6 +657,10 @@ void BSP_PWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
   TIM_MasterConfigTypeDef sMasterConfig;
   TIM_OC_InitTypeDef sConfigOC;
 
+  __GPIOA_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
+  __GPIOD_CLK_ENABLE();
+
   if(htim_base == &htim2_gen)
     htim_base->Instance = TIM2;
   else if(htim_base == &htim3_gen)
@@ -650,27 +675,27 @@ void BSP_PWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
     htim_base->Init.Prescaler = SystemCoreClock/132000;
 
     if(pwm_mode == PWM_EDGE_ALIGN_MODE)
-      htim_base->Init.Period = 65000/2*freq_hz;
-    else
       htim_base->Init.Period = 65000/freq_hz;
+    else
+      htim_base->Init.Period = 32500/freq_hz;
   }
   else if (freq_hz <=200000) //1KHZ to 200000 KHZ
   {
     htim_base->Init.Prescaler = SystemCoreClock/168000000;
 
     if(pwm_mode == PWM_EDGE_ALIGN_MODE)
-      htim_base->Init.Period = 41900000/2*freq_hz;
-    else
       htim_base->Init.Period = 41900000/freq_hz;
+    else
+      htim_base->Init.Period = 20950000/freq_hz;
   }
   else if (freq_hz <= 2000000) //200000KHZ to 2000000KHZ
   {
     htim_base->Init.Prescaler = 0;
 
     if(pwm_mode == PWM_EDGE_ALIGN_MODE)
-      htim_base->Init.Period = 83800000/2*freq_hz;
-    else
       htim_base->Init.Period = 83800000/freq_hz;
+    else
+      htim_base->Init.Period = 41900000/freq_hz;
   }
 
   if(pwm_mode == PWM_EDGE_ALIGN_MODE)
@@ -701,20 +726,47 @@ void BSP_PWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
 
   if(freq_hz <= 1000) // 1HZ to 1KHZ
-    sConfigOC.Pulse = (float)(65000/(1000000/pulsewidth_us));
+  {
+    if(pwm_mode == PWM_EDGE_ALIGN_MODE)
+      sConfigOC.Pulse = (float)(65000/(1000000/pulsewidth_us));
+    else
+      sConfigOC.Pulse = (float)(32500/(1000000/pulsewidth_us));
+  }
   else if (freq_hz <=200000) //1KHZ to 200000 KHZ
-    sConfigOC.Pulse = (float)(41900000/(1000000/pulsewidth_us));
+  {
+    if(pwm_mode == PWM_EDGE_ALIGN_MODE)
+      sConfigOC.Pulse = (float)(41900000/(1000000/pulsewidth_us));
+    else
+      sConfigOC.Pulse = (float)(20950000/(1000000/pulsewidth_us));
+  }
   else if (freq_hz <= 2000000) //200000KHZ to 2000000KHZ
-    sConfigOC.Pulse = (float)(83800000/(1000000/pulsewidth_us));
+  {
+    if(pwm_mode == PWM_EDGE_ALIGN_MODE)
+      sConfigOC.Pulse = (float)(83800000/(1000000/pulsewidth_us));
+    else
+      sConfigOC.Pulse = (float)(41900000/(1000000/pulsewidth_us));
+  }
 
   if(tim_ch == TIM_CH1)
+  {
     HAL_TIM_PWM_ConfigChannel(htim_base, &sConfigOC, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start_IT(htim_base, TIM_CHANNEL_1);
+  }
   else if(tim_ch == TIM_CH2)
+  {
     HAL_TIM_PWM_ConfigChannel(htim_base, &sConfigOC, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start_IT(htim_base, TIM_CHANNEL_2);
+  }
   else if(tim_ch == TIM_CH3)
+  {
     HAL_TIM_PWM_ConfigChannel(htim_base, &sConfigOC, TIM_CHANNEL_3);
+    HAL_TIM_PWM_Start_IT(htim_base, TIM_CHANNEL_3);
+  }
   else if(tim_ch == TIM_CH4)
+  {
     HAL_TIM_PWM_ConfigChannel(htim_base, &sConfigOC, TIM_CHANNEL_4);
+    HAL_TIM_PWM_Start_IT(htim_base, TIM_CHANNEL_4);
+  }
 }
 
 
@@ -746,6 +798,11 @@ void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t
   TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig;
   TIM_OC_InitTypeDef sConfigOC;
 
+  __GPIOA_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
+  __GPIOC_CLK_ENABLE();
+  __GPIOE_CLK_ENABLE();
+
   if(htim_base == &htim1_mcpwm)
     htim_base->Instance = TIM1;
   else if(htim_base == &htim8_mcpwm)
@@ -756,7 +813,7 @@ void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t
     htim_base->Init.Prescaler = SystemCoreClock/132000;
 
     if(pwm_mode == PWM_EDGE_ALIGN_MODE)
-      htim_base->Init.Period = 65000/2*freq_hz;
+      htim_base->Init.Period = 130000/freq_hz;
     else
       htim_base->Init.Period = 65000/freq_hz;
   }
@@ -765,16 +822,16 @@ void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t
     htim_base->Init.Prescaler = SystemCoreClock/168000000;
 
     if(pwm_mode == PWM_EDGE_ALIGN_MODE)
-      htim_base->Init.Period = 41900000/2*freq_hz;
+      htim_base->Init.Period = 84000000/freq_hz;
     else
-      htim_base->Init.Period = 41900000/freq_hz;
+      htim_base->Init.Period = 42000000/freq_hz;
   }
   else if (freq_hz <= 2000000) //200000KHZ to 2000000KHZ
   {
     htim_base->Init.Prescaler = 0;
 
     if(pwm_mode == PWM_EDGE_ALIGN_MODE)
-      htim_base->Init.Period = 83800000/2*freq_hz;
+      htim_base->Init.Period = 167600000/freq_hz;
     else
       htim_base->Init.Period = 83800000/freq_hz;
   }
@@ -820,25 +877,73 @@ void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t
   sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
 
   if(freq_hz <= 1000) // 1HZ to 1KHZ
-    sConfigOC.Pulse = (float)(65000/(1000000/pulsewidth_us));
+  {
+    if(pwm_mode == PWM_EDGE_ALIGN_MODE)
+      sConfigOC.Pulse = (float)(130000/(1000000/pulsewidth_us));
+    else
+      sConfigOC.Pulse = (float)(65000/(1000000/pulsewidth_us));
+  }
   else if (freq_hz <=200000) //1KHZ to 200000 KHZ
-    sConfigOC.Pulse = (float)(41900000/(1000000/pulsewidth_us));
+  {
+    if(pwm_mode == PWM_EDGE_ALIGN_MODE)
+      sConfigOC.Pulse = (float)(84000000/(1000000/pulsewidth_us));
+    else
+      sConfigOC.Pulse = (float)(42000000/(1000000/pulsewidth_us));
+  }
   else if (freq_hz <= 2000000) //200000KHZ to 2000000KHZ
-    sConfigOC.Pulse = (float)(83800000/(1000000/pulsewidth_us));
+  {
+    if(pwm_mode == PWM_EDGE_ALIGN_MODE)
+      sConfigOC.Pulse = (float)(167600000/(1000000/pulsewidth_us));
+    else
+      sConfigOC.Pulse = (float)(83800000/(1000000/pulsewidth_us));
+  }
 
   if(tim_ch == TIM_CH1)
+  {
     HAL_TIM_PWM_ConfigChannel(htim_base, &sConfigOC, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start_IT(htim_base, TIM_CHANNEL_1);
+    HAL_TIMEx_PWMN_Start_IT(htim_base,TIM_CHANNEL_1);
+  }
   else if(tim_ch == TIM_CH2)
+  {
     HAL_TIM_PWM_ConfigChannel(htim_base, &sConfigOC, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start_IT(htim_base, TIM_CHANNEL_2);
+    HAL_TIMEx_PWMN_Start_IT(htim_base,TIM_CHANNEL_2);
+  }
   else if(tim_ch == TIM_CH3)
+  {
     HAL_TIM_PWM_ConfigChannel(htim_base, &sConfigOC, TIM_CHANNEL_3);
+    HAL_TIM_PWM_Start_IT(htim_base, TIM_CHANNEL_3);
+    HAL_TIMEx_PWMN_Start_IT(htim_base,TIM_CHANNEL_3);
+  }
 }
 
 
-
-void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, uint32_t capFreq_hz)
+/**
+ * @brief This is Timer Capture configuration function
+ *        Capture Channel Pins
+ *        TIM10   PB8
+ *        TIM11   PB9
+ *        TIM13   PA6
+ *        TIM14   PA7
+ * @param htim_base   Timer Handler
+ *        @arg  htim10_cap
+ *        @arg  htim11_cap
+ *        @arg  htim13_cap
+ *        @arg  htim14_cap
+ * @param capFreq_hz  <provide description>
+ * @param capEdge     Capture Polarity
+ *        @arg  TIM_CAP_RISING_EDGE
+ *        @arg  TIM_CAP_FALLING_EDGE
+ *        @arg  TIM_CAP_BOTH_EDGE
+ * @return  None
+ */
+void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, uint32_t capFreq_hz, TIM_CAP_POLARITY_Type capEdge)
 {
   TIM_IC_InitTypeDef sConfigIC;
+
+  __GPIOA_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
 
   if(htim_base == &htim10_cap)
     htim_base->Instance = TIM10;
@@ -860,25 +965,43 @@ void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, uint32_t capFreq_hz)
 
   HAL_TIM_IC_Init(htim_base);
 
-  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  if(capEdge == TIM_CAP_RISING_EDGE)
+    sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  else if(capEdge == TIM_CAP_FALLING_EDGE)
+    sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_FALLING;
+  else if(capEdge == TIM_CAP_BOTH_EDGE)
+    sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_BOTHEDGE;
+
   sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
   sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
   sConfigIC.ICFilter = 0;
   HAL_TIM_IC_ConfigChannel(htim_base, &sConfigIC, TIM_CHANNEL_1);
+
+  HAL_TIM_IC_Start_IT(htim_base, TIM_CHANNEL_1);
 }
 
 
 /**
- *
- * @param htim_base
- * @param tim_ch
- * @param capFreq_hz
+ * @brief This is PWM Capture Configuration function
+ * @param htim_base   Timer Handler
+ *        @arg  htim9_pcap
+ *        @arg  htim12_pcap
+ * @param tim_ch        Select Hardware channel or use without channel
+ *        @arg  None      No channel        TIM9   TIM12
+ *                                          ------------
+ *        @arg  TIM_CH1   Timer Channel 1   PE5    PB14
+ *        @arg  TIM_CH2   Timer Channel 2   PE6    PB15
+ * @param capFreq_hz    <provide description>
+ * @return  None
  */
 void BSP_PWM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t capFreq_hz)
 {
   TIM_ClockConfigTypeDef sClockSourceConfig;
   TIM_SlaveConfigTypeDef sSlaveConfig;
   TIM_IC_InitTypeDef sConfigIC;
+
+  __GPIOE_CLK_ENABLE();
+  __GPIOB_CLK_ENABLE();
 
   if(htim_base == &htim9_pcap)
     htim_base->Instance = TIM9;
