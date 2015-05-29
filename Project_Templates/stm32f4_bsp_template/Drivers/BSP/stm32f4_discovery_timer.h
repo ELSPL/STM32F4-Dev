@@ -29,6 +29,22 @@ extern "C"
 /** @defgroup STM32F4_DISCOVERY_TIMER_Public_Types
  * @{
  */
+
+extern __IO uint32_t TimCapPsc;
+extern __IO uint32_t TimCapPeriod;
+
+/* Capture Callback Freq Calc global variables */
+extern __IO uint32_t uwIC2Value1;
+extern __IO uint32_t uwIC2Value2;
+extern __IO uint32_t uwDiffCapture;
+extern __IO uint16_t uhCaptureIndex;
+extern __IO uint32_t uwFrequency;
+
+extern __IO uint8_t tim9_12_flag;
+extern __IO uint32_t uwFrequency1;
+extern __IO uint32_t uwIC2Value;
+extern __IO uint32_t uwDutyCycle;
+
 extern TIM_HandleTypeDef htim1_mcpwm;
 extern TIM_HandleTypeDef htim8_mcpwm;
 
@@ -85,6 +101,14 @@ typedef enum
   TIM_CAP_BOTH_EDGE        /*!< Capture at both Rising and Falling Edge */
 }TIM_CAP_POLARITY_Type;
 
+/** @brief Capture Frequency rate */
+typedef enum
+{
+  LOW_FREQ = 0,   /*!< Capture at low frequency */
+  MEDIUM_FREQ,    /*!< Capture at medium frequency */
+  FAST_FREQ       /*!< Capture at fast frequency */
+}TIM_CAP_FREQ_RATE;
+
 /**
  * @} STM32F4_DISCOVERY_TIMER_Public_Types End
  */
@@ -104,8 +128,8 @@ void BSP_PWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
 void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t freq_hz, float pulsewidth_us, uint8_t deadtime, PWM_ALIGN_MODE pwm_mode);
 
 /* Timer and PWM capture functions */
-void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, uint32_t capFreq_hz, TIM_CAP_POLARITY_Type capEdge);
-void BSP_PWM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t capFreq_hz);
+void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CAP_FREQ_RATE freqSel, TIM_CAP_POLARITY_Type capEdge);
+void BSP_PWM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, TIM_CAP_FREQ_RATE freqSel);
 
 /* Timer De-Initialization function */
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base);

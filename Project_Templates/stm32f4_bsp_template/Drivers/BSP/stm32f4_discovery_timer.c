@@ -19,6 +19,21 @@
 /** @addtogroup STM32F4_DISCOVERY_TIMER_Public_Types
  * @{
  */
+__IO uint32_t TimCapPsc;
+__IO uint32_t TimCapPeriod;
+
+/* Capture Callback Freq Calc global variables */
+__IO uint32_t uwIC2Value1 = 0;
+__IO uint32_t uwIC2Value2 = 0;
+__IO uint32_t uwDiffCapture = 0;
+__IO uint16_t uhCaptureIndex = 0;
+__IO uint32_t uwFrequency = 0;
+
+__IO uint8_t tim9_12_flag;
+__IO uint32_t uwFrequency1 = 0;
+__IO uint32_t uwIC2Value = 0;
+__IO uint32_t uwDutyCycle = 0;
+
 TIM_HandleTypeDef htim1_mcpwm;
 TIM_HandleTypeDef htim8_mcpwm;
 
@@ -931,14 +946,17 @@ void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t
  *        @arg  htim11_cap
  *        @arg  htim13_cap
  *        @arg  htim14_cap
- * @param capFreq_hz  <provide description>
+ * @param freqSel     Select Range of Capture Frequency
+ *        @arg  LOW_FREQ      (10Hz    - 10KHz)
+ *        @arg  MEDIUM_FREQ   (10KHz   - 65536Hz)
+ *        @arg  FAST_FREQ     (65538Hz - 160KHz)
  * @param capEdge     Capture Polarity
  *        @arg  TIM_CAP_RISING_EDGE
  *        @arg  TIM_CAP_FALLING_EDGE
  *        @arg  TIM_CAP_BOTH_EDGE
  * @return  None
  */
-void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, uint32_t capFreq_hz, TIM_CAP_POLARITY_Type capEdge)
+void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CAP_FREQ_RATE freqSel, TIM_CAP_POLARITY_Type capEdge)
 {
   TIM_IC_InitTypeDef sConfigIC;
 
@@ -954,9 +972,31 @@ void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, uint32_t capFreq_hz, T
   else if(htim_base == &htim14_cap)
     htim_base->Instance = TIM14;
 
-  htim_base->Init.Prescaler = (SystemCoreClock)/168000000;
-  htim_base->Init.Period = 168000000/capFreq_hz;
+  switch(freqSel)
+  {
+    case LOW_FREQ:
+      TimCapPsc = 255;
+      TimCapPeriod = 0xFFFF;
+      break;
 
+    case MEDIUM_FREQ:
+      TimCapPsc = 15;
+      TimCapPeriod = 0xFFFF;
+      break;
+
+    case FAST_FREQ:
+      TimCapPsc = 1;
+      TimCapPeriod = 0xFFF;
+      break;
+
+    default:
+      TimCapPsc = 15;
+      TimCapPeriod = 0xFFFF;
+      break;
+  }
+
+  htim_base->Init.Prescaler = TimCapPsc;
+  htim_base->Init.Period = TimCapPeriod;
   htim_base->Init.CounterMode = TIM_COUNTERMODE_UP;
   htim_base->Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 
@@ -982,19 +1022,26 @@ void BSP_TIM_Capture_Config(TIM_HandleTypeDef* htim_base, uint32_t capFreq_hz, T
 
 
 /**
- * @brief This is PWM Capture Configuration function
+ * @brief This is PWM Capture Configuration function (Only Channel1 supported for NOW)
+ *        For any Timer select Channel1 or Channel2 for Frequency
+ *        measurement then other channel register CCRx will be used
+ *        for Duty Cycle Measurement.
  * @param htim_base   Timer Handler
  *        @arg  htim9_pcap
  *        @arg  htim12_pcap
- * @param tim_ch        Select Hardware channel or use without channel
+ * @param tim_ch      Select Hardware channel or use without channel
  *        @arg  None      No channel        TIM9   TIM12
  *                                          ------------
  *        @arg  TIM_CH1   Timer Channel 1   PE5    PB14
+ *                              OR              OR
  *        @arg  TIM_CH2   Timer Channel 2   PE6    PB15
- * @param capFreq_hz    <provide description>
+ * @param freqSel     Select Range of Capture Frequency
+ *        @arg  LOW_FREQ      (10Hz    - 10KHz)
+ *        @arg  MEDIUM_FREQ   (10KHz   - 65536Hz)
+ *        @arg  FAST_FREQ     (65538Hz - 160KHz)
  * @return  None
  */
-void BSP_PWM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t capFreq_hz)
+void BSP_PWM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, TIM_CAP_FREQ_RATE freqSel)
 {
   TIM_ClockConfigTypeDef sClockSourceConfig;
   TIM_SlaveConfigTypeDef sSlaveConfig;
@@ -1008,9 +1055,31 @@ void BSP_PWM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, ui
   else if(htim_base == &htim12_pcap)
     htim_base->Instance = TIM12;
 
-  htim_base->Init.Prescaler = 0;
-  htim_base->Init.Period = 0;
+  switch(freqSel)
+  {
+    case LOW_FREQ:
+      TimCapPsc = 255;
+      TimCapPeriod = 0xFFFF;
+      break;
 
+    case MEDIUM_FREQ:
+      TimCapPsc = 15;
+      TimCapPeriod = 0xFFFF;
+      break;
+
+    case FAST_FREQ:
+      TimCapPsc = 1;
+      TimCapPeriod = 0xFFF;
+      break;
+
+    default:
+      TimCapPsc = 15;
+      TimCapPeriod = 0xFFFF;
+      break;
+  }
+
+  htim_base->Init.Prescaler = TimCapPsc;
+  htim_base->Init.Period = TimCapPeriod;
   htim_base->Init.CounterMode = TIM_COUNTERMODE_UP;
   htim_base->Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 
@@ -1026,11 +1095,13 @@ void BSP_PWM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, ui
   {
     sSlaveConfig.InputTrigger = TIM_TS_TI1FP1;
     sSlaveConfig.TriggerPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+    tim9_12_flag = ENABLE;
   }
   else if(tim_ch == TIM_CH2)
   {
     sSlaveConfig.InputTrigger = TIM_TS_TI2FP2;
     sSlaveConfig.TriggerPolarity = TIM_INPUTCHANNELPOLARITY_FALLING;
+    tim9_12_flag = DISABLE;
   }
 
   sSlaveConfig.SlaveMode = TIM_SLAVEMODE_RESET;
@@ -1048,6 +1119,8 @@ void BSP_PWM_Capture_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, ui
   sConfigIC.ICSelection = TIM_ICSELECTION_INDIRECTTI;
   HAL_TIM_IC_ConfigChannel(htim_base, &sConfigIC, TIM_CHANNEL_2);
 
+  HAL_TIM_IC_Start_IT(htim_base, TIM_CHANNEL_1);
+  HAL_TIM_IC_Start_IT(htim_base, TIM_CHANNEL_2);
 }
 
 /**

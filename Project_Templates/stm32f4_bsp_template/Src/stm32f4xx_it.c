@@ -336,6 +336,7 @@ void HAL_DCMI_FrameEventCallback(DCMI_HandleTypeDef *hdcmi)
 void TIM1_TRG_COM_TIM11_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&htim1_mcpwm);
+  HAL_TIM_IRQHandler(&htim11_cap);
 }
 
 /**
@@ -344,6 +345,7 @@ void TIM1_TRG_COM_TIM11_IRQHandler(void)
 void TIM1_BRK_TIM9_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&htim1_mcpwm);
+  HAL_TIM_IRQHandler(&htim9_pcap);
 }
 
 /**
@@ -352,6 +354,7 @@ void TIM1_BRK_TIM9_IRQHandler(void)
 void TIM1_UP_TIM10_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&htim1_mcpwm);
+  HAL_TIM_IRQHandler(&htim10_cap);
 }
 
 
@@ -402,6 +405,7 @@ void TIM7_IRQHandler(void)
 void TIM8_TRG_COM_TIM14_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&htim8_mcpwm);
+  HAL_TIM_IRQHandler(&htim14_cap);
 }
 
 /**
@@ -410,6 +414,7 @@ void TIM8_TRG_COM_TIM14_IRQHandler(void)
 void TIM8_BRK_TIM12_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&htim8_mcpwm);
+  HAL_TIM_IRQHandler(&htim12_pcap);
 }
 
 /**
@@ -418,6 +423,80 @@ void TIM8_BRK_TIM12_IRQHandler(void)
 void TIM8_UP_TIM13_IRQHandler(void)
 {
   HAL_TIM_IRQHandler(&htim8_mcpwm);
+  HAL_TIM_IRQHandler(&htim13_cap);
+}
+
+/**
+ * @brief Timer Capture Callback function for Frequency Calculations
+ */
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+  __HAL_TIM_DISABLE(htim);
+
+  if(htim->Instance == TIM9 || htim->Instance == TIM12)
+  {
+    /* Get the Input Capture value */
+//    if(tim9_12_flag == ENABLE)
+      uwIC2Value = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+//    else
+//      uwIC2Value = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+
+    if (uwIC2Value != 0)
+    {
+      /* Duty cycle computation */
+//      if(tim9_12_flag == ENABLE)
+        uwDutyCycle = ((HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2)) * 100) / uwIC2Value;
+//      else
+//        uwDutyCycle = ((HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1)) * 100) / uwIC2Value;
+
+      /* uwFrequency computation
+      TIM4 counter clock = (RCC_Clocks.HCLK_Frequency)/2 */
+      if(htim->Instance == TIM9)
+        uwFrequency1 = (168000000UL)/(TimCapPsc+1) / uwIC2Value;
+      else if(htim->Instance == TIM12)
+        uwFrequency1 = (168000000UL)/(2*(TimCapPsc+1)) / uwIC2Value;
+    }
+    else
+    {
+      uwDutyCycle = 0;
+      uwFrequency1 = 0;
+    }
+  }
+  else if(htim->Instance == TIM10 || htim->Instance == TIM11 || htim->Instance == TIM12 || htim->Instance == TIM13)
+  {
+    if(uhCaptureIndex == 0)
+    {
+      /* Get the 1st Input Capture value */
+      uwIC2Value1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+      uhCaptureIndex = 1;
+    }
+    else if(uhCaptureIndex == 1)
+    {
+      /* Get the 2nd Input Capture value */
+      uwIC2Value2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+
+      /* Capture computation */
+      if (uwIC2Value2 > uwIC2Value1)
+      {
+        uwDiffCapture = (uwIC2Value2 - uwIC2Value1);
+      }
+      else  /* (uwIC2Value2 <= uwIC2Value1) */
+      {
+        uwDiffCapture = ((TimCapPeriod - uwIC2Value1) + uwIC2Value2);
+      }
+
+      /* Frequency computation: for this example TIMx (TIM1) is clocked by
+         2xAPB2Clk */
+      uwFrequency = (2*HAL_RCC_GetPCLK2Freq()) / uwDiffCapture;
+      if(htim->Instance == TIM10 || htim->Instance == TIM11)
+        uwFrequency = uwFrequency/(TimCapPsc+1);
+      else
+        uwFrequency = uwFrequency/(2*(TimCapPsc+1));
+      uhCaptureIndex = 0;
+    }
+  }
+
+  __HAL_TIM_ENABLE(htim);
 }
 
 
