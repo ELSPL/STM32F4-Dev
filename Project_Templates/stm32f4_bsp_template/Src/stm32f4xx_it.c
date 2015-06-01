@@ -462,7 +462,7 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
       uwFrequency1 = 0;
     }
   }
-  else if(htim->Instance == TIM10 || htim->Instance == TIM11 || htim->Instance == TIM12 || htim->Instance == TIM13)
+  else if(htim->Instance == TIM10 || htim->Instance == TIM11 || htim->Instance == TIM14 || htim->Instance == TIM13)
   {
     if(uhCaptureIndex == 0)
     {

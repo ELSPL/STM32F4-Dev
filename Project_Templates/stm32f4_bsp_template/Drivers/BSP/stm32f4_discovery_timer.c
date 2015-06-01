@@ -166,7 +166,7 @@ static void BSP_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_c
     }
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM2_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM2_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(TIM2_IRQn);
   }
   else if(htim_base->Instance==TIM3)
@@ -243,7 +243,7 @@ static void BSP_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_c
     }
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM4_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM4_IRQn, 1, 0);
     HAL_NVIC_EnableIRQ(TIM4_IRQn);
   }
   else if(htim_base->Instance==TIM5)
@@ -694,7 +694,7 @@ void BSP_PWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
     else
       htim_base->Init.Period = 32500/freq_hz;
   }
-  else if (freq_hz <=200000) //1KHZ to 200000 KHZ
+  else if (freq_hz <=200000) //1KHZ to 200 KHZ
   {
     htim_base->Init.Prescaler = SystemCoreClock/168000000;
 
@@ -703,7 +703,7 @@ void BSP_PWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
     else
       htim_base->Init.Period = 20950000/freq_hz;
   }
-  else if (freq_hz <= 2000000) //200000KHZ to 2000000KHZ
+  else if (freq_hz <= 2000000) //200KHZ to 2MHZ
   {
     htim_base->Init.Prescaler = 0;
 
