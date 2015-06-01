@@ -1,16 +1,21 @@
-/*
- * stm32f4_discovery_buzzer.h
- *
- *  Created on: May 30, 2015
- *      Author: Bhavin Darji
- */
+/**
+  ******************************************************************************
+  * @file    stm32f4_discovery_buzzer.h
+  * @author  Bhavin.Edutech Learning Solutions
+  * @version V1.0
+  * @date    30-May-2015
+  * @brief   This file contains macro definitions and declarations for its
+  *          source file.
+  ******************************************************************************
+  */
 
-#ifndef __STM32F4_DISCOVERY_BUZZER_H_
-#define __STM32F4_DISCOVERY_BUZZER_H_
+#ifndef __STM32F4_DISCOVERY_BUZZER_H
+#define __STM32F4_DISCOVERY_BUZZER_H
 
 /* Includes ------------------------------------------------------------------- */
 #include "stm32f4_global.h"
 #include "stm32f4xx_hal.h"
+#include "stm32f4_discovery_timer.h"
 
 /* Peripheral group ----------------------------------------------------------- */
 /** @defgroup STM32F4_DISCOVERY_BUZZER
@@ -27,14 +32,12 @@ extern "C"
 /**
  * @defgroup STM32F4_DISCOVERY_BUZZER_Variable
  */
-
 extern uint16_t timeout;     /* timeout for note */
 extern uint16_t on_time;
 extern uint16_t off_time;
 extern uint16_t on_timer;
 extern uint16_t off_timer;
 extern uint8_t play_note;
-
 
 /**
  * @} STM32F4_DISCOVERY_BUZZER_Variable End
@@ -45,7 +48,6 @@ extern uint8_t play_note;
 /**
  * @defgroup STM32F4_DISCOVERY_BUZZER_Macros
  */
-
 #define MELODY_LENGTH 95
 
 /* Key at 20kHz interrupt service routine Timer2 */
@@ -101,19 +103,15 @@ extern uint8_t play_note;
 #define B7           5     // 4000  Hz
 
 #define D_SHARP8     4     // 5000  Hz
-
-
 /**
  * @} STM32F4_DISCOVERY_BUZZER_Macros End
  */
-
 
 
 /* Public Functions ----------------------------------------------------------- */
 /** @defgroup STM32F4_DISCOVERY_BUZZER_Public_Functions
  * @{
  */
-
 void BSP_Buzzer_Init(GPIO_TypeDef *Buzzer_port,uint32_t Buzzer_pin);
 void BSP_Play_Frequency(uint16_t freq, uint16_t dur);
 void BSP_Play_Melody(void);
@@ -123,18 +121,11 @@ void BSP_Play_Melody(void);
  */
 
 
-
-
-
-
-
-
-
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32F4_DISCOVERY_BUZZER_H_ */
+#endif /* __STM32F4_DISCOVERY_BUZZER_H */
 
 /**
  * @} STM32F4_DISCOVERY_BUZZER End

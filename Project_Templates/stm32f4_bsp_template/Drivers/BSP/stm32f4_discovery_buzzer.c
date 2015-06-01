@@ -1,14 +1,15 @@
-/*
- * stm32f4_discovery_buzzer.c
- *
- *  Created on: May 30, 2015
- *      Author: Bhavin Darji
- */
-
+/**
+  ******************************************************************************
+  * @file    stm32f4_discovery_buzzer.c
+  * @author  Bhavin.Edutech Learning Solutions
+  * @version V1.0
+  * @date    30-May-2015
+  * @brief   This file provides set of firmware functions for Buzzer.
+  ******************************************************************************
+  */
 
 /* Includes ------------------------------------------------------------------- */
 #include "stm32f4_discovery_buzzer.h"
-#include "stm32f4_discovery_timer.h"
 
 /* Peripheral group ----------------------------------------------------------- */
 /** @addtogroup STM32F4_DISCOVERY_BUZZER
@@ -105,20 +106,20 @@ void BSP_Buzzer_Init(GPIO_TypeDef *Buzzer_port,uint32_t Buzzer_pin)
   /* initialize and start the the timer */
   BSP_TIM_Basic_Config(&htim7_basic,50);
 }
-
 /**
  * @} STM32F4_DISCOVERY_BUZZER_Private_Functions End
  */
+
+
 /* Public Functions ----------------------------------------------------------- */
 /** @addtogroup STM32F4_DISCOVERY_BUZZER_Public_Functions
  * @{
  */
-
 /**
  * @brief Set up timer 1 to play the desired frequency (in Hz) and for the the
  *          desired duration (in ms). Allowed frequencies are from 40 Hz to 5 kHz.
- * @param freq : Frequency of the note
- * @param   dur  : Duration of the note
+ * @param freq   Frequency of the note
+ * @param dur    Duration of the note
  * @return  None
  */
 void BSP_Play_Frequency(uint16_t freq, uint16_t dur)
@@ -162,6 +163,7 @@ void BSP_Play_Melody(void)
   play_note = RESET; /* stop tune */
   HAL_GPIO_WritePin(GPIOC,_BIT(7),GPIO_PIN_RESET); //buzzer off
 }
+
 
 /**
  * @brief Call back function for timer7
