@@ -6,43 +6,89 @@
   * @date    13-March-2015
   * @brief   Header for usbd_desc.c module
   ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __USBD_DESC_H
 #define __USBD_DESC_H
 
+#ifdef __cplusplus
+ extern "C" {
+#endif
 /* Includes ------------------------------------------------------------------*/
 #include "usbd_def.h"
 
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
+/** @addtogroup STM32_USB_OTG_DEVICE_LIBRARY
+ * @{
+ */
+
+/** @defgroup USB_DESC
+ * @brief general defines for the usb device library file
+ * @{
+ */
+
+/** @defgroup USB_DESC_Exported_Defines
+ * @{
+ */
+#ifdef USE_STM32F4_VCP
 #define         DEVICE_ID1          (0x1FFF7A10)
 #define         DEVICE_ID2          (0x1FFF7A14)
 #define         DEVICE_ID3          (0x1FFF7A18)
 
 #define  USB_SIZ_STRING_SERIAL       0x1A
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+#endif
+
+
+/**
+ * @}
+ */
+
+/** @defgroup USBD_DESC_Exported_TypesDefinitions
+ * @{
+ */
+/**
+ * @}
+ */
+
+/** @defgroup USBD_DESC_Exported_Macros
+ * @{
+ */
+/**
+ * @}
+ */
+
+/** @defgroup USBD_DESC_Exported_Variables
+ * @{
+ */
+#ifdef USE_STM32F4_VCP
 extern USBD_DescriptorsTypeDef VCP_Desc;
+#endif
+
+#ifdef USE_STM32F4_HID
+extern USBD_DescriptorsTypeDef HID_Desc;
+#endif
+
+/**
+ * @}
+ */
+
+/** @defgroup USBD_DESC_Exported_FunctionsPrototype
+  * @{
+  */
+
+/**
+  * @}
+  */
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __USBD_DESC_H */
- 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+/**
+ * @}
+ */
+
+/**
+ * @}
+ */
+/******END OF FILE****/
