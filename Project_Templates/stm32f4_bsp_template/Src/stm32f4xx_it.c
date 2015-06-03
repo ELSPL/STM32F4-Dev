@@ -51,6 +51,12 @@
 
 #ifdef USE_STM32F4_VCP
 #include "stm32f4_discovery_vcp.h"
+#define VCP_SEL 1
+#endif
+
+#ifdef USE_STM32F4_HID
+#include "stm32f4_discovery_hid.h"
+#define HID_SEL 1
 #endif
 
 #ifdef USE_STM32F4_TFT
@@ -59,6 +65,11 @@
 
 #ifdef USE_STM32F4_CAMERA
 #include "stm32f4_discovery_camera.h"
+#endif
+
+/* Conditional Checking */
+#if (VCP_SEL && HID_SEL)
+  #error Both VCP and HID are active, Only one can work at a time, so remove any definition.
 #endif
 /* USER CODE END 0 */
 
@@ -88,12 +99,20 @@ void SysTick_Handler(void)
 /********************************************************************************************/
 #ifdef USE_STM32F4_DISCO
 
-#ifdef USE_STM32F4_VCP
+/**
+* @brief This function handles USB On The Go FS global interrupt.
+*/
 void OTG_FS_IRQHandler(void)
 {
-    HAL_PCD_IRQHandler(&hpcd);
-}
+#ifdef USE_STM32F4_VCP
+    HAL_PCD_IRQHandler(&hpcd_USB_OTG_VCP);
 #endif  /* USE_STM32F4_VCP */
+
+#ifdef USE_STM32F4_HID
+    HAL_PCD_IRQHandler(&hpcd_USB_OTG_HID);
+#endif
+}
+
 
 /**
 * @brief This function handles EXTI Line0 interrupt.

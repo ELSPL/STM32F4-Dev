@@ -64,11 +64,10 @@ static void vcp_clear_screen (void)
   * @}
   */
 
-
+#ifdef USE_STM32F4_VCP
 /** @defgroup STM32F4_DISCOVERY_VCP_Functions
   * @{
   */
-
 void BSP_VCP_Init (void)
 {
   USBD_Init(&USBD_Device, &VCP_Desc, 0);
@@ -78,6 +77,7 @@ void BSP_VCP_Init (void)
   USBD_Start(&USBD_Device);
 }
 
+#endif /* USE_STM32F4_VCP */
 
 /**
  * @brief The vgetche() function returns the next character read from the
