@@ -119,7 +119,14 @@ static void BSP_UART_MspInit(UART_HandleTypeDef* huart)
 }
 
 
-static HAL_StatusTypeDef UART_Transmit(uint8_t *data_buf, uint16_t size, uint32_t timeout)
+/**
+ * This is General UART Transmit function irrespective of transfer mode
+ * @param data_buf  Data buffer or string
+ * @param size      length of data
+ * @param timeout   if polling then specify timeout: MAX_TIMEOUT
+ * @return  status of transfer
+ */
+HAL_StatusTypeDef UART_Transmit(uint8_t *data_buf, uint16_t size, uint32_t timeout)
 {
   HAL_StatusTypeDef status=HAL_ERROR;
   uint8_t i;
@@ -142,7 +149,14 @@ static HAL_StatusTypeDef UART_Transmit(uint8_t *data_buf, uint16_t size, uint32_
 }
 
 
-static HAL_StatusTypeDef UART_Receive(uint8_t *data_buf, uint16_t size, uint32_t timeout)
+/**
+ * This is General UART Receive function irrespective of transfer mode
+ * @param data_buf  data buffer to receive string or data
+ * @param size      length of data to receive
+ * @param timeout   if polling then specify timeout: MAX_TIMEOUT
+ * @return  status of transfer
+ */
+HAL_StatusTypeDef UART_Receive(uint8_t *data_buf, uint16_t size, uint32_t timeout)
 {
   HAL_StatusTypeDef status=HAL_ERROR;
 
