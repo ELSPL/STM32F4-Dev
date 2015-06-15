@@ -40,6 +40,7 @@
 #include "stm32f4_global.h"
 #include "stm32f4_discovery_timer.h"
 #include "stm32f4_discovery.h" // Comment it when On board PB is not used
+#include "stm32f4_discovery_rtc.h"
 
 #ifdef USE_STM32F4_UART
 #include "stm32f4_discovery_uart.h"
@@ -526,6 +527,30 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
   __HAL_TIM_ENABLE(htim);
 }
 
+
+/**
+* @brief This function handles RTC Wakeup interrupt through the EXTI Line22 interrupt.
+*/
+void RTC_WKUP_IRQHandler(void)
+{
+  HAL_RTCEx_WakeUpTimerIRQHandler(&hrtc_bsp);
+}
+
+/**
+* @brief This function handles RTC Alarms (A and B) through EXTI Line17 interrupt.
+*/
+void RTC_Alarm_IRQHandler(void)
+{
+  HAL_RTC_AlarmIRQHandler(&hrtc_bsp);
+}
+
+/**
+* @brief This function handles RTC Tamper and TimeStamp interrupts through EXTI Line21 interrupt.
+*/
+void TAMP_STAMP_IRQHandler(void)
+{
+  HAL_RTCEx_TamperTimeStampIRQHandler(&hrtc_bsp);
+}
 
 /********************************************************************************************/
 
