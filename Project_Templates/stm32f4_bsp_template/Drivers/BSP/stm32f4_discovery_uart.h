@@ -104,6 +104,10 @@ extern uint8_t UartReady;
 void BSP_UART_Init(uint32_t Baudrate);
 void BSP_UART_MspDeInit(UART_HandleTypeDef* huart);
 
+/* UART General Transmit and Receive functions */
+HAL_StatusTypeDef UART_Transmit(uint8_t *data_buf, uint16_t size, uint32_t timeout);
+HAL_StatusTypeDef UART_Receive(uint8_t *data_buf, uint16_t size, uint32_t timeout);
+
 /* UART Stdio functions */
 HAL_StatusTypeDef uprintf(const char *format, ...);
 uint8_t ugetche(TRANSFER_BLOCK_Type mode);
