@@ -3,7 +3,7 @@
 * @brief  This file contains declaration for stm32f4_discovery_rtc.c
 * @version  V1.0
 * @date   May 29, 2015
-* @author Bhavin Darji
+* @author Bhavin Darji.Edutech learning solutions
 **********************************************************************/
 
 #ifndef __STM32F4_DISCOVERY_RTC_H
@@ -49,19 +49,20 @@ typedef enum
 /** @defgroup STM32F4_DISCOVERY_RTC_Public_Functions
  * @{
  */
-
+/* RTC Initialization Functions */
 void BSP_RTC_Init(void);
 void BSP_RTC_MspDeInit(RTC_HandleTypeDef* hrtc);
-uint8_t BSP_Change_Time (void);
-uint8_t BSP_Change_Date (void);
 void BSP_RTC_WakeUpTimer_Init(uint16_t WakeUptime);
 void BSP_RTC_Alarm_Init(Alarm_Typedef sel_Alarm, uint8_t hour, uint8_t minute, uint8_t second, uint8_t dayselect);
+void BSP_RTC_TimeStamp_Init(uint8_t TsPinEdgeSel);
+
+/* RTC Utility Functions */
+uint8_t BSP_RTC_Change_Time (void);
+uint8_t BSP_RTC_Change_Date (void);
+
 /**
  * @} STM32F4_DISCOVERY_RTC_Public_Functions End
  */
-
-
-
 
 
 #ifdef __cplusplus

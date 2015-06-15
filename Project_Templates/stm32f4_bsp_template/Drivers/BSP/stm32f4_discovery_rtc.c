@@ -3,9 +3,8 @@
 * @brief  This file contains implementation of STM32F4 RTC in custom method.
 * @version  V1.0
 * @date   May 29, 2015
-* @author Bhavin Darji
+* @author Bhavin Darji.Edutech learning solutions
 **********************************************************************/
-
 
 /* Includes ------------------------------------------------------------------- */
 #include "stm32f4_discovery_rtc.h"
@@ -23,6 +22,7 @@
 RTC_HandleTypeDef hrtc_bsp;
 
 uint16_t Year[1];
+
 /**
  * @} STM32F4_DISCOVERY_RTC_Public_Types End
  */
@@ -34,7 +34,8 @@ uint16_t Year[1];
 
 /**
  * @brief This function enable the RTC by enabling the peripheral clock
- * @param hrtc_bsp RTC handle
+ * @param hrtc
+ *        @arg hrtc_bsp RTC handle
  */
 static void BSP_RTC_MspInit(RTC_HandleTypeDef* hrtc)
 {
@@ -54,12 +55,10 @@ static void BSP_RTC_MspInit(RTC_HandleTypeDef* hrtc)
     HAL_NVIC_EnableIRQ(TAMP_STAMP_IRQn);
   }
 }
-
-
-
 /**
  * @} STM32F4_DISCOVERY_RTC_Private_Functions End
  */
+
 
 /* Public Functions ----------------------------------------------------------- */
 /** @addtogroup STM32F4_DISCOVERY_RTC_Public_Functions
@@ -67,13 +66,12 @@ static void BSP_RTC_MspInit(RTC_HandleTypeDef* hrtc)
  */
 
 /**
- * @brief RTC Initialization
+ * @brief RTC Initialization function
  */
 void BSP_RTC_Init(void)
 {
   RTC_TimeTypeDef sTime;
   RTC_DateTypeDef sDate;
-
 
     /**Initialize RTC and set the Time and Date
     */
@@ -102,27 +100,29 @@ void BSP_RTC_Init(void)
   sDate.Date = 1;
   sDate.Year = 00;
   HAL_RTC_SetDate(&hrtc_bsp, &sDate, FORMAT_BIN);
-
 }
+
 
 /**
  * @brief RTC Wakeup Timer configuration function using interrupt
  * @param hrtc
  *        @arg hrtc_bsp
- * @param WakeUptime
- *        @arg provide time in 1 millisecond 10 millisecond 1 second to  60 seconds
+ * @param WakeUptime_ms   provide time in 1 to 10 millisecond
+ *                        and 1 second to  60 seconds (in msec unit)
  * NOTE minimum value of WakeUptime_ms is 1 msec.
  */
 void BSP_RTC_WakeUpTimer_Init(uint16_t WakeUptime_ms)
 {
-  /*RTC_WAKEUPCLOCK_RTCCLK_DIV2 = 500KHZ*/
-  /*1 millisecond count = 500000/1000 */
-  /*RTC_WAKEUPCLOCK_CK_SPRE_16BITS - 1HZ clock selected*/
-  /*RTC_WAKEUPCLOCK_RTCCLK_DIV16 - 1MHZ/16 = 62500*/
-  /* 62500 count = 1sec */
+  /********************************************************************//**
+  * @brief RTC_WAKEUPCLOCK_RTCCLK_DIV2 = 500KHZ
+  *        1 millisecond count = 500000/1000
+  *        RTC_WAKEUPCLOCK_CK_SPRE_16BITS - 1HZ clock selected
+  *        RTC_WAKEUPCLOCK_RTCCLK_DIV16 - 1MHZ/16 = 62500
+  *        62500 count = 1sec
+  **********************************************************************/
+  uint8_t WakeUp_clock=0;
+  uint16_t WakeUpcount=0;
 
-  uint8_t WakeUp_clock;
-  uint16_t WakeUpcount;
   if (WakeUptime_ms <= 10 ) //1 msec to 10 msec
   {
     WakeUp_clock = RTC_WAKEUPCLOCK_RTCCLK_DIV2;
@@ -135,19 +135,19 @@ void BSP_RTC_WakeUpTimer_Init(uint16_t WakeUptime_ms)
     WakeUpcount = (WakeUptime_ms/1000) - 1 ;
   }
   HAL_RTCEx_SetWakeUpTimer_IT(&hrtc_bsp, WakeUpcount, WakeUp_clock);
-
 }
+
 
 /**
  * @brief RTC Alarm configuration function using interrupt
- * @param sel_Alarm Select the Alarm
+ * @param sel_Alarm   Select the Alarm
  *        @arg AlarmA
  *        @arg AlarmB
- *        @arg BothAlarm  to set the Alarm A and Alarm B
- * @param hour set the Hour for Alarm interrupt
- * @param minute set the Minute for Alarm interrupt
- * @param second set the Second for Alarm interrupt
- * @param dayselect Select the alarm type
+ *        @arg BothAlarm  To set the Alarm A and Alarm B
+ * @param hour        Set the Hour for Alarm interrupt
+ * @param minute      Set the Minute for Alarm interrupt
+ * @param second      Set the Second for Alarm interrupt
+ * @param dayselect   Select the alarm type
  *        @arg RTC_ALARMDATEWEEKDAYSEL_DATE      Alarm interrupt occur day of every month
  *        @arg RTC_ALARMDATEWEEKDAYSEL_WEEKDAY   Alarm interrupt occur day of every week
  *
@@ -199,22 +199,24 @@ void BSP_RTC_Alarm_Init(Alarm_Typedef sel_Alarm, uint8_t hour, uint8_t minute, u
   }
 }
 
+
 /**
- * @brief RTC time stamp configuration function
- * @param TSpinEdgeSel select the rising edge or falling edge
- *      @arg RTC_TIMESTAMPEDGE_RISING
- *      @arg RTC_TIMESTAMPEDGE_FALLING
+ * @brief RTC Time stamp configuration function
+ * @param TSpinEdgeSel  Select the rising edge or falling edge
+ *        @arg RTC_TIMESTAMPEDGE_RISING
+ *        @arg RTC_TIMESTAMPEDGE_FALLING
  *
  * NOTE Time stamp event generated on the PC13 GPIO pin by apply
  */
-void BSP_RTC_TimeStamp_Init(uint8_t TSpinEdgeSel)
+void BSP_RTC_TimeStamp_Init(uint8_t TsPinEdgeSel)
 {
-  HAL_RTCEx_SetTimeStamp_IT(&hrtc_bsp, TSpinEdgeSel, RTC_TIMESTAMPPIN_PC13);
+  HAL_RTCEx_SetTimeStamp_IT(&hrtc_bsp, TsPinEdgeSel, RTC_TIMESTAMPPIN_PC13);
 }
+
 
 /**
  * @brief RTC Tamper configuration function
- * @param TampTrigEdge select the rising edge or falling edge
+ * @param TampTrigEdge  Select the rising edge or falling edge
  *       @arg RTC_TAMPERTRIGGER_RISINGEDGE
  *       @arg RTC_TAMPERTRIGGER_FALLINGEDGE
  */
@@ -232,20 +234,16 @@ void BSP_RTC_Tamper_Init(uint8_t TampTrigEdge)
 
   HAL_RTCEx_SetTamper_IT(&hrtc_bsp, &sTamper);
 }
+
+
 /**
- * @brief Set Time
+ * @brief It asks user to set new Time
  * @return status
  */
-uint8_t BSP_Change_Time (void)
+uint8_t BSP_RTC_Change_Time (void)
 {
   RTC_TimeTypeDef T;
-  T.Hours = 0;
-  T.Minutes = 0;
-  T.Seconds = 0;
-  T.SubSeconds = 0;
-  T.TimeFormat = RTC_HOURFORMAT12_AM;
-  T.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-  T.StoreOperation = RTC_STOREOPERATION_RESET;
+
   char cp;                          /* input from keyboard */
   char RTCdata;                     /* buffer */
   uint8_t TimeFlag=0;               /* flag for time data is available */
@@ -256,6 +254,14 @@ uint8_t BSP_Change_Time (void)
   uint8_t MaxCount = 6;             /* maximum no. of digits */
   char AsciiLSB;                    /* temporary storage for lsb ascii input */
   char AsciiMSB;                    /* temporary storage for msb ascii input */
+
+  T.Hours = 0;
+  T.Minutes = 0;
+  T.Seconds = 0;
+  T.SubSeconds = 0;
+  T.TimeFormat = RTC_HOURFORMAT12_AM;
+  T.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+  T.StoreOperation = RTC_STOREOPERATION_RESET;
 
   while(1)
   {
@@ -445,10 +451,11 @@ uint8_t BSP_Change_Time (void)
   return(0);
 }
 
+
 /**
  * @brief Check if the entered year is leap year or not
- * @param Year
- * @param Century
+ * @param Year      Only provide last two digits of Year (2015 = 15)
+ * @param Century   Provide the Century-1 (2015 = 21-1 = 20)
  * @return status
  */
 uint8_t Is_Leap_Year(uint16_t Year, uint16_t Century)
@@ -462,11 +469,13 @@ uint8_t Is_Leap_Year(uint16_t Year, uint16_t Century)
   /* Must check the century is a multiple of 4 also */
   return ((Century % 4) == 0);
 }
+
+
 /**
- * @brief Set Date
+ * @brief It asks user to change Date
  * @return status
  */
-uint8_t BSP_Change_Date (void)
+uint8_t BSP_RTC_Change_Date (void)
 {
   uint8_t DaysPerMonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
   RTC_DateTypeDef D;
@@ -769,7 +778,8 @@ uint8_t BSP_Change_Date (void)
 
 /**
  * @brief This function disable the RTC by disabling the peripheral clock
- * @param hrtc_bsp_bsp RTC handle
+ * @param hrtc
+ *        @arg hrtc_bsp  RTC handle
  */
 void BSP_RTC_MspDeInit(RTC_HandleTypeDef* hrtc)
 {
@@ -780,11 +790,8 @@ void BSP_RTC_MspDeInit(RTC_HandleTypeDef* hrtc)
 
     /* Peripheral interrupt Deinit*/
     HAL_NVIC_DisableIRQ(RTC_WKUP_IRQn);
-
     HAL_NVIC_DisableIRQ(RTC_Alarm_IRQn);
-
     HAL_NVIC_DisableIRQ(TAMP_STAMP_IRQn);
-
   }
 }
 

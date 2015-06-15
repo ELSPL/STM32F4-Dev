@@ -40,7 +40,10 @@
 #include "stm32f4_global.h"
 #include "stm32f4_discovery_timer.h"
 #include "stm32f4_discovery.h" // Comment it when On board PB is not used
+
+#ifdef USE_STM32F4_RTC
 #include "stm32f4_discovery_rtc.h"
+#endif
 
 #ifdef USE_STM32F4_UART
 #include "stm32f4_discovery_uart.h"
@@ -51,9 +54,14 @@
 #define VCP_SEL 1
 #endif
 
-#ifdef USE_STM32F4_HID
+#ifdef USE_STM32F4_DEVICE_HID
 #include "stm32f4_discovery_hid.h"
-#define HID_SEL 1
+#define DEVICE_HID_SEL 1
+#endif
+
+#ifdef USE_STM32F4_HOST_HID
+#include "stm32f4_discovery_hid.h"
+#define HOST_HID_SEL 1
 #endif
 
 #ifdef USE_STM32F4_MSC
@@ -73,7 +81,7 @@
 #endif
 
 /* Conditional Checking */
-#if (VCP_SEL && HID_SEL)
+#if (VCP_SEL && DEVICE_HID_SEL)
   #error Both VCP and HID are active, Only one can work at a time, so remove any definition.
 #endif
 /* USER CODE END 0 */
@@ -113,11 +121,15 @@ void OTG_FS_IRQHandler(void)
     HAL_PCD_IRQHandler(&hpcd_USB_OTG_VCP);
 #endif  /* USE_STM32F4_VCP */
 
-#ifdef USE_STM32F4_HID
+#ifdef USE_STM32F4_DEVICE_HID
     HAL_PCD_IRQHandler(&hpcd_USB_OTG_HID);
 #endif
 
-#ifdef USE_STM32F4_MSC
+#ifdef USE_STM32F4_HOST_MSC
+    HAL_HCD_IRQHandler(&hhcd_USB_OTG_FS);
+#endif
+
+#ifdef USE_STM32F4_HOST_HID
     HAL_HCD_IRQHandler(&hhcd_USB_OTG_FS);
 #endif
 }
@@ -526,8 +538,9 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 
   __HAL_TIM_ENABLE(htim);
 }
+/********************************************************************************************/
 
-
+#ifdef USE_STM32F4_RTC
 /**
 * @brief This function handles RTC Wakeup interrupt through the EXTI Line22 interrupt.
 */
@@ -551,7 +564,7 @@ void TAMP_STAMP_IRQHandler(void)
 {
   HAL_RTCEx_TamperTimeStampIRQHandler(&hrtc_bsp);
 }
-
+#endif /* USE_STM32F4_RTC */
 /********************************************************************************************/
 
 /* USER CODE END 1 */
