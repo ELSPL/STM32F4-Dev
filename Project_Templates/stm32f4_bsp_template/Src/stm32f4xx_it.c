@@ -41,10 +41,6 @@
 #include "stm32f4_discovery_timer.h"
 #include "stm32f4_discovery.h" // Comment it when On board PB is not used
 
-#ifdef USE_STM32F4_ASK25
-#include "stm32f4_ask25.h"
-#endif
-
 #ifdef USE_STM32F4_UART
 #include "stm32f4_discovery_uart.h"
 #endif
@@ -57,6 +53,14 @@
 #ifdef USE_STM32F4_HID
 #include "stm32f4_discovery_hid.h"
 #define HID_SEL 1
+#endif
+
+#ifdef USE_STM32F4_MSC
+#include "stm32f4_discovery_msc.h"
+#endif
+
+#ifdef USE_STM32F4_ASK25
+#include "stm32f4_ask25.h"
 #endif
 
 #ifdef USE_STM32F4_TFT
@@ -110,6 +114,10 @@ void OTG_FS_IRQHandler(void)
 
 #ifdef USE_STM32F4_HID
     HAL_PCD_IRQHandler(&hpcd_USB_OTG_HID);
+#endif
+
+#ifdef USE_STM32F4_MSC
+    HAL_HCD_IRQHandler(&hhcd_USB_OTG_FS);
 #endif
 }
 
