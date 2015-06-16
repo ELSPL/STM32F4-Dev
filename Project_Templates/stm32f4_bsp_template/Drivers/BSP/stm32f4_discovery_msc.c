@@ -23,7 +23,7 @@
   * @brief This file provides set of firmware functions to manage MSCs
   * @{
   */
-
+#ifdef USE_STM32F4_HOST_MSC
 
 /** @defgroup STM32F4_DISCOVERY_MSC_Exported_Handle
  * @{
@@ -46,11 +46,10 @@ static void USBH_UserProcess  (USBH_HandleTypeDef *phost, uint8_t id);
   * @}
   */
 
-#ifdef USE_STM32F4_MSC
 /** @defgroup STM32F4_DISCOVERY_MSC_Functions
   * @{
   */
-void BSP_MSCHost_Init (void)
+void BSP_HostMSC_Init (void)
 {
   MX_FATFS_Init();
 
@@ -61,8 +60,6 @@ void BSP_MSCHost_Init (void)
 
   USBH_Start(&hUsbHostMSC);
 }
-
-#endif /* USE_STM32F4_MSC */
 
 
 /*
@@ -100,6 +97,7 @@ static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
       break;
   }
 }
+#endif /* USE_STM32F4_HOST_MSC */
 
 /**
   * @}

@@ -101,10 +101,12 @@ void HAL_HCD_MspDeInit(HCD_HandleTypeDef* hhcd)
     /**USB_OTG_FS GPIO Configuration
     PA8     ------> USB_OTG_FS_SOF
     PA9     ------> USB_OTG_FS_VBUS
-    PA11     ------> USB_OTG_FS_DM
-    PA12     ------> USB_OTG_FS_DP
+    PA11    ------> USB_OTG_FS_DM
+    PA12    ------> USB_OTG_FS_DP
+    PC0     ------> USB_OTG_FS_PWRSW
     */
     HAL_GPIO_DeInit(GPIOA, GPIO_PIN_8|GPIO_PIN_9|GPIO_PIN_11|GPIO_PIN_12);
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_0);
 
     /* Peripheral interrupt Deinit*/
     HAL_NVIC_DisableIRQ(OTG_FS_IRQn);
@@ -180,7 +182,6 @@ USBH_StatusTypeDef  USBH_LL_Init (USBH_HandleTypeDef *phost)
   hhcd_USB_OTG_FS.Init.dma_enable = DISABLE;
   hhcd_USB_OTG_FS.Init.phy_itface = HCD_PHY_EMBEDDED;
   hhcd_USB_OTG_FS.Init.Sof_enable = ENABLE;
-
   HAL_HCD_Init(&hhcd_USB_OTG_FS);
 
   USBH_LL_SetTimer (phost, HAL_HCD_GetCurrentFrame(&hhcd_USB_OTG_FS));

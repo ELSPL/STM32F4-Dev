@@ -31,6 +31,7 @@
 /** @addtogroup STM32F4_DISCOVERY_MSC
   * @{
   */
+#ifdef USE_STM32F4_HOST_MSC
 
 /** @defgroup STM32F4_DISCOVERY_MSC_Exported_Handle
  * @{
@@ -65,7 +66,7 @@ extern ApplicationTypeDef Appli_state;
   */
 
 /* MSC Initialization function */
-void BSP_MSCHost_Init (void);
+void BSP_HostMSC_Init (void);
 void BSP_USB_HOST_Process(void);
 
 /**
@@ -83,6 +84,8 @@ void BSP_USB_HOST_Process(void);
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* USE_STM32F4_HOST_MSC */
 
 #endif /* __STM32F4_DISCOVERY_MSC_H */
 
