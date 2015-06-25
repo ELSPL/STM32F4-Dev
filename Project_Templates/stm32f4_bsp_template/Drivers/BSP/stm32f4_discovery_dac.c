@@ -21,9 +21,7 @@
 
 DAC_HandleTypeDef hdac_bsp;
 uint8_t SqWaveFlag = SET, SinWaveFlag = SET ;
-uint16_t i=0,y,z;
-float x;
-uint32_t j,deg,Vout,dac[360];
+uint32_t Vout,dac[360];
 
 /**
  * @} STM32F4_DISCOVERY_DAC_Public_Types End
@@ -163,6 +161,7 @@ void BSP_DAC_SquareWave(uint8_t DAC_Channel)
  */
 void BSP_DAC_SawtoothWave(uint8_t DAC_Channel)
 {
+  uint16_t i=0;
   for (i=0;i<=4095;i++)
   {
     HAL_DAC_SetValue(&hdac_bsp,DAC_Channel,DAC_ALIGN_12B_R,i);
@@ -192,6 +191,8 @@ void BSP_DAC_TriangularWave(uint8_t DAC_Channel)
  */
 void BSP_DAC_SineWave(uint8_t DAC_Channel)
 {
+  uint16_t j;
+  uint8_t deg;
   if (SinWaveFlag == SET)
   {
     deg = 1;   // sample at this resolution
