@@ -19,7 +19,7 @@
 /**
  * @} STM32F4_GLOBAL_Variables End
  */
-
+uint8_t WwdgFlag = RESET;
 
 /* Public Functions ----------------------------------------------------------- */
 /** @addtogroup GLOBAL_Public_Functions

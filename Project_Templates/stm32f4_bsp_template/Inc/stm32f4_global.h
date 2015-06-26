@@ -297,7 +297,7 @@ typedef int32_t(*PFI)();
 * @{
 */
 //extern int variable_name;
-
+extern uint8_t WwdgFlag;
 /**
 * @}
 */

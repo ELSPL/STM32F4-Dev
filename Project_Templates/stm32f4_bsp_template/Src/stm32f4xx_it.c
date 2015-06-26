@@ -567,5 +567,17 @@ void TAMP_STAMP_IRQHandler(void)
 #endif /* USE_STM32F4_RTC */
 /********************************************************************************************/
 
+void WWDG_IRQHandler(void)
+{
+  /* USER CODE BEGIN WWDG_IRQn 0 */
+
+  /* USER CODE END WWDG_IRQn 0 */
+  HAL_WWDG_IRQHandler(&hwwdg_bsp);
+  /* USER CODE BEGIN WWDG_IRQn 1 */
+
+  /* USER CODE END WWDG_IRQn 1 */
+}
+
+
 /* USER CODE END 1 */
 /******END OF FILE*******/
