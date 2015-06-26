@@ -40,6 +40,7 @@
 #include "stm32f4_global.h"
 #include "stm32f4_discovery_timer.h"
 #include "stm32f4_discovery.h" // Comment it when On board PB is not used
+#include "stm32f4_discovery_wwdg.h"
 
 #ifdef USE_STM32F4_RTC
 #include "stm32f4_discovery_rtc.h"
