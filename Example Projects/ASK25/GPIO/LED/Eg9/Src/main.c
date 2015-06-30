@@ -116,6 +116,17 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+/**
+ * @brief User GPIO Interrupt Callback
+ * @param GPIO_Pin  This parameter determines interrupt pin.
+ */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if(GPIO_Pin == GPIO_PIN_0)
+  {
+    HAL_GPIO_TogglePin(GPIOD, (1<<12));
+  }
+}
 /* USER CODE END 4 */
 
 #ifdef USE_FULL_ASSERT
