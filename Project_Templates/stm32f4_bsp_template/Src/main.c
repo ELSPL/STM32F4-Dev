@@ -44,6 +44,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+  trace_printf("Hello\n");
   char byte, read[10];
   int check;
   /* USER CODE END 1 */
@@ -62,7 +63,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   BSP_UART_Init(115200);
 
-  trace_printf("Hello\n");
+
 
   BSP_VCP_Init();
 
@@ -118,6 +119,7 @@ void SystemClock_Config(void)
   HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
 
 #ifdef USE_STM32F4_RTC
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_HSE_DIV8;  // Comment this line if you want to use LSI clock
 //  PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;     // Remove comment if you want to use LSI clock
