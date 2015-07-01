@@ -144,17 +144,17 @@ void EXTI0_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
 
-// /**
-//  * @brief User GPIO Interrupt Callback
-//  * @param GPIO_Pin  This parameter determines interrupt pin.
-//  */
-// void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-// {
-//   if(GPIO_Pin == GPIO_PIN_0)
-//   {
-//     HAL_GPIO_TogglePin(GPIOD, (1<<12));
-//   }
-// }
+/**
+ * @brief User GPIO Interrupt Callback
+ * @param GPIO_Pin  This parameter determines interrupt pin.
+ */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if(GPIO_Pin == GPIO_PIN_0)
+  {
+    HAL_GPIO_TogglePin(GPIOD, (1<<12));
+  }
+}
 #endif  /*USE_STM32F4_DISCO*/
 /********************************************************************************************/
 
