@@ -31,7 +31,7 @@ extern "C"
  */
 
 extern DAC_HandleTypeDef hdac_bsp;
-#define PI 3.1415
+#define PI 3.14159
 
 /**
  * @} STM32F4_DISCOVERY_DAC_Public_Types End
@@ -42,7 +42,7 @@ extern DAC_HandleTypeDef hdac_bsp;
  * @{
  */
 /* Initialization functions */
-void BSP_DAC_Init(uint8_t DAC_Channel, uint8_t Alignment,uint16_t Data,uint8_t DAC_Trigger);
+void BSP_DAC_Init(uint8_t DAC_Channel, uint8_t DAC_Trigger);
 void BSP_DAC_MspDeInit(DAC_HandleTypeDef* hdac,uint8_t DAC_Channel);
 
 /* Application specific function */

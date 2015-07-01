@@ -21,7 +21,7 @@
 
 DAC_HandleTypeDef hdac_bsp;
 uint8_t SqWaveFlag = SET, SinWaveFlag = SET ;
-uint32_t Vout,dac[360];
+float Vout,dac[720];
 
 /**
  * @} STM32F4_DISCOVERY_DAC_Public_Types End
@@ -52,22 +52,22 @@ static void BSP_DAC_MspInit(DAC_HandleTypeDef* hdac,uint8_t DAC_Channel)
     PA4     ------> DAC_OUT1
     PA5     ------> DAC_OUT2
     */
+
+    GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
     if (DAC_Channel == DAC_CHANNEL_1)
     {
       GPIO_InitStruct.Pin = GPIO_PIN_4;
-      GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-      GPIO_InitStruct.Pull = GPIO_NOPULL;
       HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     }
     else if (DAC_Channel == DAC_CHANNEL_2)
     {
       GPIO_InitStruct.Pin = GPIO_PIN_5;
-      GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
-      GPIO_InitStruct.Pull = GPIO_NOPULL;
       HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     }
   }
 }
+
 /**
  * @} STM32F4_DISCOVERY_DAC_Private_Functions End
  */
@@ -93,26 +93,21 @@ static void BSP_DAC_MspInit(DAC_HandleTypeDef* hdac,uint8_t DAC_Channel)
  *        @arg DAC_TRIGGER_T7_TRGO
  *        @arg DAC_TRIGGER_T8_TRGO
  *        @arg DAC_TRIGGER_EXT_IT9
- * @param Alignment     Specifies the data alignment
- *        @arg DAC_ALIGN_8B_R: 8bit right data alignment selected
- *        @arg DAC_ALIGN_12B_L: 12bit left data alignment selected
- *        @arg DAC_ALIGN_12B_R: 12bit right data alignment selected
- * @param Data          Data to be loaded in the selected data holding register
  */
-void BSP_DAC_Init(uint8_t DAC_Channel, uint8_t Alignment,uint16_t Data,uint8_t DAC_Trigger)
+void BSP_DAC_Init(uint8_t DAC_Channel, uint8_t DAC_Trigger)
 {
   DAC_ChannelConfTypeDef sConfig;
 
-    /**DAC Initialization
-    */
+  /**DAC Initialization
+   */
   hdac_bsp.Instance = DAC;
   BSP_DAC_MspInit(&hdac_bsp,DAC_Channel);
   HAL_DAC_Init(&hdac_bsp);
 
   if (DAC_Channel == DAC_CHANNEL_1)
   {
-      /**DAC channel OUT1 config
-      */
+     /**DAC channel OUT1 config
+     */
     sConfig.DAC_Trigger = DAC_Trigger;
     sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
     HAL_DAC_ConfigChannel(&hdac_bsp, &sConfig, DAC_Channel);
@@ -125,8 +120,7 @@ void BSP_DAC_Init(uint8_t DAC_Channel, uint8_t Alignment,uint16_t Data,uint8_t D
     sConfig.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;
     HAL_DAC_ConfigChannel(&hdac_bsp, &sConfig, DAC_CHANNEL_2);
   }
-
-  HAL_DAC_SetValue(&hdac_bsp, DAC_Channel, Alignment, Data);
+  /* Start DAC */
   HAL_DAC_Start(&hdac_bsp,DAC_Channel);
 
 }
@@ -191,23 +185,26 @@ void BSP_DAC_TriangularWave(uint8_t DAC_Channel)
  */
 void BSP_DAC_SineWave(uint8_t DAC_Channel)
 {
-  uint16_t j;
-  uint8_t deg;
+  float j;
+  float deg;
+  uint16_t i = 0;
   if (SinWaveFlag == SET)
   {
-    deg = 1;   // sample at this resolution
+    deg = 0.5;   // sample at this resolution
     for(j=0;j<360;j=j+deg)
     {
       Vout = (15+(15*sin((PI/180)*j)));       // Amplitude(1+sin(angle)), amplitude max 3v
-      dac[j] = (Vout*1365)/10;                // max DAC value = 4095
+      dac[i] = (Vout*1365)/10;                // max DAC value = 4095
+      i++;
     }
     SinWaveFlag = RESET;
   }
-  for(j=0;j<360;j=j+deg)
+  for(i=0;i<720;i++)
   {
-    HAL_DAC_SetValue(&hdac_bsp,DAC_Channel,DAC_ALIGN_12B_R,(uint32_t)dac[j]);
+    HAL_DAC_SetValue(&hdac_bsp,DAC_Channel,DAC_ALIGN_12B_R,(uint32_t)dac[i]);
   }
 }
+
 /**
  * @brief Disable the DAC feature by disabling DAC clock
  * @param hdac          DAC handle select
@@ -218,7 +215,6 @@ void BSP_DAC_SineWave(uint8_t DAC_Channel)
  */
 void BSP_DAC_MspDeInit(DAC_HandleTypeDef* hdac,uint8_t DAC_Channel)
 {
-
   if(hdac->Instance==DAC)
   {
     /* Peripheral clock disable */

@@ -19,8 +19,10 @@
  * @{
  */
 
-WWDG_HandleTypeDef hwwdg_bsp;         // window watchdog handle 
-IWDG_HandleTypeDef hiwdg_bsp;         // independent watchdog handle  
+WWDG_HandleTypeDef hwwdg_bsp;         // window watchdog handle
+IWDG_HandleTypeDef hiwdg_bsp;         // independent watchdog handle
+
+uint8_t wwdgflag = RESET;             // Watchdog flag used for wwdg interrupt in user application
 
 /**
  * @} STM32F4_DISCOVERY_WDG_Public_Types End
@@ -44,7 +46,7 @@ static void BSP_WWDG_MspInit(WWDG_HandleTypeDef* hwwdg)
     __WWDG_CLK_ENABLE();
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(WWDG_IRQn, 1, 0);
+    HAL_NVIC_SetPriority(WWDG_IRQn, 7, 0);
     HAL_NVIC_EnableIRQ(WWDG_IRQn);
   }
 }
@@ -71,6 +73,13 @@ static void BSP_WWDG_MspInit(WWDG_HandleTypeDef* hwwdg)
  * @param CounterSize    WWDG free-running downcounter value
  *        @arg value between 80 to 127
  */
+/*********************************************************************************
+ * WWDG clock counter = (PCLK1 (42MHz)/4096)/8) = 1281 Hz (~780 us)
+ * WWDG Window value = 80 means that the WWDG counter should be refreshed only
+ * when the counter is below 80 (and greater than 64) otherwise a reset will
+ * be generated.
+ * WWDG Counter value = 127, WWDG timeout = ~780 us * 64 = 49.9 ms
+ *********************************************************************************/
 void BSP_WWDG_Init(uint16_t WWDG_Prescaler, uint8_t WindowSize, uint8_t CounterSize)
 {
   hwwdg_bsp.Instance = WWDG;
@@ -131,7 +140,7 @@ void BSP_IWDG_Init(uint16_t ResetTime_ms)
       hiwdg_bsp.Init.Reload = ((float)(LSI_VALUE/32000)*ResetTime_ms) - 1;
     }
   }
-  else
+  else if (ResetTime_ms > 4096)
   {
     if (ResetTime_ms < 8192)
     {
@@ -154,6 +163,7 @@ void BSP_IWDG_Init(uint16_t ResetTime_ms)
   /* Start IWDG */
   HAL_IWDG_Start(&hiwdg_bsp);
 }
+
 /**
  * @} STM32F4_DISCOVERY_WDG_Public_Functions End
  */

@@ -16,7 +16,6 @@
  * @{
  */
 
-uint8_t WwdgFlag = RESET;
 uint32_t priviledge_status;
 /**
  * @} STM32F4_GLOBAL_Variables End
@@ -194,8 +193,6 @@ void MPU_Config(void)
 /* @brief Low Power Configuration Function                          */
 /********************************************************************/
 
-
-
 /**********************************************************************************
  *   In Stop mode, all clocks in the 1.2V domain are stopped, the PLL, the HSI,
  *   and the HSE RC oscillators are disabled. Internal SRAM and register contents
@@ -204,13 +201,20 @@ void MPU_Config(void)
 
 /**
  * @brief Low power sleep mode
- * NOTE: This is Low power sleep mode with wakeup button(PA0)
+ * NOTE: This is Low power sleep mode, system can be wake up using any interrupt
  */
-void BSP_Sleepmode_PB(void)
+void BSP_SleepMode(void)
 {
   /* suspand systick */
   HAL_SuspendTick();
+
+/*
+ *  Enters Sleep mode
+ *  PWR_LOWPOWERREGULATOR_ON: SLEEP mode with low power regulator ON
+ *  PWR_SLEEPENTRY_WFI: enter SLEEP mode with WFI instruction
+ */
   HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON,PWR_SLEEPENTRY_WFI);
+
   /* Resume systick */
   HAL_ResumeTick();
 }
@@ -224,7 +228,6 @@ void BSP_Sleepmode_PB(void)
  *  circuitry.
  *********************************************************************************/
 
-
 /**
  * @brief Low Power standby mode
  * @param WakeUptime_ms provide time in 1 to 10 millisecond
@@ -236,6 +239,7 @@ void BSP_StandbyMode_AWU(uint16_t WakeUptime_ms)
 {
   /* Initalize RTC */
   BSP_RTC_Init();
+
   /* Start RTC wakeup timer */
   BSP_RTC_WakeUpTimer_Init(WakeUptime_ms);
 
@@ -262,6 +266,7 @@ void BSP_StandbyMode_AWU(uint16_t WakeUptime_ms)
 void BSP_StandbyMode_PB(void)
 {
   HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
+
   /* Clear standby and wakeup flag */
   __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB | PWR_FLAG_WU);
   HAL_PWR_EnterSTANDBYMode();
@@ -272,29 +277,39 @@ void BSP_StandbyMode_PB(void)
 /********************************************************************/
 
 /**
- * @brief  SVC Handler
+ * To change mode we need to be privilege first
+ * If thread mode is in un-privilege level so we cannot execute privilege/system commands.
+ * By default exception handlers are in privilege level so through
+ * SVC exception we will change the Thread mode to Privilege level.
+ */
+
+/**
+ * @brief  SVC function to change the Thread mode to Privilege level
  */
 void __SVC()
 {
   __ASM volatile ("svc 0x01");
 }
+
 /**
  * @brief Change mode to privilege handler
  */
 void SVC_Handler(void)
 {
-/* Change Thread mode to privileged */
-__set_CONTROL(2);
+  /* Change Thread mode to privileged */
+  __set_CONTROL(2);
 }
+
 /**
  * @brief This function check the privilege mode status
  * @return priviledge_status
  */
-uint8_t BSP_Check_priviledge_status()
+uint8_t BSP_Check_Priviledge_Status(void)
 {
   priviledge_status = __get_CONTROL();
   return (uint8_t)(priviledge_status & ~(THREAD_PRIVILEDGED_MASK));
 }
+
 /**
  * @brief Change the mode privilege to unprivilege
  */
@@ -305,9 +320,5 @@ void BSP_Set_UnprivilegeMode(void)
 /**
  * @} GLOBAL_Public_Functions End
  */
-
-
-
-
 
 /***********************************END OF FILE*********************************/
