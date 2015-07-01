@@ -258,6 +258,18 @@ Region 3 - APB Peripherals:                     0x4000 0000 - 0x4001 FFFF       
 #define MPU_REGION_PRIVILEGED_READ_ONLY          (0x05UL << MPU_RASR_AP_Pos)
 #define MPU_REGION_READ_ONLY                     (0x06UL << MPU_RASR_AP_Pos)
 
+
+/*******************************************************************************//**
+* @brief  Mode Privilege macro Functions
+***********************************************************************************/
+/********************** SYSTEM CALL EXCEPTION *********************/
+
+/* CONTROL register controls the privileged level for software execution
+* when the processor is in Thread mode
+*/
+#define THREAD_PRIVILEGED 0
+#define THREAD_UNPRIVILEGED 1
+#define THREAD_PRIVILEDGED_MASK 0xFFFFFFFE
 /**
 * @}
 */
@@ -297,7 +309,7 @@ typedef int32_t(*PFI)();
 * @{
 */
 //extern int variable_name;
-
+extern uint8_t WwdgFlag;
 /**
 * @}
 */
@@ -323,6 +335,21 @@ void MPU_Disable(void);
 void MPU_Region_Config(uint8_t region_num, uint32_t addr, uint32_t size, uint32_t attr);
 void MPU_Config(void);
 
+/*******************************************************************************//**
+* @brief Low Power mode Function Delcaration
+***********************************************************************************/
+void BSP_Sleepmode_PB(void);
+void BSP_StandbyMode_AWU(uint16_t WakeUptime_ms);
+void BSP_StandbyMode_PB(void);
+
+
+/*******************************************************************************//**
+* @brief  Mode Privilege Functions Delcaration
+***********************************************************************************/
+void __SVC();
+void SVC_Handler(void);
+uint8_t BSP_Check_priviledge_status();
+void BSP_Set_UnprivilegeMode(void);
 /**
  * @} GLOBAL_Public_Functions End
  */

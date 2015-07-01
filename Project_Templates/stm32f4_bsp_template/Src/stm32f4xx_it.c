@@ -40,6 +40,7 @@
 #include "stm32f4_global.h"
 #include "stm32f4_discovery_timer.h"
 #include "stm32f4_discovery.h" // Comment it when On board PB is not used
+#include "stm32f4_discovery_wdg.h"
 
 #ifdef USE_STM32F4_RTC
 #include "stm32f4_discovery_rtc.h"
@@ -566,6 +567,18 @@ void TAMP_STAMP_IRQHandler(void)
 }
 #endif /* USE_STM32F4_RTC */
 /********************************************************************************************/
+
+void WWDG_IRQHandler(void)
+{
+  /* USER CODE BEGIN WWDG_IRQn 0 */
+
+  /* USER CODE END WWDG_IRQn 0 */
+  HAL_WWDG_IRQHandler(&hwwdg_bsp);
+  /* USER CODE BEGIN WWDG_IRQn 1 */
+
+  /* USER CODE END WWDG_IRQn 1 */
+}
+
 
 /* USER CODE END 1 */
 /******END OF FILE*******/

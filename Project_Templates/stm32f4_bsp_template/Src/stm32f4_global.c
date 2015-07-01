@@ -10,12 +10,14 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_global.h"
-
+#include "stm32f4_discovery_rtc.h"
 /* Global Variables ----------------------------------------------------------- */
 /** @addtogroup STM32F4_GLOBAL_Variables
  * @{
  */
 
+uint8_t WwdgFlag = RESET;
+uint32_t priviledge_status;
 /**
  * @} STM32F4_GLOBAL_Variables End
  */
@@ -188,6 +190,118 @@ void MPU_Config(void)
   MPU_Enable();
 }
 
+/********************************************************************/
+/* @brief Low Power Configuration Function                          */
+/********************************************************************/
+
+
+
+/**********************************************************************************
+ *   In Stop mode, all clocks in the 1.2V domain are stopped, the PLL, the HSI,
+ *   and the HSE RC oscillators are disabled. Internal SRAM and register contents
+ *   are preserved.
+ **********************************************************************************/
+
+/**
+ * @brief Low power sleep mode
+ * NOTE: This is Low power sleep mode with wakeup button(PA0)
+ */
+void BSP_Sleepmode_PB(void)
+{
+  /* suspand systick */
+  HAL_SuspendTick();
+  HAL_PWR_EnterSLEEPMode(PWR_LOWPOWERREGULATOR_ON,PWR_SLEEPENTRY_WFI);
+  /* Resume systick */
+  HAL_ResumeTick();
+}
+
+/*********************************************************************************
+ *  The Standby mode allows to achieve the lowest power consumption. It is based
+ *  on the Cortex-M4 deep sleep mode, with the voltage regulator disabled.
+ *  The 1.2V domain is consequently powered off. The PLL, the HSI oscillator and
+ *  the HSE oscillator are also switched off. SRAM and register contents are lost
+ *  except for the RTC registers, RTC backup registers, backup SRAM and Standby
+ *  circuitry.
+ *********************************************************************************/
+
+
+/**
+ * @brief Low Power standby mode
+ * @param WakeUptime_ms provide time in 1 to 10 millisecond
+ *                      and 1 second to  60 seconds (in msec unit)
+ * NOTE: Auto-wake-up (AWU) from low-power mode using RTC wakeup timer
+ *       After RTC wakeup timer interrupt the system will reset
+ */
+void BSP_StandbyMode_AWU(uint16_t WakeUptime_ms)
+{
+  /* Initalize RTC */
+  BSP_RTC_Init();
+  /* Start RTC wakeup timer */
+  BSP_RTC_WakeUpTimer_Init(WakeUptime_ms);
+
+ /**
+  *  Clear all related wakeup flags,
+  *  Re-enable all used wakeup sources,
+  *  Enter the Standby mode.
+  */
+  /* Clear RTC wakeup flag */
+  __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc_bsp,RTC_FLAG_WUTF);
+
+  /* Restart RTC wakeup timer */
+  BSP_RTC_WakeUpTimer_Init(WakeUptime_ms);
+
+  /* Enter Standby mode */
+  HAL_PWR_EnterSTANDBYMode();
+}
+
+/**
+ * @brief Low Power standby mode
+ * NOTE: This is Low power standby mode with wakeup button(PA0)
+ *       After WAKEUP button interrupt the system will reset
+ */
+void BSP_StandbyMode_PB(void)
+{
+  HAL_PWR_EnableWakeUpPin(PWR_WAKEUP_PIN1);
+  /* Clear standby and wakeup flag */
+  __HAL_PWR_CLEAR_FLAG(PWR_FLAG_SB | PWR_FLAG_WU);
+  HAL_PWR_EnterSTANDBYMode();
+}
+
+/********************************************************************/
+/* @brief Mode Privilege Function                                   */
+/********************************************************************/
+
+/**
+ * @brief  SVC Handler
+ */
+void __SVC()
+{
+  __ASM volatile ("svc 0x01");
+}
+/**
+ * @brief Change mode to privilege handler
+ */
+void SVC_Handler(void)
+{
+/* Change Thread mode to privileged */
+__set_CONTROL(2);
+}
+/**
+ * @brief This function check the privilege mode status
+ * @return priviledge_status
+ */
+uint8_t BSP_Check_priviledge_status()
+{
+  priviledge_status = __get_CONTROL();
+  return (uint8_t)(priviledge_status & ~(THREAD_PRIVILEDGED_MASK));
+}
+/**
+ * @brief Change the mode privilege to unprivilege
+ */
+void BSP_Set_UnprivilegeMode(void)
+{
+  __set_CONTROL((priviledge_status & THREAD_PRIVILEDGED_MASK)|THREAD_UNPRIVILEGED);
+}
 /**
  * @} GLOBAL_Public_Functions End
  */

@@ -796,7 +796,7 @@ void BSP_RTC_MspDeInit(RTC_HandleTypeDef* hrtc)
 }
 
 /**
- * @} STM32F4_DISCOVERY_TIMER_Public_Functions End
+ * @} STM32F4_DISCOVERY_RTC_Public_Functions End
  */
 
 /**
