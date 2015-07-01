@@ -148,13 +148,13 @@ void EXTI0_IRQHandler(void)
  * @brief User GPIO Interrupt Callback
  * @param GPIO_Pin  This parameter determines interrupt pin.
  */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  if(GPIO_Pin == GPIO_PIN_0)
-  {
-    HAL_GPIO_TogglePin(GPIOD, (1<<12));
-  }
-}
+//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+//{
+//  if(GPIO_Pin == GPIO_PIN_0)
+//  {
+//    HAL_GPIO_TogglePin(GPIOD, (1<<12));
+//  }
+//}
 #endif  /*USE_STM32F4_DISCO*/
 /********************************************************************************************/
 
@@ -186,25 +186,25 @@ void EXTI9_5_IRQHandler(void)
  * @brief User GPIO Interrupt Callback
  * @param GPIO_Pin  This parameter determines interrupt pin.
  */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  if(GPIO_Pin == GPIO_PIN_4)
-  {
-    HAL_GPIO_TogglePin(GPIOE,(1<<8));
-  }
-  else if(GPIO_Pin == GPIO_PIN_5)
-  {
-    HAL_GPIO_TogglePin(GPIOE,(1<<9));
-  }
-  else if(GPIO_Pin == GPIO_PIN_6)
-  {
-    HAL_GPIO_TogglePin(GPIOE,(1<<10));
-  }
-  else if(GPIO_Pin == GPIO_PIN_7)
-  {
-    HAL_GPIO_TogglePin(GPIOE,(1<<11));
-  }
-}
+//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+//{
+//  if(GPIO_Pin == GPIO_PIN_4)
+//  {
+//    HAL_GPIO_TogglePin(GPIOE,(1<<8));
+//  }
+//  else if(GPIO_Pin == GPIO_PIN_5)
+//  {
+//    HAL_GPIO_TogglePin(GPIOE,(1<<9));
+//  }
+//  else if(GPIO_Pin == GPIO_PIN_6)
+//  {
+//    HAL_GPIO_TogglePin(GPIOE,(1<<10));
+//  }
+//  else if(GPIO_Pin == GPIO_PIN_7)
+//  {
+//    HAL_GPIO_TogglePin(GPIOE,(1<<11));
+//  }
+//}
 #endif
 
 /**

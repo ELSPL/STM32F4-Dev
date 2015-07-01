@@ -309,7 +309,6 @@ typedef int32_t(*PFI)();
 * @{
 */
 //extern int variable_name;
-extern uint8_t WwdgFlag;
 /**
 * @}
 */
@@ -338,7 +337,7 @@ void MPU_Config(void);
 /*******************************************************************************//**
 * @brief Low Power mode Function Delcaration
 ***********************************************************************************/
-void BSP_Sleepmode_PB(void);
+void BSP_SleepMode(void);
 void BSP_StandbyMode_AWU(uint16_t WakeUptime_ms);
 void BSP_StandbyMode_PB(void);
 
@@ -348,7 +347,7 @@ void BSP_StandbyMode_PB(void);
 ***********************************************************************************/
 void __SVC();
 void SVC_Handler(void);
-uint8_t BSP_Check_priviledge_status();
+uint8_t BSP_Check_Priviledge_Status(void)
 void BSP_Set_UnprivilegeMode(void);
 /**
  * @} GLOBAL_Public_Functions End

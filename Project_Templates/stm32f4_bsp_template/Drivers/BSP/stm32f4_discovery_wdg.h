@@ -31,8 +31,9 @@ extern "C"
  */
 
 extern WWDG_HandleTypeDef hwwdg_bsp;     // window watchdog handle
-extern IWDG_HandleTypeDef hiwdg_bsp;	 // independent watchdog handle	
+extern IWDG_HandleTypeDef hiwdg_bsp;	 // independent watchdog handle
 
+extern uint8_t wwdgflag;
 /**
  * @} STM32F4_DISCOVERY_WDG_Public_Types End
  */
