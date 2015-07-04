@@ -347,7 +347,7 @@ void BSP_StandbyMode_PB(void);
 ***********************************************************************************/
 void __SVC();
 void SVC_Handler(void);
-uint8_t BSP_Check_Priviledge_Status(void)
+uint8_t BSP_Check_Priviledge_Status(void);
 void BSP_Set_UnprivilegeMode(void);
 /**
  * @} GLOBAL_Public_Functions End

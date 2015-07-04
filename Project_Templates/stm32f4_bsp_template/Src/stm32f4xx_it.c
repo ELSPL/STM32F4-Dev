@@ -39,8 +39,9 @@
 /* USER CODE BEGIN 0 */
 #include "stm32f4_global.h"
 #include "stm32f4_discovery_timer.h"
-#include "stm32f4_discovery.h" // Comment it when On board PB is not used
+#include "stm32f4_discovery.h"
 #include "stm32f4_discovery_wdg.h"
+#include "stm32f4_discovery_adc.h"
 
 #ifdef USE_STM32F4_RTC
 #include "stm32f4_discovery_rtc.h"
@@ -579,6 +580,31 @@ void WWDG_IRQHandler(void)
   /* USER CODE END WWDG_IRQn 1 */
 }
 
+/**
+* @brief This function handles ADC1, ADC2 and ADC3 global interrupts.
+*/
+void ADC_IRQHandler(void)
+{
+  if(hadc_bsp1.Instance == ADC1)
+  {
+    HAL_ADC_IRQHandler(&hadc_bsp1);
+  }
+  else if(hadc_bsp2.Instance == ADC2)
+  {
+    HAL_ADC_IRQHandler(&hadc_bsp2);
+  }
+  else if(hadc_bsp3.Instance == ADC3)
+  {
+    HAL_ADC_IRQHandler(&hadc_bsp3);
+  }
+}
 
+/**
+* @brief This function handles DMA2 Stream0 global interrupt.
+*/
+void DMA2_Stream0_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_adcbsp1);
+}
 /* USER CODE END 1 */
 /******END OF FILE*******/
