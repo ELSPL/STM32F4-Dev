@@ -349,16 +349,17 @@ void BSP_ADC_Init(ADC_HandleTypeDef* hadc, ADC_PortPin_Typedef ADC_channel, uint
     */
     sConfig.Channel = ADC_Channel[ADC_channel];
     sConfig.Rank = rank;
-    sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
-    HAL_ADC_ConfigChannel(hadc, &sConfig);
-
     if(multimode_type == Temperature_Measure)
     {
-      sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
-      sConfig.Rank = 1;
       sConfig.SamplingTime = ADC_SAMPLETIME_144CYCLES;
-      HAL_ADC_ConfigChannel(hadc, &sConfig);
     }
+    else
+    {
+      sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+    }
+
+    HAL_ADC_ConfigChannel(hadc, &sConfig);
+
   }
   else if (hadc == &hadc_bsp2)
   {
