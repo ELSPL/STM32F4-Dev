@@ -54,7 +54,8 @@ typedef enum
   ADC_IN12,
   ADC_IN13,
   ADC_IN14,
-  ADC_IN15
+  ADC_IN15,
+  ADC_IN16
 }ADC_PortPin_Typedef;
 
 typedef enum
@@ -62,7 +63,8 @@ typedef enum
   Indepenent_Mode,
   Dual_Mode_REGSIMULT,
   Dual_Mode_INTERL,
-  Triple_Mode_INTERL
+  Triple_Mode_INTERL,
+  Temperature_Measure
 }ADC_ModeSel_Typedef;
 
 extern uint16_t GPIO_Pin[16];
@@ -75,11 +77,9 @@ extern uint32_t ADC_Chnl[19];
 /** @defgroup STM32F4_DISCOVERY_ADC_Public_Functions
  * @{
  */
-void BSP_ADC_Init(ADC_HandleTypeDef* hadc,ADC_PortPin_Typedef ADC_channel, uint8_t rank, ADC_ModeSel_Typedef Multimode_Type);
+void BSP_ADC_Init(ADC_HandleTypeDef* hadc,ADC_PortPin_Typedef ADC_channel, uint8_t rank, ADC_ModeSel_Typedef multimode_type);
 void BSP_ADC_WDG_Init(ADC_HandleTypeDef* hadc, uint16_t highthreshold, uint16_t lowthreshold);
-void BSP_ADC_TemperatureMeasure_Init(void);
 float BSP_ADC_Get_Temperature(void);
-void BSP_ADC_DMA_Init(void);
 void BSP_ADC_MspDeInit(ADC_HandleTypeDef* hadc,ADC_PortPin_Typedef ADC_pin);
 
 /**
