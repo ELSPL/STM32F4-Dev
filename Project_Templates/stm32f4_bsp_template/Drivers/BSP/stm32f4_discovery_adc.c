@@ -69,7 +69,8 @@ uint16_t GPIO_Pin[16] = { GPIO_PIN_0,GPIO_PIN_1,GPIO_PIN_2,GPIO_PIN_3,GPIO_PIN_4
  * @param ADC_pin   Select ADC port pin
  *        @arg ADC_IN0 to ADC_IN15 for ADC1 and ADC2
  * NOTE        For ADC3 ADC_IN0 to ADC_IN3 and ADC_IN10 to ADC_IN13
- *            /**ADC2 GPIO Configuration
+ *
+ *   ADC2 GPIO Configuration
  *
  *   PA0-WKUP     ------> ADC2_IN0
  *   PA1     ------> ADC2_IN1
@@ -189,11 +190,25 @@ static void BSP_ADC_MspInit(ADC_HandleTypeDef* hadc,ADC_PortPin_Typedef ADC_pin)
 }
 
 /**
+ * @brief DMA initialization for ADC
+ */
+static void BSP_ADC_DMA_Init(void)
+{
+  /* DMA controller clock enable */
+  __DMA2_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 1, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+}
+
+
+/**
  * @brief This function is used for sorting the value
  * @param A   Array data to be sorted
  * @param L   length of array
  */
-void BSP_Sort_values(uint16_t A[], uint8_t L)
+static void BSP_Sort_Values(uint16_t A[], uint8_t L)
 {
   uint8_t i = 0;
   uint8_t status = 1;
@@ -213,10 +228,10 @@ void BSP_Sort_values(uint16_t A[], uint8_t L)
     }
   }
 }
+
 /**
  * @} STM32F4_DISCOVERY_ADC_Private_Functions End
  */
-
 
 /* Public Functions ----------------------------------------------------------- */
 /** @addtogroup STM32F4_DISCOVERY_ADC_Public_Functions
@@ -239,6 +254,7 @@ void BSP_Sort_values(uint16_t A[], uint8_t L)
  *        @arg Dual_Mode_REGSIMULT
  *        @arg Dual_Mode_INTERL
  *        @arg Triple_Mode_INTERL
+ *        @arg Temperature_Measure ADC1 channel 16 is used to measure the Temperature
  */
 
 /************************************************************************************
@@ -267,7 +283,7 @@ void BSP_Sort_values(uint16_t A[], uint8_t L)
  *       different channel so that it can scan one channel after another.
  ***********************************************************************************/
 
-void BSP_ADC_Init(ADC_HandleTypeDef* hadc, ADC_PortPin_Typedef ADC_channel, uint8_t rank, ADC_ModeSel_Typedef Multimode_Type)
+void BSP_ADC_Init(ADC_HandleTypeDef* hadc, ADC_PortPin_Typedef ADC_channel, uint8_t rank, ADC_ModeSel_Typedef multimode_type)
 {
   ADC_ChannelConfTypeDef sConfig;
   if (hadc == &hadc_bsp1)
@@ -275,7 +291,14 @@ void BSP_ADC_Init(ADC_HandleTypeDef* hadc, ADC_PortPin_Typedef ADC_channel, uint
     /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
     */
     hadc->Instance = ADC1;
-    hadc->Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+    if (multimode_type == Temperature_Measure)
+    {
+      hadc->Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV8;
+    }
+    else
+    {
+      hadc->Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV2;
+    }
     hadc->Init.Resolution = ADC_RESOLUTION12b;
     hadc->Init.ScanConvMode = ENABLE;
     hadc->Init.ContinuousConvMode = ENABLE;
@@ -286,28 +309,39 @@ void BSP_ADC_Init(ADC_HandleTypeDef* hadc, ADC_PortPin_Typedef ADC_channel, uint
     hadc->Init.DMAContinuousRequests = ENABLE;
     hadc->Init.EOCSelection = EOC_SEQ_CONV;
 
+    if (multimode_type == Dual_Mode_REGSIMULT || multimode_type == Dual_Mode_INTERL || multimode_type == Triple_Mode_INTERL)
+    {
+      BSP_ADC_DMA_Init();   // Initialize DMA Clock and interrupt
+    }
     BSP_ADC_MspInit(hadc,ADC_channel);
     HAL_ADC_Init(hadc);
 
-    ADC_MultiModeTypeDef multimode;
     /**Configure the ADC multi-mode
      */
-    multimode.DMAAccessMode = ADC_DMAACCESSMODE_2;
-    multimode.TwoSamplingDelay = ADC_TWOSAMPLINGDELAY_5CYCLES;
+    ADC_MultiModeTypeDef multimode;
 
-    if (Multimode_Type == Dual_Mode_REGSIMULT )
+    if (multimode_type == Dual_Mode_REGSIMULT )
     {
       multimode.Mode = ADC_DUALMODE_REGSIMULT;
+      multimode.DMAAccessMode = ADC_DMAACCESSMODE_2;
+      multimode.TwoSamplingDelay = ADC_TWOSAMPLINGDELAY_5CYCLES;
+
       HAL_ADCEx_MultiModeConfigChannel(hadc, &multimode);
     }
-    else if (Multimode_Type == Dual_Mode_INTERL)
+    else if (multimode_type == Dual_Mode_INTERL)
     {
       multimode.Mode = ADC_DUALMODE_INTERL;
+      multimode.DMAAccessMode = ADC_DMAACCESSMODE_2;
+      multimode.TwoSamplingDelay = ADC_TWOSAMPLINGDELAY_5CYCLES;
+
       HAL_ADCEx_MultiModeConfigChannel(hadc, &multimode);
     }
-    else if (Multimode_Type == Triple_Mode_INTERL)
+    else if (multimode_type == Triple_Mode_INTERL)
     {
       multimode.Mode = ADC_TRIPLEMODE_INTERL;
+      multimode.DMAAccessMode = ADC_DMAACCESSMODE_2;
+      multimode.TwoSamplingDelay = ADC_TWOSAMPLINGDELAY_5CYCLES;
+
       HAL_ADCEx_MultiModeConfigChannel(hadc, &multimode);
     }
 
@@ -315,8 +349,17 @@ void BSP_ADC_Init(ADC_HandleTypeDef* hadc, ADC_PortPin_Typedef ADC_channel, uint
     */
     sConfig.Channel = ADC_Channel[ADC_channel];
     sConfig.Rank = rank;
-    sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+    if(multimode_type == Temperature_Measure)
+    {
+      sConfig.SamplingTime = ADC_SAMPLETIME_144CYCLES;
+    }
+    else
+    {
+      sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+    }
+
     HAL_ADC_ConfigChannel(hadc, &sConfig);
+
   }
   else if (hadc == &hadc_bsp2)
   {
@@ -334,28 +377,39 @@ void BSP_ADC_Init(ADC_HandleTypeDef* hadc, ADC_PortPin_Typedef ADC_channel, uint
     hadc->Init.DMAContinuousRequests = ENABLE;
     hadc->Init.EOCSelection = EOC_SEQ_CONV;
 
+    if (multimode_type == Dual_Mode_REGSIMULT || multimode_type == Dual_Mode_INTERL || multimode_type == Triple_Mode_INTERL)
+    {
+      BSP_ADC_DMA_Init();   // Initialize DMA Clock and interrupt
+    }
     BSP_ADC_MspInit(hadc,ADC_channel);
     HAL_ADC_Init(hadc);
 
     ADC_MultiModeTypeDef multimode;
     /**Configure the ADC multi-mode
      */
-    multimode.DMAAccessMode = ADC_DMAACCESSMODE_2;
-    multimode.TwoSamplingDelay = ADC_TWOSAMPLINGDELAY_5CYCLES;
 
-    if (Multimode_Type == Dual_Mode_REGSIMULT )
+    if (multimode_type == Dual_Mode_REGSIMULT )
     {
       multimode.Mode = ADC_DUALMODE_REGSIMULT;
+      multimode.DMAAccessMode = ADC_DMAACCESSMODE_2;
+      multimode.TwoSamplingDelay = ADC_TWOSAMPLINGDELAY_5CYCLES;
+
       HAL_ADCEx_MultiModeConfigChannel(hadc, &multimode);
     }
-    else if (Multimode_Type == Dual_Mode_INTERL)
+    else if (multimode_type == Dual_Mode_INTERL)
     {
       multimode.Mode = ADC_DUALMODE_INTERL;
+      multimode.DMAAccessMode = ADC_DMAACCESSMODE_2;
+      multimode.TwoSamplingDelay = ADC_TWOSAMPLINGDELAY_5CYCLES;
+
       HAL_ADCEx_MultiModeConfigChannel(hadc, &multimode);
     }
-    else if (Multimode_Type == Triple_Mode_INTERL)
+    else if (multimode_type == Triple_Mode_INTERL)
     {
       multimode.Mode = ADC_TRIPLEMODE_INTERL;
+      multimode.DMAAccessMode = ADC_DMAACCESSMODE_2;
+      multimode.TwoSamplingDelay = ADC_TWOSAMPLINGDELAY_5CYCLES;
+
       HAL_ADCEx_MultiModeConfigChannel(hadc, &multimode);
     }
 
@@ -382,18 +436,20 @@ void BSP_ADC_Init(ADC_HandleTypeDef* hadc, ADC_PortPin_Typedef ADC_channel, uint
     hadc->Init.DMAContinuousRequests = ENABLE;
     hadc->Init.EOCSelection = EOC_SEQ_CONV;
 
+    BSP_ADC_DMA_Init();   // Initialize DMA Clock and interrupt
     BSP_ADC_MspInit(hadc,ADC_channel);
     HAL_ADC_Init(hadc);
 
     ADC_MultiModeTypeDef multimode;
     /**Configure the ADC multi-mode
      */
-    multimode.DMAAccessMode = ADC_DMAACCESSMODE_2;
-    multimode.TwoSamplingDelay = ADC_TWOSAMPLINGDELAY_5CYCLES;
 
-    if (Multimode_Type == Triple_Mode_INTERL)
+    if (multimode_type == Triple_Mode_INTERL)
     {
       multimode.Mode = ADC_TRIPLEMODE_INTERL;
+      multimode.DMAAccessMode = ADC_DMAACCESSMODE_2;
+      multimode.TwoSamplingDelay = ADC_TWOSAMPLINGDELAY_5CYCLES;
+
       HAL_ADCEx_MultiModeConfigChannel(hadc, &multimode);
     }
 
@@ -429,44 +485,6 @@ void BSP_ADC_WDG_Init(ADC_HandleTypeDef* hadc, uint16_t highthreshold, uint16_t 
 }
 
 /**
- * @brief ADC Temperature measure initialization function
- */
-void BSP_ADC_TemperatureMeasure_Init(void)
-{
-
-  ADC_ChannelConfTypeDef sConfig;
-
-    /**Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
-    */
-  hadc_bsp1.Instance = ADC1;
-  hadc_bsp1.Init.ClockPrescaler = ADC_CLOCKPRESCALER_PCLK_DIV8;
-  hadc_bsp1.Init.Resolution = ADC_RESOLUTION12b;
-  hadc_bsp1.Init.ScanConvMode = DISABLE;
-  hadc_bsp1.Init.ContinuousConvMode = ENABLE;
-  hadc_bsp1.Init.DiscontinuousConvMode = DISABLE;
-  hadc_bsp1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-  hadc_bsp1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-  hadc_bsp1.Init.NbrOfConversion = 1;
-  hadc_bsp1.Init.DMAContinuousRequests = DISABLE;
-  hadc_bsp1.Init.EOCSelection = EOC_SEQ_CONV;
-
-  /* Peripheral clock enable */
-  __ADC1_CLK_ENABLE();
-
-  HAL_ADC_Init(&hadc_bsp1);
-
-    /**Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-    */
-  sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
-  sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_144CYCLES;
-  HAL_ADC_ConfigChannel(&hadc_bsp1, &sConfig);
-
-  /* Start measuring Temperature */
-  HAL_ADC_Start(&hadc_bsp1);
-}
-
-/**
  * @brief Temperature calculation
  * @return temperature value in DegCelcius
  */
@@ -477,18 +495,16 @@ float BSP_ADC_Get_Temperature(void)
   for(i = 0; i < NS; i++)
   {
     Sample_ADC_Raw[i] = HAL_ADC_GetValue(&hadc_bsp1);
-
   }
 
-  BSP_Sort_values(Sample_ADC_Raw, NS);
-
+  BSP_Sort_Values(Sample_ADC_Raw, NS);
 
   ADC_Average = 0;
   for(i = SR/2; i < NS-SR/2; i++)
   {
     ADC_Average += Sample_ADC_Raw[i];
-
   }
+
   ADC_Average /= (NS-SR);
 
   Temp += ADC_Average;
@@ -502,20 +518,6 @@ float BSP_ADC_Get_Temperature(void)
   return Temp;
 }
 
-
-
-/**
- * @brief DMA initialization for ADC
- */
-void BSP_ADC_DMA_Init(void)
-{
-  /* DMA controller clock enable */
-  __DMA2_CLK_ENABLE();
-
-  /* DMA interrupt init */
-  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 1, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
-}
 
 /**
  * @brief This function disable the ADC and its port pin by disabling the ADC clock and GPIO clock
