@@ -112,6 +112,18 @@ void SysTick_Handler(void)
 
 /* USER CODE BEGIN 1 */
 /********************************************************************************************/
+
+/**
+* @brief This function handles Memory management fault.
+*/
+void MemManage_Handler(void)
+{
+  while (1)
+  {
+      HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_SET);
+  }
+}
+
 #ifdef USE_STM32F4_DISCO
 
 /**
