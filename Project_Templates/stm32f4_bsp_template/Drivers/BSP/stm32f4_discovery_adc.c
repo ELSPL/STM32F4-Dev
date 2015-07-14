@@ -473,7 +473,7 @@ void BSP_ADC_Init(ADC_HandleTypeDef* hadc, ADC_PortPin_Typedef ADC_channel, uint
  * @param lowthreshold    ADC analog watchdog Low threshold value.
  *                        This value must be 12bit value(Min 0)
  */
-void BSP_ADC_WDG_Init(ADC_HandleTypeDef* hadc, uint16_t highthreshold, uint16_t lowthreshold)
+void BSP_ADCThreshold_Init(ADC_HandleTypeDef* hadc, uint16_t highthreshold, uint16_t lowthreshold)
 {
   ADC_AnalogWDGConfTypeDef AnalogWDGConfig;
 

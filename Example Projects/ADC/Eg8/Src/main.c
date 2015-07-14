@@ -59,7 +59,7 @@ int main(void)
   MX_GPIO_Init();
 
   /* USER CODE BEGIN 2 */
- 
+
    /* Initialize ADC */
   BSP_ADC_Init(&hadc_bsp2,ADC_IN2,1,Indepenent_Mode);
 
@@ -67,7 +67,7 @@ int main(void)
   BSP_LED_Init(LED5);
 
   /* Initialize ADC Watchdog */
-  BSP_ADC_WDG_Init(&hadc_bsp2,3412, 682);
+  BSP_ADCThreshold_Init(&hadc_bsp2,3412, 682);
 
   /* Start ADC */
   HAL_ADC_Start_IT(&hadc_bsp2);
