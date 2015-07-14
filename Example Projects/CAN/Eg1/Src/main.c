@@ -1,7 +1,6 @@
 /******************************************************************//**
 * @file   main.c
-* @brief  Write a program to trigger Low Threshold interrupt (ADC watchdog) when adc value crosses low threshold and
-*         High Threshold interrupt (ADC watchdog) when adc value crosses high threshold
+* @brief  Write a program to Write and Read Byte of I2C based EEPROM (ASK-25A)
 * @version  v1.0
 * @date   Apr 16, 2015
 * @author Bhavin R. Darji
@@ -14,11 +13,13 @@
 
 /* USER CODE BEGIN Includes */
 #include "stm32f4_global.h"
-//#include "stm32f4_discovery_uart.h"
+#include "stm32f4_discovery_uart.h"
 //#include "stm32f4_discovery_vcp.h"
-#include "stm32f4_discovery.h"
+//#include "stm32f4_discovery.h"
 //#include "stm32f4_ask25.h"
-#include "stm32f4_discovery_adc.h"
+#include "stm32f4_discovery_can.h"
+
+
 
 /* USER CODE END Includes */
 
@@ -36,7 +37,7 @@ void SystemClock_Config(void);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-uint32_t ConvertedValue = 0;
+
 /* USER CODE END 0 */
 
 int main(void)
@@ -44,7 +45,6 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
   trace_printf("Hello\n");
-
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -60,17 +60,45 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
 
-   /* Initialize ADC */
-  BSP_ADC_Init(&hadc_bsp2,ADC_IN2,1,Indepenent_Mode);
+  /* Inintialize CAN */
+  BSP_CAN_Init(&hcan_bsp1,CAN_MODE_LOOPBACK,FIFO0);
 
-  /* Initialize LED */
-  BSP_LED_Init(LED5);
+  hcan_bsp1.pTxMsg->StdId = 0x11;
+  hcan_bsp1.pTxMsg->RTR = CAN_RTR_DATA;
+  hcan_bsp1.pTxMsg->IDE = CAN_ID_STD;
+  hcan_bsp1.pTxMsg->DLC = 2;
+  hcan_bsp1.pTxMsg->Data[0] = 0xCA;
+  hcan_bsp1.pTxMsg->Data[1] = 0xFE;
 
-  /* Initialize ADC Watchdog */
-  BSP_ADC_Thr_Init(&hadc_bsp2,3412, 682);
-
-  /* Start ADC */
-  HAL_ADC_Start_IT(&hadc_bsp2);
+  if(HAL_CAN_Transmit_IT(&hcan_bsp1) != HAL_OK)
+  {
+    /* Transmission Error */
+    while(1);
+  }
+  HAL_Delay(1);
+  
+  if(HAL_CAN_Receive_IT(&hcan_bsp1, CAN_FIFO0) == HAL_OK)
+  {
+    if (hcan_bsp1.pRxMsg->StdId != 0x11)
+    {
+      return HAL_ERROR;
+    }
+    if (hcan_bsp1.pRxMsg->IDE != CAN_ID_STD)
+    {
+      return HAL_ERROR;
+    }
+    if (hcan_bsp1.pRxMsg->DLC != 2)
+    {
+      return HAL_ERROR;
+    }
+    if ((hcan_bsp1.pRxMsg->Data[1]<<8 | hcan_bsp1.pRxMsg->Data[0]) != 0xFECA)
+    {
+      return HAL_ERROR;
+    }
+    trace_printf("STDID: %x\n\r", hcan_bsp1.pRxMsg->StdId);
+    trace_printf("DLC: %d\n\r", hcan_bsp1.pRxMsg->DLC);
+    trace_printf("DATA: %x\n\r", hcan_bsp1.pRxMsg->Data[1]<<8 | hcan_bsp1.pRxMsg->Data[0]);
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -103,10 +131,10 @@ void SystemClock_Config(void)
 //  RCC_OscInitStruct.LSIState = RCC_LSI_ON;        // uncomment when LSI Clock is used for RTC
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 5;
-  RCC_OscInitStruct.PLL.PLLN = 210;
+  RCC_OscInitStruct.PLL.PLLM = 8;
+  RCC_OscInitStruct.PLL.PLLN = 336;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
+  RCC_OscInitStruct.PLL.PLLQ = 7;
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1
@@ -118,6 +146,7 @@ void SystemClock_Config(void)
   HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
 
 #ifdef USE_STM32F4_RTC
+  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
   PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_HSE_DIV8;  // Comment this line if you want to use LSI clock
 //  PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSI;     // Remove comment if you want to use LSI clock
@@ -126,20 +155,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-  ConvertedValue = HAL_ADC_GetValue(&hadc_bsp2);
-  trace_printf("%04d\n\r",ConvertedValue);
-  HAL_Delay(500);
-}
-void HAL_ADC_LevelOutOfWindowCallback(ADC_HandleTypeDef* hadc)
-{
-  uint8_t i = 0;
-  for (i = 0; i < 3; i++)
-  {
-    BSP_LED_Toggle(LED5);
-  }
-}
+
 /* USER CODE END 4 */
 
 #ifdef USE_FULL_ASSERT

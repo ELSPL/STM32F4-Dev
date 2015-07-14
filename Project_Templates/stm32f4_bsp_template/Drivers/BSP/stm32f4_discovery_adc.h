@@ -78,7 +78,7 @@ extern uint32_t ADC_Chnl[19];
  * @{
  */
 void BSP_ADC_Init(ADC_HandleTypeDef* hadc,ADC_PortPin_Typedef ADC_channel, uint8_t rank, ADC_ModeSel_Typedef multimode_type);
-void BSP_ADC_WDG_Init(ADC_HandleTypeDef* hadc, uint16_t highthreshold, uint16_t lowthreshold);
+void BSP_ADC_Thr_Init(ADC_HandleTypeDef* hadc, uint16_t highthreshold, uint16_t lowthreshold);
 float BSP_ADC_Get_Temperature(void);
 void BSP_ADC_MspDeInit(ADC_HandleTypeDef* hadc,ADC_PortPin_Typedef ADC_pin);
 
