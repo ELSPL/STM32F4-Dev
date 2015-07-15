@@ -42,8 +42,8 @@ Purpose     : Display controller initialization
   *
   *        http://www.st.com/software_license_agreement_liberty_v2
   *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   * See the License for the specific language governing permissions and
   * limitations under the License.
@@ -62,7 +62,7 @@ Purpose     : Display controller initialization
 //
 // Define the available number of bytes available for the GUI
 //
-#define GUI_NUMBYTES  0x200000
+#define GUI_NUMBYTES  (1024) * 64   // x KByte
 
 /*********************************************************************
 *
@@ -90,7 +90,7 @@ void GUI_X_Config(void) {
   //
   // Set default font
   //
-  GUI_SetDefaultFont(GUI_FONT_6X8);
+//  GUI_SetDefaultFont(GUI_FONT_6X8);
 }
 
 /*************************** End of file ****************************/

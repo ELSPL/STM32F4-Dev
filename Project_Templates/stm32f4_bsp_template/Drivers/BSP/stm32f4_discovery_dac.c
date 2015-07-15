@@ -8,6 +8,7 @@
 
 /* Includes ------------------------------------------------------------------- */
 #include "stm32f4_discovery_dac.h"
+#include "math.h"
 
 /* Peripheral group ----------------------------------------------------------- */
 /** @addtogroup STM32F4_DISCOVERY_DAC

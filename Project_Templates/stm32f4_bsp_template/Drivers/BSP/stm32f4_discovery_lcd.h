@@ -34,11 +34,35 @@
 /** @defgroup STM32F4_DISCOVERY_LCD_Exported_Types
   * @{
   */
+typedef enum
+{
+ LCD_OK = 0,
+ LCD_ERROR = 1,
+ LCD_TIMEOUT = 2
+}LCD_StatusTypeDef;
+
+typedef struct
+{
+ uint32_t TextColor;
+ uint32_t BackColor;
+ sFONT    *pFont;
+}LCD_DrawPropTypeDef;
+
+typedef enum
+{
+  CENTER_MODE             = 0x01,    /* center mode */
+  RIGHT_MODE              = 0x02,    /* right mode  */
+  LEFT_MODE               = 0x03,    /* left mode   */
+}Text_AlignModeTypdef;
+
 typedef struct
 {
   int16_t X;
   int16_t Y;
 } Point, * pPoint;
+
+extern LCD_DrawPropTypeDef DrawProp;
+
 /**
   * @}
   */
@@ -96,6 +120,15 @@ typedef struct
 
 #define ENTRY_MODE_DEFAULT 0x6830
 #define ENTRY_MODE_BMP     0x6810
+#define ENTRY_MODE_HINC    0x6830
+#define ENTRY_MODE_VINC    0x6838
+
+// According to STM324xG Eval EmWin
+//#define ENTRY_MODE_DEFAULT 0x6818
+//#define ENTRY_MODE_BMP     0x6808
+//#define ENTRY_MODE_HINC    0x6818
+//#define ENTRY_MODE_VINC    0x6810
+
 #define MAKE_ENTRY_MODE(x) ((ENTRY_MODE_DEFAULT & 0xFF00) | (x))
 
 /**
@@ -138,16 +171,35 @@ typedef struct
 /**
   * @brief  LCD color
   */
-#define LCD_COLOR_WHITE          0xFFFF
-#define LCD_COLOR_BLACK          0x0000
-#define LCD_COLOR_GREY           0xF7DE
-#define LCD_COLOR_BLUE           0x001F
-#define LCD_COLOR_BLUE2          0x051F
-#define LCD_COLOR_RED            0xF800
-#define LCD_COLOR_MAGENTA        0xF81F
-#define LCD_COLOR_GREEN          0x07E0
-#define LCD_COLOR_CYAN           0x7FFF
-#define LCD_COLOR_YELLOW         0xFFE0
+
+#define LCD_COLOR_BLUE          0x001F
+#define LCD_COLOR_BLUE2         0x051F
+#define LCD_COLOR_GREEN         0x07E0
+#define LCD_COLOR_RED           0xF800
+#define LCD_COLOR_CYAN          0x07FF
+#define LCD_COLOR_CYAN2         0x7FFF
+#define LCD_COLOR_MAGENTA       0xF81F
+#define LCD_COLOR_YELLOW        0xFFE0
+#define LCD_COLOR_LIGHTBLUE     0x841F
+#define LCD_COLOR_LIGHTGREEN    0x87F0
+#define LCD_COLOR_LIGHTRED      0xFC10
+#define LCD_COLOR_LIGHTCYAN     0x87FF
+#define LCD_COLOR_LIGHTMAGENTA  0xFC1F
+#define LCD_COLOR_LIGHTYELLOW   0xFFF0
+#define LCD_COLOR_DARKBLUE      0x0010
+#define LCD_COLOR_DARKGREEN     0x0400
+#define LCD_COLOR_DARKRED       0x8000
+#define LCD_COLOR_DARKCYAN      0x0410
+#define LCD_COLOR_DARKMAGENTA   0x8010
+#define LCD_COLOR_DARKYELLOW    0x8400
+#define LCD_COLOR_WHITE         0xFFFF
+#define LCD_COLOR_LIGHTGRAY     0xD69A
+#define LCD_COLOR_GRAY          0x8410
+#define LCD_COLOR_GREY2         0xF7DE
+#define LCD_COLOR_DARKGRAY      0x4208
+#define LCD_COLOR_BLACK         0x0000
+#define LCD_COLOR_BROWN         0xA145
+#define LCD_COLOR_ORANGE        0xFD20
 
 #define White		          LCD_COLOR_WHITE
 #define Black		          LCD_COLOR_BLACK
@@ -204,7 +256,7 @@ typedef struct
 /**
   * @brief LCD default font
   */
-#define LCD_DEFAULT_FONT         Font16x24
+#define LCD_DEFAULT_FONT         Font24
 
 /**
   * @brief  LCD Direction
@@ -226,6 +278,7 @@ typedef struct
   * @{
   */
 #define ASSEMBLE_RGB(R ,G, B)    ((((R)& 0xF8) << 8) | (((G) & 0xFC) << 3) | (((B) & 0xF8) >> 3))
+
 /**
   * @}
   */
@@ -234,47 +287,44 @@ typedef struct
   * @{
   */
 
-void LCD_DeInit(void);
-void STM32f4_Discovery_LCD_Init(void);
-void LCD_PutPixel(int16_t x, int16_t y);
-void LCD_RGB_Test(void);
-void LCD_SetColors(__IO uint16_t _TextColor, __IO uint16_t _BackColor);
-void LCD_GetColors(__IO uint16_t *_TextColor, __IO uint16_t *_BackColor);
-void LCD_SetTextColor(__IO uint16_t Color);
-void LCD_SetBackColor(__IO uint16_t Color);
-void LCD_ClearLine(uint16_t Line);
-void LCD_Clear(uint16_t Color);
-void LCD_SetCursor(uint16_t Xpos, uint16_t Ypos);
-void LCD_DrawChar(uint16_t Xpos, uint16_t Ypos, const uint16_t *c);
-void LCD_DisplayChar(uint16_t Line, uint16_t Column, uint8_t Ascii);
-void LCD_SetFont(sFONT *fonts);
-sFONT *LCD_GetFont(void);
-void LCD_DisplayStringLine(uint16_t Line, uint8_t *ptr);
-void LCD_SetDisplayWindow(uint16_t Xpos, uint16_t Ypos, uint16_t Height, uint16_t Width);
-void LCD_WindowModeDisable(void);
-void LCD_DrawLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length, uint8_t Direction);
-void LCD_DrawRect(uint16_t Xpos, uint16_t Ypos, uint8_t Height, uint16_t Width);
-void LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
-void LCD_DrawMonoPict(const uint32_t *Pict);
-void LCD_WriteBMP(uint32_t BmpAddress);
-void LCD_DrawUniLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
-void LCD_DrawFullRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height);
-void LCD_DrawFullCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
-void LCD_PolyLine(pPoint Points, uint16_t PointCount);
-void LCD_PolyLineRelative(pPoint Points, uint16_t PointCount);
-void LCD_ClosedPolyLine(pPoint Points, uint16_t PointCount);
-void LCD_ClosedPolyLineRelative(pPoint Points, uint16_t PointCount);
-void LCD_FillPolyLine(pPoint Points, uint16_t PointCount);
+void BSP_LCD_DeInit(void);
 
-/* Basic TFT functions */
-void LCD_WriteReg(uint8_t LCD_Reg, uint16_t LCD_RegValue);
-uint16_t LCD_ReadReg(uint8_t LCD_Reg);
-void LCD_WriteRAM_Prepare(void);
-void LCD_WriteRAM(uint16_t RGB_Code);
-uint16_t LCD_ReadRAM(void);
-void LCD_PowerOn(void);
-void LCD_DisplayOn(void);
-void LCD_DisplayOff(void);
+uint8_t BSP_LCD_Init(void);
+uint32_t BSP_LCD_GetXSize(void);
+uint32_t BSP_LCD_GetYSize(void);
+
+uint16_t BSP_LCD_GetTextColor(void);
+uint16_t BSP_LCD_GetBackColor(void);
+sFONT *BSP_LCD_GetFont(void);
+void BSP_LCD_SetTextColor(uint16_t Color);
+void BSP_LCD_SetBackColor(uint16_t Color);
+void BSP_LCD_SetFont(sFONT *fonts);
+
+void BSP_LCD_Clear(uint16_t Color);
+void BSP_LCD_ClearStringLine(uint16_t Line);
+void BSP_LCD_DisplayChar(uint16_t Column, uint16_t Line, uint8_t Ascii);
+void BSP_LCD_DisplayStringAt(uint16_t Xpos, uint16_t Ypos, uint8_t *Text, Text_AlignModeTypdef Mode);
+void BSP_LCD_DisplayStringAtLine(uint16_t Line, uint8_t *ptr);
+
+uint16_t BSP_LCD_ReadPixel(uint16_t Xpos, uint16_t Ypos);
+void BSP_LCD_DrawPixel(uint16_t Xpos, uint16_t Ypos, uint16_t RGB_Code);
+void BSP_LCD_DrawHLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length);
+void BSP_LCD_DrawVLine(uint16_t Xpos, uint16_t Ypos, uint16_t Length);
+void BSP_LCD_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
+void BSP_LCD_DrawRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height);
+void BSP_LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
+void BSP_LCD_DrawPolygon(pPoint Points, uint16_t PointCount);
+void BSP_LCD_DrawEllipse(int Xpos, int Ypos, int XRadius, int YRadius);
+void BSP_LCD_DrawBitmap(uint16_t Xpos, uint16_t Ypos, uint8_t *pbmp);
+void BSP_LCD_DrawRGBImage(uint16_t Xpos, uint16_t Ypos, uint16_t Xsize, uint16_t Ysize, uint8_t *pdata);
+void BSP_LCD_DrawMonoPict(const uint32_t *Pict); //extra
+void BSP_LCD_FillRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height);
+void BSP_LCD_FillCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
+void BSP_LCD_FillPolygon(pPoint Points, uint16_t PointCount);
+void BSP_LCD_FillEllipse(int Xpos, int Ypos, int XRadius, int YRadius);
+
+void BSP_LCD_DisplayOn(void);
+void BSP_LCD_DisplayOff(void);
 
 /**
   * @}

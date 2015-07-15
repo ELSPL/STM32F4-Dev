@@ -42,6 +42,7 @@
 #include "stm32f4_discovery.h"
 #include "stm32f4_discovery_wdg.h"
 #include "stm32f4_discovery_adc.h"
+#include "GUI.h"
 
 #ifdef USE_STM32F4_RTC
 #include "stm32f4_discovery_rtc.h"
@@ -74,8 +75,8 @@
 #include "stm32f4_ask25.h"
 #endif
 
-#ifdef USE_STM32F4_TFT
-#include "stm32f4_discovery_tsc.h"
+#ifdef USE_STM32F4_TSC
+#include "stm32f4_discovery_ts_cal.h"
 #endif
 
 #ifdef USE_STM32F4_CAMERA
@@ -86,6 +87,10 @@
 #if (VCP_SEL && DEVICE_HID_SEL)
   #error Both VCP and HID are active, Only one can work at a time, so remove any definition.
 #endif
+
+/* External variables --------------------------------------------------------*/
+extern volatile GUI_TIMER_TIME OS_TimeMS;
+
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -101,6 +106,8 @@ void SysTick_Handler(void)
 {
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
+
+  OS_TimeMS++; // EmWin Ticks
 }
 
 /******************************************************************************/

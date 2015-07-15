@@ -188,7 +188,7 @@ typedef enum
                                 I2C1 Mode
 *******************************************************************************/
 #define   AUDIO_SEL       DISABLE      // Specify the type of interface
-#define   CAMERA_SEL      ENABLE
+#define   CAMERA_TSC_SEL      ENABLE
 
 /******************************************************************************
                             I2C1 Mode validation
@@ -199,8 +199,8 @@ typedef enum
 
 #if AUDIO_SEL
   #define AUDIO_MODE
-#elif CAMERA_SEL
-  #define CAMERA_MODE
+#elif CAMERA_TSC_SEL
+  #define CAMERA_TSC_MODE
 #else
   #error i2c1 Mode not defined in BSP
 #endif
@@ -211,9 +211,10 @@ typedef enum
 #ifdef AUDIO_MODE
  #define BSP_I2C_SPEED                            100000
 #endif /* AUDIO_MODE */
-#ifdef CAMERA_MODE
- #define BSP_I2C_SPEED                             30000
-#endif /* CAMERA_MODE */
+#ifdef CAMERA_TSC_MODE
+// #define BSP_I2C_SPEED                             30000 //old config for camera
+ #define BSP_I2C_SPEED                            100000
+#endif /* CAMERA__TSC_MODE */
 #endif /* BSP_I2C_SPEED */
 
 /* I2C peripheral configuration defines (control interface of the audio codec) */
@@ -225,7 +226,7 @@ typedef enum
 #ifdef AUDIO_MODE
 #define DISCOVERY_I2Cx_SCL_PIN                    GPIO_PIN_6
 #endif
-#ifdef CAMERA_MODE
+#ifdef CAMERA_TSC_MODE
 #define DISCOVERY_I2Cx_SCL_PIN                    GPIO_PIN_8
 #endif
 #define DISCOVERY_I2Cx_SDA_PIN                    GPIO_PIN_9
@@ -286,6 +287,11 @@ typedef enum
 #define AUDIO_RESET_GPIO_CLK_ENABLE()         __GPIOD_CLK_ENABLE()
 #define AUDIO_RESET_PIN                       GPIO_PIN_4
 #define AUDIO_RESET_GPIO                      GPIOD
+
+/*############################### TFT ######################################*/
+#define TS_I2C_ADDRESS                        0x82
+
+
 /**
   * @}
   */

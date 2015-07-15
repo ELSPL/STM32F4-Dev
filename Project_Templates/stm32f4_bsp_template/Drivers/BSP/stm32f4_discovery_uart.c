@@ -423,7 +423,7 @@ HAL_StatusTypeDef uprintf(const char *format, ...)
   uint8_t hex[]= "0123456789ABCDEF";
   uint32_t width_dec[10] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000};
   uint32_t width_hex[10] = { 0x1, 0x10, 0x100, 0x1000, 0x10000, 0x100000, 0x1000000, 0x10000000};
-  uint32_t temp;
+  uint8_t temp;
 
   int8_t format_flag, fill_char;
   uint32_t u_val, div_val;

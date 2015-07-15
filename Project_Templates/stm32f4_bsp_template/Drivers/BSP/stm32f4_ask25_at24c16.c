@@ -10,6 +10,7 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_ask25_at24c16.h"
+#include "stm32f4_discovery_vcp.h"
 
 /** @addtogroup BSP
   * @{
