@@ -108,6 +108,9 @@ uint32_t SpixTimeout = SPIx_TIMEOUT_MAX;    /*<! Value of Timeout when SPI commu
 static SPI_HandleTypeDef    SpiHandle;
 static I2C_HandleTypeDef    I2cHandle;
 
+DMA_HandleTypeDef hdma_i2c1_tx;
+DMA_HandleTypeDef hdma_i2c1_rx;
+
 DCMI_HandleTypeDef hdcmi_camera;
 DMA_HandleTypeDef hdma_dcmi;
 /**
@@ -132,6 +135,11 @@ static HAL_StatusTypeDef I2Cx_WriteMultiple(uint8_t Addr, uint16_t Reg, uint16_t
 static void     I2Cx_MspInit(void);
 static void     I2Cx_Error(uint8_t Addr);
 static void     I2Cx_ITConfig(void);
+static void     I2Cx_DMA_Init(I2C_HandleTypeDef* hi2c);
+static HAL_StatusTypeDef I2Cx_WriteData_DMA(uint8_t Addr, uint8_t Reg, uint8_t Value);
+static uint8_t  I2Cx_ReadData_DMA(uint8_t Addr, uint8_t Reg);
+static HAL_StatusTypeDef I2Cx_ReadMultiple_DMA(uint8_t Addr, uint16_t Reg, uint8_t *Buffer, uint16_t Length);
+
 
 static void     SPIx_Init(void);
 static void     SPIx_MspInit(void);
@@ -609,9 +617,129 @@ static HAL_StatusTypeDef I2Cx_WriteMultiple(uint8_t Addr, uint16_t Reg, uint16_t
   return status;
 }
 
-/***************************** I2C Routines for Camera ************************/
+/***************************** I2C Routines for TSC ************************/
+/**
+ * @brief Initialize DMA for I2C for TouchScreen
+ * @param hi2c  I2cHandle
+ */
+static void I2Cx_DMA_Init(I2C_HandleTypeDef* hi2c)
+{
+  /* DMA controller clock enable */
+  __DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  HAL_NVIC_SetPriority(DMA1_Stream6_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream6_IRQn);
+  HAL_NVIC_SetPriority(DMA1_Stream0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Stream0_IRQn);
+
+  /* Peripheral DMA init*/
+  hdma_i2c1_tx.Instance = DMA1_Stream6;
+  hdma_i2c1_tx.Init.Channel = DMA_CHANNEL_1;
+  hdma_i2c1_tx.Init.Direction = DMA_MEMORY_TO_PERIPH;
+  hdma_i2c1_tx.Init.PeriphInc = DMA_PINC_DISABLE;
+  hdma_i2c1_tx.Init.MemInc = DMA_MINC_ENABLE;
+  hdma_i2c1_tx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+  hdma_i2c1_tx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+  hdma_i2c1_tx.Init.Mode = DMA_NORMAL;
+  hdma_i2c1_tx.Init.Priority = DMA_PRIORITY_LOW;
+  hdma_i2c1_tx.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+  hdma_i2c1_tx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_1QUARTERFULL;
+  hdma_i2c1_tx.Init.MemBurst = DMA_MBURST_SINGLE;
+  hdma_i2c1_tx.Init.PeriphBurst = DMA_PBURST_SINGLE;
+  HAL_DMA_Init(&hdma_i2c1_tx);
+
+  __HAL_LINKDMA(hi2c,hdmatx,hdma_i2c1_tx);
+
+  hdma_i2c1_rx.Instance = DMA1_Stream0;
+  hdma_i2c1_rx.Init.Channel = DMA_CHANNEL_1;
+  hdma_i2c1_rx.Init.Direction = DMA_PERIPH_TO_MEMORY;
+  hdma_i2c1_rx.Init.PeriphInc = DMA_PINC_DISABLE;
+  hdma_i2c1_rx.Init.MemInc = DMA_MINC_ENABLE;
+  hdma_i2c1_rx.Init.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+  hdma_i2c1_rx.Init.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+  hdma_i2c1_rx.Init.Mode = DMA_NORMAL;
+  hdma_i2c1_rx.Init.Priority = DMA_PRIORITY_LOW;
+  hdma_i2c1_rx.Init.FIFOMode = DMA_FIFOMODE_ENABLE;
+  hdma_i2c1_rx.Init.FIFOThreshold = DMA_FIFO_THRESHOLD_1QUARTERFULL;
+  hdma_i2c1_rx.Init.MemBurst = DMA_MBURST_SINGLE;
+  hdma_i2c1_rx.Init.PeriphBurst = DMA_PBURST_SINGLE;
+  HAL_DMA_Init(&hdma_i2c1_rx);
+
+  __HAL_LINKDMA(hi2c,hdmarx,hdma_i2c1_rx);
+}
 
 
+/**
+  * @brief  Write a value in a register of the device through DMA BUS.
+  * @param  Addr: Device address on BUS Bus.
+  * @param  Reg: The target register address to write
+  * @param  Value: The target register value to be written
+  * @retval HAL status
+  */
+static HAL_StatusTypeDef I2Cx_WriteData_DMA(uint8_t Addr, uint8_t Reg, uint8_t Value)
+{
+  HAL_StatusTypeDef status = HAL_OK;
+
+  status = HAL_I2C_Mem_Write_DMA(&I2cHandle, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT, &Value, 1);
+  HAL_Delay(1);
+
+  /* Check the communication status */
+  if(status != HAL_OK)
+  {
+    /* Execute user timeout callback */
+    I2Cx_Error(Addr);
+  }
+
+  return status;
+}
+
+/**
+  * @brief  Read a register of the device through DMA BUS
+  * @param  Addr: Device address on BUS
+  * @param  Reg: The target register address to read
+  * @retval HAL status
+  */
+static uint8_t  I2Cx_ReadData_DMA(uint8_t Addr, uint8_t Reg)
+{
+  HAL_StatusTypeDef status = HAL_OK;
+  uint8_t value = 0;
+
+  status = HAL_I2C_Mem_Read_DMA(&I2cHandle, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT, &value, 1);
+  HAL_Delay(1);
+
+  /* Check the communication status */
+  if(status != HAL_OK)
+  {
+    /* Execute user timeout callback */
+    I2Cx_Error(Addr);
+  }
+  return value;
+}
+
+/**
+  * @brief  Reads multiple data on I2C DMA Bus.
+  * @param  Addr: I2C address
+  * @param  Reg: Reg address
+  * @param  Buffer: Pointer to data buffer
+  * @param  Length: Length of the data
+  * @retval Number of read data
+  */
+static HAL_StatusTypeDef I2Cx_ReadMultiple_DMA(uint8_t Addr, uint16_t Reg, uint8_t *Buffer, uint16_t Length)
+{
+  HAL_StatusTypeDef status = HAL_OK;
+
+  status = HAL_I2C_Mem_Read_DMA(&I2cHandle, Addr, (uint16_t)Reg, I2C_MEMADD_SIZE_8BIT, Buffer, Length);
+  HAL_Delay(1);
+
+  /* Check the communication status */
+  if(status != HAL_OK)
+  {
+    /* I2C error occured */
+    I2Cx_Error(Addr);
+  }
+  return status;
+}
 
 /*******************************************************************************
                                LINK OPERATIONS
@@ -860,6 +988,7 @@ void CAMERA_Delay(uint32_t Delay)
   */
 void IOE_Init(void)
 {
+  I2Cx_DMA_Init(&I2cHandle);
   I2Cx_Init();
 }
 
@@ -882,7 +1011,7 @@ void IOE_ITConfig(void)
   */
 void IOE_Write(uint8_t Addr, uint8_t Reg, uint8_t Value)
 {
-  I2Cx_WriteData(Addr, Reg, Value);
+  I2Cx_WriteData_DMA(Addr, Reg, Value);
 }
 
 /**
@@ -893,7 +1022,7 @@ void IOE_Write(uint8_t Addr, uint8_t Reg, uint8_t Value)
   */
 uint8_t IOE_Read(uint8_t Addr, uint8_t Reg)
 {
-  return I2Cx_ReadData(Addr, Reg);
+  return I2Cx_ReadData_DMA(Addr, Reg);
 }
 
 /**
@@ -906,7 +1035,7 @@ uint8_t IOE_Read(uint8_t Addr, uint8_t Reg)
   */
 uint16_t IOE_ReadMultiple(uint8_t Addr, uint8_t Reg, uint8_t *Buffer, uint16_t Length)
 {
- return I2Cx_ReadMultiple(Addr, Reg, I2C_MEMADD_SIZE_8BIT, Buffer, Length);
+ return I2Cx_ReadMultiple_DMA(Addr, Reg, Buffer, Length);
 }
 
 /**

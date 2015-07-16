@@ -300,7 +300,7 @@ void DMA2_Stream1_IRQHandler(void)
 /********************************************************************************************/
 
 
-#ifdef USE_STM32F4_TFT
+#ifdef USE_STM32F4_TSC
 /**
 * @brief This function handles DMA1 Stream6 global interrupt.
 */
