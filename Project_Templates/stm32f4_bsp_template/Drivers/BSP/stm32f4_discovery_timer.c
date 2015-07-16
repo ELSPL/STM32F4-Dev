@@ -290,7 +290,7 @@ static void BSP_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_c
     __TIM7_CLK_ENABLE();
 
     /* Peripheral interrupt init*/
-    HAL_NVIC_SetPriority(TIM7_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(TIM7_IRQn, 6, 0);
     HAL_NVIC_EnableIRQ(TIM7_IRQn);
   }
   else if(htim_base->Instance==TIM8)
