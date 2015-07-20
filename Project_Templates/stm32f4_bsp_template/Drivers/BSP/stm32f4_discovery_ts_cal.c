@@ -84,6 +84,12 @@
 static TS_DrvTypeDef *ts_driver;
 static uint16_t ts_x_boundary, ts_y_boundary;
 static uint8_t  ts_orientation;
+
+MATRIX_Type cmatrix;
+TS_StateTypeDef gTouch;
+__IO uint8_t TReady=FALSE;
+__IO uint8_t CalTouch=TRUE;
+
 /**
   * @}
   */
@@ -91,6 +97,9 @@ static uint8_t  ts_orientation;
 /** @defgroup STM32F4_DISCOVERY_TS_CAL_Private_Function_Prototypes
   * @{
   */
+uint8_t BSP_TS_SetCalibrationMatrix(TS_StateTypeDef *displayPtr, TS_StateTypeDef *screenPtr, MATRIX_Type *matrixPtr);
+uint8_t BSP_TS_Cal_Values(TS_StateTypeDef *displayPtr, MATRIX_Type *matrixPtr);
+
 /**
   * @}
   */
@@ -216,6 +225,230 @@ void BSP_TS_ITClear(void)
 {
   ts_driver->ClearIT(TS_I2C_ADDRESS);
 }
+
+
+/********************************************************************//**
+* @brief Touch Screen Calibration
+**********************************************************************/
+
+/**
+ * @brief
+ * @param matrixPtr
+ */
+void BSP_TS_Cal_Init(MATRIX_Type *matrixPtr)
+{
+  uint8_t n;
+  MATRIX_Type matrix[4],avgmatrix;
+  TS_StateTypeDef RTouch;
+  TS_StateTypeDef screenSample[5];
+  TS_StateTypeDef displaySample[5] =  {
+      {  20,  20 },
+      { 300,  20 },
+      { 300, 220 },
+      {  20, 220 },
+      { 160, 120 },
+  };
+
+  TS_StateTypeDef displaytriangle1[3] = {displaySample[0],displaySample[4],displaySample[1]};
+  TS_StateTypeDef displaytriangle2[3] = {displaySample[1],displaySample[4],displaySample[2]};
+  TS_StateTypeDef displaytriangle3[3] = {displaySample[2],displaySample[4],displaySample[3]};
+  TS_StateTypeDef displaytriangle4[3] = {displaySample[3],displaySample[4],displaySample[0]};
+
+  BSP_LCD_Clear(White); //Clear Screen
+
+  // For 5 Ref Points
+  for(n=0; n<5; n++)
+  {
+    switch (n) {
+      case 0:
+        BSP_LCD_SetTextColor(Red);
+        BSP_LCD_DrawCircle(20,20,3);
+        break;
+
+      case 1:
+        BSP_LCD_SetTextColor(Red);
+        BSP_LCD_DrawCircle(300,20,3);
+        break;
+
+      case 2:
+        BSP_LCD_SetTextColor(Red);
+        BSP_LCD_DrawCircle(300,220,3);
+        break;
+
+      case 3:
+        BSP_LCD_SetTextColor(Red);
+        BSP_LCD_DrawCircle(20,220,3);
+        break;
+
+      case 4:
+        BSP_LCD_SetTextColor(Red);
+        BSP_LCD_DrawCircle(160,120,3);
+        break;
+
+      default:
+        break;
+    }
+
+    while(TReady == FALSE);
+    HAL_Delay(2000);
+
+    screenSample[n].x = gTouch.x;
+    screenSample[n].y = gTouch.y;
+    TReady = FALSE;
+  }
+
+  CalTouch=FALSE;
+
+  TS_StateTypeDef screentriangle1[3] = {screenSample[0],screenSample[4],screenSample[1]};
+  TS_StateTypeDef screentriangle2[3] = {screenSample[1],screenSample[4],screenSample[2]};
+  TS_StateTypeDef screentriangle3[3] = {screenSample[2],screenSample[4],screenSample[3]};
+  TS_StateTypeDef screentriangle4[3] = {screenSample[3],screenSample[4],screenSample[0]};
+
+
+  BSP_TS_SetCalibrationMatrix(displaytriangle1, screentriangle1, &matrix[0]);
+  BSP_TS_SetCalibrationMatrix(displaytriangle2, screentriangle2, &matrix[1]);
+  BSP_TS_SetCalibrationMatrix(displaytriangle3, screentriangle3, &matrix[2]);
+  BSP_TS_SetCalibrationMatrix(displaytriangle4, screentriangle4, &matrix[3]);
+
+
+  matrixPtr->An = ( matrix[0].An + matrix[1].An + matrix[2].An + matrix[3].An ) / 4;
+  matrixPtr->Bn = ( matrix[0].Bn + matrix[1].Bn + matrix[2].Bn + matrix[3].Bn ) / 4;
+  matrixPtr->Cn = ( matrix[0].Cn + matrix[1].Cn + matrix[2].Cn + matrix[3].Cn ) / 4;
+  matrixPtr->Dn = ( matrix[0].Dn + matrix[1].Dn + matrix[2].Dn + matrix[3].Dn ) / 4;
+  matrixPtr->En = ( matrix[0].En + matrix[1].En + matrix[2].En + matrix[3].En ) / 4;
+  matrixPtr->Fn = ( matrix[0].Fn + matrix[1].Fn + matrix[2].Fn + matrix[3].Fn ) / 4;
+  matrixPtr->Divider = ( matrix[0].Divider + matrix[1].Divider + matrix[2].Divider + matrix[3].Divider ) / 4;
+
+  BSP_LCD_Clear(White);
+}
+
+
+/**
+ * @brief
+ * @param displayPtr
+ * @param screenPtr
+ * @param matrixPtr
+ * @return
+ */
+uint8_t BSP_TS_SetCalibrationMatrix(TS_StateTypeDef *displayPtr, TS_StateTypeDef *screenPtr, MATRIX_Type *matrixPtr)
+{
+  uint8_t retValue = TS_OK;
+
+  matrixPtr->Divider = ((screenPtr[0].x - screenPtr[2].x) * (screenPtr[1].y - screenPtr[2].y)) -
+      ((screenPtr[1].x - screenPtr[2].x) * (screenPtr[0].y - screenPtr[2].y));
+
+  if(matrixPtr->Divider == 0)
+  {
+    retValue = TS_ERROR;
+  }
+  else
+  {
+    matrixPtr->An = ((displayPtr[0].x - displayPtr[2].x) * (screenPtr[1].y - screenPtr[2].y)) -
+        ((displayPtr[1].x - displayPtr[2].x) * (screenPtr[0].y - screenPtr[2].y));
+
+    matrixPtr->Bn = ((screenPtr[0].x - screenPtr[2].x) * (displayPtr[1].x - displayPtr[2].x)) -
+        ((displayPtr[0].x - displayPtr[2].x) * (screenPtr[1].x - screenPtr[2].x));
+
+    matrixPtr->Cn = (screenPtr[2].x * displayPtr[1].x - screenPtr[1].x * displayPtr[2].x) * screenPtr[0].y +
+        (screenPtr[0].x * displayPtr[2].x - screenPtr[2].x * displayPtr[0].x) * screenPtr[1].y +
+        (screenPtr[1].x * displayPtr[0].x - screenPtr[0].x * displayPtr[1].x) * screenPtr[2].y;
+
+    matrixPtr->Dn = ((displayPtr[0].y - displayPtr[2].y) * (screenPtr[1].y - screenPtr[2].y)) -
+        ((displayPtr[1].y - displayPtr[2].y) * (screenPtr[0].y - screenPtr[2].y));
+
+    matrixPtr->En = ((screenPtr[0].x - screenPtr[2].x) * (displayPtr[1].y - displayPtr[2].y)) -
+        ((displayPtr[0].y - displayPtr[2].y) * (screenPtr[1].x - screenPtr[2].x));
+
+    matrixPtr->Fn = (screenPtr[2].x * displayPtr[1].y - screenPtr[1].x * displayPtr[2].y) * screenPtr[0].y +
+        (screenPtr[0].x * displayPtr[2].y - screenPtr[2].x * displayPtr[0].y) * screenPtr[1].y +
+        (screenPtr[1].x * displayPtr[0].y - screenPtr[0].x * displayPtr[1].y) * screenPtr[2].y;
+  }
+
+  return(retValue);
+} /* end of setCalibrationMatrix() */
+
+
+/**
+ * @brief
+ * @param displayPtr
+ * @param matrixPtr
+ * @return
+ */
+uint8_t BSP_TS_Cal_Values(TS_StateTypeDef *displayPtr, MATRIX_Type *matrixPtr)
+{
+  int  retValue = TS_OK;
+  TS_StateTypeDef RTouchn;
+
+  BSP_TS_GetState(&RTouchn);
+  displayPtr->z = RTouchn.z;
+
+  if(matrixPtr->Divider != 0)
+  {
+    /* Operation order is important since we are doing integer */
+    /*  math. Make sure you add all terms together before      */
+    /*  dividing, so that the remainder is not rounded off     */
+    /*  prematurely.                                           */
+
+    displayPtr->x = ( (matrixPtr->An * RTouchn.x) +
+        (matrixPtr->Bn * RTouchn.y) +
+        matrixPtr->Cn
+    ) / matrixPtr->Divider;
+
+    displayPtr->y = ( (matrixPtr->Dn * RTouchn.x) +
+        (matrixPtr->En * RTouchn.y) +
+        matrixPtr->Fn
+    ) / matrixPtr->Divider;
+  }
+  else
+  {
+    retValue = TS_ERROR;
+  }
+
+  return(retValue);
+} /* end of getDisplayPoint() */
+
+
+/**
+ * @brief User GPIO Interrupt Callback
+ * @param GPIO_Pin  This parameter determines interrupt pin.
+ */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+{
+  if (GPIO_Pin == GPIO_PIN_13)
+  {
+    TS_StateTypeDef Touch;
+    uint8_t INT=0;
+
+    INT = BSP_TS_ITGetStatus();
+
+    if((INT & 0x02) == 0x02)
+    {
+      if (CalTouch == 0)
+      {
+        BSP_TS_Cal_Values(&Touch, &cmatrix);
+        if ((Touch.x <= 320) && (Touch.y <= 240))
+        {
+          gTouch.x = Touch.x;
+          gTouch.y = Touch.y;
+        }
+        TReady = TRUE;
+      }
+      else if (CalTouch == 1)
+      {
+        BSP_TS_GetState(&Touch);
+        if ((Touch.x != 0) && (Touch.y != 0))
+        {
+          gTouch.x = Touch.x;
+          gTouch.y = Touch.y;
+        }
+        TReady = TRUE;
+      }
+
+      BSP_TS_ITClear();
+    }
+  }
+}
+
 
 /**
   * @}

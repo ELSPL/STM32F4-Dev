@@ -562,11 +562,11 @@ static void I2Cx_ITConfig(void)
   GPIO_InitStruct.Pin   = GPIO_PIN_13;
   GPIO_InitStruct.Pull  = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-  GPIO_InitStruct.Mode  = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Mode  = GPIO_MODE_IT_RISING_FALLING;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /* Set priority and Enable GPIO EXTI Interrupt */
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 6, 0);
   HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
