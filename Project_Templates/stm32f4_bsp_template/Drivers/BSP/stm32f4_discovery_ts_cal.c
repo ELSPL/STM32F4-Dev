@@ -408,46 +408,46 @@ uint8_t BSP_TS_Cal_Values(TS_StateTypeDef *displayPtr, MATRIX_Type *matrixPtr)
 } /* end of getDisplayPoint() */
 
 
-/**
- * @brief User GPIO Interrupt Callback
- * @param GPIO_Pin  This parameter determines interrupt pin.
- */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-  if (GPIO_Pin == GPIO_PIN_13)
-  {
-    TS_StateTypeDef Touch;
-    uint8_t INT=0;
-
-    INT = BSP_TS_ITGetStatus();
-
-    if((INT & 0x02) == 0x02)
-    {
-      if (CalTouch == 0)
-      {
-        BSP_TS_Cal_Values(&Touch, &cmatrix);
-        if ((Touch.x <= 320) && (Touch.y <= 240))
-        {
-          gTouch.x = Touch.x;
-          gTouch.y = Touch.y;
-        }
-        TReady = TRUE;
-      }
-      else if (CalTouch == 1)
-      {
-        BSP_TS_GetState(&Touch);
-        if ((Touch.x != 0) && (Touch.y != 0))
-        {
-          gTouch.x = Touch.x;
-          gTouch.y = Touch.y;
-        }
-        TReady = TRUE;
-      }
-
-      BSP_TS_ITClear();
-    }
-  }
-}
+///**
+// * @brief User GPIO Interrupt Callback
+// * @param GPIO_Pin  This parameter determines interrupt pin.
+// */
+//void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+//{
+//  if (GPIO_Pin == GPIO_PIN_13)
+//  {
+//    TS_StateTypeDef Touch;
+//    uint8_t INT=0;
+//
+//    INT = BSP_TS_ITGetStatus();
+//
+//    if((INT & 0x02) == 0x02)
+//    {
+//      if (CalTouch == 0)
+//      {
+//        BSP_TS_Cal_Values(&Touch, &cmatrix);
+//        if ((Touch.x <= 320) && (Touch.y <= 240))
+//        {
+//          gTouch.x = Touch.x;
+//          gTouch.y = Touch.y;
+//        }
+//        TReady = TRUE;
+//      }
+//      else if (CalTouch == 1)
+//      {
+//        BSP_TS_GetState(&Touch);
+//        if ((Touch.x != 0) && (Touch.y != 0))
+//        {
+//          gTouch.x = Touch.x;
+//          gTouch.y = Touch.y;
+//        }
+//        TReady = TRUE;
+//      }
+//
+//      BSP_TS_ITClear(); // Use only FIFO Threshold Interrupt
+//    }
+//  }
+//}
 
 
 /**
