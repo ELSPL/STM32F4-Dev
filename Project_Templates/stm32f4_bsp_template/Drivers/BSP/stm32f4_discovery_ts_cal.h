@@ -21,6 +21,7 @@
 #include "stm32f4_discovery.h"
 /* Include IOExpander(STMPE811) component Driver */
 #include "../Components/stmpe811/stmpe811.h"
+#include "stm32f4_discovery_lcd.h"
 
 /** @addtogroup BSP
   * @{
@@ -37,6 +38,21 @@
 /** @defgroup STM32F4_DISCOVERY_TS_CAL_Exported_Types
   * @{
   */
+
+typedef struct
+{
+ /* This arrangement of values facilitates
+  * calculations within getDisplayPoint()
+  */
+ int32_t An;       /* A = An/Divider */
+ int32_t Bn;         /* B = Bn/Divider */
+ int32_t Cn;         /* C = Cn/Divider */
+ int32_t Dn;         /* D = Dn/Divider */
+ int32_t En;         /* E = En/Divider */
+ int32_t Fn;         /* F = Fn/Divider */
+ int32_t Divider ;
+} MATRIX_Type;
+
 typedef struct
 {
   uint16_t TouchDetected;
@@ -44,6 +60,7 @@ typedef struct
   uint16_t y;
   uint16_t z;
 }TS_StateTypeDef;
+
 /**
   * @}
   */
@@ -62,6 +79,12 @@ typedef enum
   TS_ERROR    = 0x01,
   TS_TIMEOUT  = 0x02
 }TS_StatusTypeDef;
+
+extern MATRIX_Type cmatrix;
+extern TS_StateTypeDef gTouch;
+extern __IO uint8_t TReady;
+extern __IO uint8_t CalTouch;
+
 /**
   * @}
   */
@@ -81,6 +104,9 @@ uint8_t BSP_TS_GetState(TS_StateTypeDef *TS_State);
 uint8_t BSP_TS_ITConfig(void);
 uint8_t BSP_TS_ITGetStatus(void);
 void    BSP_TS_ITClear(void);
+
+void BSP_TS_Cal_Init(MATRIX_Type *matrixPtr);
+
 
 /**
   * @}

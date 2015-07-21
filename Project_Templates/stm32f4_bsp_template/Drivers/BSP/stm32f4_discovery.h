@@ -64,6 +64,9 @@
   * @{
   */
 
+extern DMA_HandleTypeDef hdma_i2c1_tx;
+extern DMA_HandleTypeDef hdma_i2c1_rx;
+
 typedef enum
 {
   LED4 = 0,

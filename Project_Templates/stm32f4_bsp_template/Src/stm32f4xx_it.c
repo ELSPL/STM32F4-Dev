@@ -300,7 +300,7 @@ void DMA2_Stream1_IRQHandler(void)
 /********************************************************************************************/
 
 
-#ifdef USE_STM32F4_TFT
+#ifdef USE_STM32F4_TSC
 /**
 * @brief This function handles DMA1 Stream6 global interrupt.
 */
@@ -315,6 +315,14 @@ void DMA1_Stream6_IRQHandler(void)
 void DMA1_Stream0_IRQHandler(void)
 {
   HAL_DMA_IRQHandler(&hdma_i2c1_rx);
+}
+
+/**
+* @brief This function handles EXTI Line[15:10] interrupts.
+*/
+void EXTI15_10_IRQHandler(void)
+{
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_13);
 }
 #endif  /* USE_STM32F4_TFT */
 /********************************************************************************************/
