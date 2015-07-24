@@ -1,7 +1,6 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_it.c
-  * @date    03/04/2015 16:19:56
   * @brief   Interrupt Service Routines.
   ******************************************************************************
   *
@@ -51,8 +50,14 @@
 */
 void SysTick_Handler(void)
 {
+  /* USER CODE BEGIN SysTick_IRQn 0 */
+
+  /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
+  /* USER CODE BEGIN SysTick_IRQn 1 */
+
+  /* USER CODE END SysTick_IRQn 1 */
 }
 
 /******************************************************************************/
