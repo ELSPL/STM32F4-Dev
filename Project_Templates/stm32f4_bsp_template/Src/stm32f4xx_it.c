@@ -1,7 +1,6 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_it.c
-  * @date    20/04/2015 17:22:47
   * @brief   Interrupt Service Routines.
   ******************************************************************************
   *
@@ -89,8 +88,9 @@
 #endif
 
 /* External variables --------------------------------------------------------*/
+#ifdef USE_STM32F4_TSC
 extern volatile GUI_TIMER_TIME OS_TimeMS;
-
+#endif
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -104,10 +104,16 @@ extern volatile GUI_TIMER_TIME OS_TimeMS;
 */
 void SysTick_Handler(void)
 {
+  /* USER CODE BEGIN SysTick_IRQn 0 */
+
+  /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
-
+  /* USER CODE BEGIN SysTick_IRQn 1 */
+#ifdef USE_STM32F4_TSC
   OS_TimeMS++; // EmWin Ticks
+#endif
+  /* USER CODE END SysTick_IRQn 1 */
 }
 
 /******************************************************************************/
@@ -634,4 +640,4 @@ void DMA2_Stream0_IRQHandler(void)
   HAL_DMA_IRQHandler(&hdma_adcbsp1);
 }
 /* USER CODE END 1 */
-/******END OF FILE*******/
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

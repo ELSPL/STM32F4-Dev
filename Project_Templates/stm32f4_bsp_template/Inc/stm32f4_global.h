@@ -338,7 +338,9 @@ void MPU_Config(void);
 * @brief Low Power mode Function Delcaration
 ***********************************************************************************/
 void BSP_SleepMode(void);
+#ifdef USE_STM32F4_RTC
 void BSP_StandbyMode_AWU(uint16_t WakeUptime_ms);
+#endif
 void BSP_StandbyMode_PB(void);
 
 

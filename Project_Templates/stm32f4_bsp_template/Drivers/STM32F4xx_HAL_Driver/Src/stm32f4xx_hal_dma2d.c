@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_dma2d.c
   * @author  MCD Application Team
-  * @version V1.3.0
-  * @date    09-March-2015
+  * @version V1.3.2
+  * @date    26-June-2015
   * @brief   DMA2D HAL module driver.
   *          This file provides firmware functions to manage the following 
   *          functionalities of the DMA2D peripheral:
@@ -895,7 +895,7 @@ HAL_StatusTypeDef HAL_DMA2D_ConfigLayer(DMA2D_HandleTypeDef *hdma2d, uint32_t La
     if ((pLayerCfg->InputColorMode == CM_A4) || (pLayerCfg->InputColorMode == CM_A8))
     {
       /* Prepare the value to be wrote to the BGCOLR register */
-      tmp |= ((pLayerCfg->InputAlpha) & 0x00FFFFFF);
+      tmp = ((pLayerCfg->InputAlpha) & 0x00FFFFFF);
     
       /* Write to DMA2D BGCOLR register */
       hdma2d->Instance->BGCOLR = tmp;
@@ -941,7 +941,7 @@ HAL_StatusTypeDef HAL_DMA2D_ConfigLayer(DMA2D_HandleTypeDef *hdma2d, uint32_t La
     if ((pLayerCfg->InputColorMode == CM_A4) || (pLayerCfg->InputColorMode == CM_A8))
     {
       /* Prepare the value to be wrote to the FGCOLR register */
-      tmp |= ((pLayerCfg->InputAlpha) & 0x00FFFFFF);
+      tmp = ((pLayerCfg->InputAlpha) & 0x00FFFFFF);
     
       /* Write to DMA2D FGCOLR register */
       hdma2d->Instance->FGCOLR = tmp;

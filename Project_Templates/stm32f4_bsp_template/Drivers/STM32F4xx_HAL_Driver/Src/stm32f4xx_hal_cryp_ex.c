@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_cryp_ex.c
   * @author  MCD Application Team
-  * @version V1.3.0
-  * @date    09-March-2015
+  * @version V1.3.2
+  * @date    26-June-2015
   * @brief   Extended CRYP HAL module driver
   *          This file provides firmware functions to manage the following 
   *          functionalities of CRYP extension peripheral:

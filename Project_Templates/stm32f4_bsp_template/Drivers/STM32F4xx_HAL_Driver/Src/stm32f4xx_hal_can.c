@@ -2,8 +2,8 @@
   ******************************************************************************
   * @file    stm32f4xx_hal_can.c
   * @author  MCD Application Team
-  * @version V1.3.0
-  * @date    09-March-2015
+  * @version V1.3.2
+  * @date    26-June-2015
   * @brief   This file provides firmware functions to manage the following 
   *          functionalities of the Controller Area Network (CAN) peripheral:
   *           + Initialization and de-initialization functions 
