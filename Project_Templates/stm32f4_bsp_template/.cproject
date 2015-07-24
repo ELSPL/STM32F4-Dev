@@ -80,6 +80,11 @@
 									<listOptionValue builtIn="false" value="../Drivers/Middlewares/ST/STemWin/Config"/>
 									<listOptionValue builtIn="false" value="../Drivers/Components/Fonts"/>
 									<listOptionValue builtIn="false" value="../Drivers/Components/stmpe811"/>
+									<listOptionValue builtIn="false" value="../Drivers/Middlewares/Third_Party/LwIP/usr"/>
+									<listOptionValue builtIn="false" value="../Drivers/Middlewares/Third_Party/LwIP/system"/>
+									<listOptionValue builtIn="false" value="../Drivers/Middlewares/Third_Party/LwIP/src/netif/ppp"/>
+									<listOptionValue builtIn="false" value="../Drivers/Middlewares/Third_Party/LwIP/src/include"/>
+									<listOptionValue builtIn="false" value="../Drivers/Middlewares/Third_Party/LwIP/src/include/ipv4"/>
 								</option>
 								<option id="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs.480630399" name="Defined symbols (-D)" superClass="ilg.gnuarmeclipse.managedbuild.cross.option.c.compiler.defs" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="STM32F407xx"/>
