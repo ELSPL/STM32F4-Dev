@@ -98,7 +98,7 @@ static void BSP_ADC_MspInit(ADC_HandleTypeDef* hadc,ADC_PortPin_Typedef ADC_pin)
     __ADC1_CLK_ENABLE();
 
     /* Peripheral DMA init*/
-    hdma_adcbsp1.Instance = DMA2_Stream0;
+    hdma_adcbsp1.Instance = DMA2_Stream4;
     hdma_adcbsp1.Init.Channel = DMA_CHANNEL_0;
     hdma_adcbsp1.Init.Direction = DMA_PERIPH_TO_MEMORY;
     hdma_adcbsp1.Init.PeriphInc = DMA_PINC_DISABLE;
@@ -138,7 +138,7 @@ static void BSP_ADC_MspInit(ADC_HandleTypeDef* hadc,ADC_PortPin_Typedef ADC_pin)
     __ADC3_CLK_ENABLE();
 
     /* Peripheral DMA init*/
-    hdma_adcbsp3.Instance = DMA2_Stream1;
+    hdma_adcbsp3.Instance = DMA2_Stream0;
     hdma_adcbsp3.Init.Channel = DMA_CHANNEL_2;
     hdma_adcbsp3.Init.Direction = DMA_PERIPH_TO_MEMORY;
     hdma_adcbsp3.Init.PeriphInc = DMA_PINC_DISABLE;

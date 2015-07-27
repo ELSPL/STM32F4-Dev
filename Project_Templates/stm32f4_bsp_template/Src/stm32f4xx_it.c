@@ -629,9 +629,17 @@ void ADC_IRQHandler(void)
 /**
 * @brief This function handles DMA2 Stream0 global interrupt.
 */
-void DMA2_Stream0_IRQHandler(void)
+void DMA2_Stream4_IRQHandler(void)
 {
   HAL_DMA_IRQHandler(&hdma_adcbsp1);
+}
+void DMA2_Stream2_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_adcbsp2);
+}
+void DMA2_Stream0_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(&hdma_adcbsp3);
 }
 /* USER CODE END 1 */
 /******END OF FILE*******/
