@@ -83,7 +83,7 @@ void Lcd_Touch_Calibration(void)
 
   /*Indicates whether Calibration is OK*/
   uint8_t adjust_OK_Falg = 0;
-  TS_STATE *pstate = NULL;
+  TS_StateTypeDef *pstate = NULL;
 
   /* Clear the LCD */
   LCD_Clear(White);
@@ -214,14 +214,14 @@ void Lcd_Touch_Calibration(void)
 
 void TSC_Read_Cal_Value(Point_Struct* tpoint)
 {
-  TS_STATE *pstate = NULL;
+  TS_StateTypeDef *pstate = NULL;
 
   do {
     pstate = IOE_TS_GetState();
   } while(!pstate->TouchDetected);
 
-  tpoint->x = pstate->X;
-  tpoint->y = pstate->Y;
+  tpoint->x = pstate->x;
+  tpoint->y = pstate->y;
 
   /*Calculate coordinates*/
   tpoint->x = ((int)(tpoint->x * adjust_Para.xScale - adjust_Para.xOffset));
@@ -242,7 +242,7 @@ void TSC_Read_Cal_Value(Point_Struct* tpoint)
   */
 void Calibration_Test_Dispose(void)
 {
-  TS_STATE *pstate = NULL;
+  TS_StateTypeDef *pstate = NULL;
   uint8_t text[50];
   uint8_t b_flag = 1;
 
@@ -261,8 +261,8 @@ void Calibration_Test_Dispose(void)
       pstate = IOE_TS_GetState();
       HAL_Delay(10);
     } while(!pstate->TouchDetected);
-    point_new.x = pstate->X;
-    point_new.y = pstate->Y;
+    point_new.x = pstate->x;
+    point_new.y = pstate->y;
 
     /* If AD result is abnormal, then LCD show nothing */
     if ((point_new.x > TOUCH_AD_VALUE_MAX)
