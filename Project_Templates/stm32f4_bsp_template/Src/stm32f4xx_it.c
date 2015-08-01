@@ -41,6 +41,7 @@
 #include "stm32f4_discovery.h"
 #include "stm32f4_discovery_wdg.h"
 #include "stm32f4_discovery_adc.h"
+#include "stm32f4_discovery_wifi.h"
 #include "GUI.h"
 
 #ifdef USE_STM32F4_RTC
