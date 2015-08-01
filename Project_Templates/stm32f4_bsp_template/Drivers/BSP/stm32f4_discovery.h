@@ -190,8 +190,8 @@ typedef enum
 /******************************************************************************
                                 I2C1 Mode
 *******************************************************************************/
-#define   AUDIO_SEL       DISABLE      // Specify the type of interface
-#define   CAMERA_TSC_SEL      ENABLE
+#define   AUDIO_SEL           ENABLE      // Specify the type of interface
+#define   CAMERA_TSC_SEL      DISABLE
 
 /******************************************************************************
                             I2C1 Mode validation

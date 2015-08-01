@@ -1,7 +1,6 @@
 /**
   ******************************************************************************
   * @file    stm32f4xx_it.c
-  * @date    20/04/2015 17:22:47
   * @brief   Interrupt Service Routines.
   ******************************************************************************
   *
@@ -67,7 +66,7 @@
 #define HOST_HID_SEL 1
 #endif
 
-#ifdef USE_STM32F4_MSC
+#ifdef USE_STM32F4_HOST_MSC
 #include "stm32f4_discovery_msc.h"
 #endif
 
@@ -83,14 +82,24 @@
 #include "stm32f4_discovery_camera.h"
 #endif
 
+#ifdef USE_STM32F4_AUDIO
+#include "stm32f4_discovery_audio.h"
+#endif
+
 /* Conditional Checking */
 #if (VCP_SEL && DEVICE_HID_SEL)
   #error Both VCP and HID are active, Only one can work at a time, so remove any definition.
 #endif
 
 /* External variables --------------------------------------------------------*/
+#ifdef USE_STM32F4_TSC
 extern volatile GUI_TIMER_TIME OS_TimeMS;
+#endif
 
+#ifdef USE_STM32F4_AUDIO
+__IO uint32_t TimeRecBase = 0;  /* Time Recording base variable */
+extern __IO uint32_t CmdIndex;
+#endif
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -104,10 +113,25 @@ extern volatile GUI_TIMER_TIME OS_TimeMS;
 */
 void SysTick_Handler(void)
 {
+  /* USER CODE BEGIN SysTick_IRQn 0 */
+
+  /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
-
+  /* USER CODE BEGIN SysTick_IRQn 1 */
+#ifdef USE_STM32F4_TSC
   OS_TimeMS++; // EmWin Ticks
+#endif
+
+#ifdef USE_STM32F4_AUDIO
+  /* Test on the command: Recording */
+  if (CmdIndex == CMD_RECORD)
+  {
+    /* Increments the time recording base variable */
+    TimeRecBase ++;
+  }
+#endif
+  /* USER CODE END SysTick_IRQn 1 */
 }
 
 /******************************************************************************/
@@ -596,6 +620,29 @@ void TAMP_STAMP_IRQHandler(void)
 #endif /* USE_STM32F4_RTC */
 /********************************************************************************************/
 
+#ifdef USE_STM32F4_AUDIO
+/**
+  * @brief  This function handles main I2S interrupt.
+  * @param  None
+  * @retval 0 if correct communication, else wrong communication
+  */
+void I2S3_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(hAudioOutI2s.hdmatx);
+}
+
+/**
+  * @brief  This function handles DMA Stream interrupt request.
+  * @param  None
+  * @retval None
+  */
+void I2S2_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(hAudioInI2s.hdmarx);
+}
+#endif
+/********************************************************************************************/
+
 void WWDG_IRQHandler(void)
 {
   /* USER CODE BEGIN WWDG_IRQn 0 */
@@ -642,4 +689,4 @@ void DMA2_Stream0_IRQHandler(void)
   HAL_DMA_IRQHandler(&hdma_adcbsp3);
 }
 /* USER CODE END 1 */
-/******END OF FILE*******/
+/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

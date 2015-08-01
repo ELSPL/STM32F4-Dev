@@ -1,7 +1,6 @@
 /**
   ******************************************************************************
   * File Name          : main.c
-  * Date               : 03/04/2015 16:19:57
   * Description        : Main program body
   ******************************************************************************
   *
@@ -31,7 +30,6 @@
   *
   ******************************************************************************
   */
-
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "gpio.h"
@@ -126,6 +124,10 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;
   HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+
+  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
 }
 

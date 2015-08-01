@@ -47,6 +47,28 @@ typedef enum {
 extern USBH_HandleTypeDef hUsbHostMSC;
 extern ApplicationTypeDef Appli_state;
 
+/*Application Variables*/
+/* You can change the Wave file name as you need, but do not exceed 11 characters */
+#define WAVE_NAME "0:audio_sample.wav"
+#define REC_WAVE_NAME "0:rec.wav"
+
+/* State Machine for the USBH_USR_ApplicationState */
+#define USBH_USR_FS_INIT    ((uint8_t)0x00)
+#define USBH_USR_AUDIO      ((uint8_t)0x01)
+
+/* Defines for the Audio used commands */
+#define CMD_PLAY           ((uint32_t)0x00)
+#define CMD_RECORD         ((uint32_t)0x01)
+#define CMD_STOP           ((uint32_t)0x02)
+
+/* Defines for the Audio playing process */
+#define PAUSE_STATUS     ((uint32_t)0x00) /* Audio Player in Pause Status */
+#define RESUME_STATUS    ((uint32_t)0x01) /* Audio Player in Resume Status */
+#define IDLE_STATUS      ((uint32_t)0x02) /* Audio Player in Idle Status */
+
+#define REPEAT_ON        ((uint32_t)0x00) /* Replay Status in ON */
+#define REPEAT_OFF       ((uint32_t)0x01) /* Replay Status in OFF */
+
 /**
   * @}
   */

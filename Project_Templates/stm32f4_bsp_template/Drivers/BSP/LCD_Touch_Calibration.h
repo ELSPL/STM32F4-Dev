@@ -19,7 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_discovery.h"
 #include "stm32f4_discovery_lcd.h"
-#include "stm32f4_discovery_tsc.h"
+#include "stm32f4_discovery_ts_cal.h"
 
 /** @addtogroup BSP
   * @{

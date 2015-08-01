@@ -10,7 +10,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_global.h"
+#ifdef USE_STM32F4_RTC
 #include "stm32f4_discovery_rtc.h"
+#endif
 /* Global Variables ----------------------------------------------------------- */
 /** @addtogroup STM32F4_GLOBAL_Variables
  * @{
@@ -227,7 +229,7 @@ void BSP_SleepMode(void)
  *  except for the RTC registers, RTC backup registers, backup SRAM and Standby
  *  circuitry.
  *********************************************************************************/
-
+#ifdef USE_STM32F4_RTC
 /**
  * @brief Low Power standby mode
  * @param WakeUptime_ms provide time in 1 to 10 millisecond
@@ -250,13 +252,13 @@ void BSP_StandbyMode_AWU(uint16_t WakeUptime_ms)
   */
   /* Clear RTC wakeup flag */
   __HAL_RTC_WAKEUPTIMER_CLEAR_FLAG(&hrtc_bsp,RTC_FLAG_WUTF);
-
   /* Restart RTC wakeup timer */
   BSP_RTC_WakeUpTimer_Init(WakeUptime_ms);
 
   /* Enter Standby mode */
   HAL_PWR_EnterSTANDBYMode();
 }
+#endif
 
 /**
  * @brief Low Power standby mode
