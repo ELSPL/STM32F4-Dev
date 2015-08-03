@@ -55,7 +55,7 @@ uint8_t Keylen = 0;
 
 int32_t joinok = 0;
 int32_t ipok = 0;
-uint16_t selfIP = 0;
+uint32_t selfIP = 0;
 uint16_t pktcnt = 0;
 
 int8_t domain[100];
