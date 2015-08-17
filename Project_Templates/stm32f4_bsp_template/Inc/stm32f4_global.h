@@ -121,9 +121,33 @@
 #define REVERSE     (0)
 #endif
 
+#ifndef in_range
+#define in_range(c, lo, up)  ((uint8_t)c >= lo && (uint8_t)c <= up)
+#endif
+
+#ifndef isprint
+#define isprint(c)           in_range(c, 0x20, 0x7f)
+#endif
+
+#ifndef isdigit
+#define isdigit(c)           in_range(c, '0', '9')
+#endif
+
+#ifndef isxdigit
+#define isxdigit(c)          (isdigit(c) || in_range(c, 'a', 'f') || in_range(c, 'A', 'F'))
+#endif
+
+#ifndef isspace
+#define isspace(c)           (c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' || c == '\v')
+#endif
+
+#ifndef islower
+#define islower(c)           in_range(c, 'a', 'z')
+#endif
+
 /* CAPITALISE MACRO */
-#ifndef to_upper
-#define to_upper(c)   ('a' <= (c) && (c) <= 'z' ? (c)-32 : (c))
+#ifndef isupper
+#define isupper(c)   ('a' <= (c) && (c) <= 'z' ? (c)-32 : (c))
 #endif
 
 /* Number of elements in an array */
