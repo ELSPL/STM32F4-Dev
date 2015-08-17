@@ -41,7 +41,6 @@
 #include "stm32f4_discovery.h"
 #include "stm32f4_discovery_wdg.h"
 #include "stm32f4_discovery_adc.h"
-#include "stm32f4_discovery_wifi.h"
 #include "GUI.h"
 
 #ifdef USE_STM32F4_RTC
@@ -85,6 +84,10 @@
 
 #ifdef USE_STM32F4_AUDIO
 #include "stm32f4_discovery_audio.h"
+#endif
+
+#ifdef USE_STM32F4_WIFI
+#include "stm32f4_discovery_wifi.h"
 #endif
 
 /* Conditional Checking */
@@ -646,13 +649,7 @@ void I2S2_IRQHandler(void)
 
 void WWDG_IRQHandler(void)
 {
-  /* USER CODE BEGIN WWDG_IRQn 0 */
-
-  /* USER CODE END WWDG_IRQn 0 */
   HAL_WWDG_IRQHandler(&hwwdg_bsp);
-  /* USER CODE BEGIN WWDG_IRQn 1 */
-
-  /* USER CODE END WWDG_IRQn 1 */
 }
 /********************************************************************************************/
 /**
@@ -690,21 +687,23 @@ void DMA2_Stream0_IRQHandler(void)
   HAL_DMA_IRQHandler(&hdma_adcbsp3);
 }
 /*****************************************************************************************/
+
+#ifdef USE_STM32F4_WIFI
 /**
 * @brief This function handles USART1 global interrupt.
 */
-//void USART1_IRQHandler(void)
-//{
-//  uint8_t tmp1,tmp2;
-//  tmp1 = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
-//  tmp2 = __HAL_UART_GET_IT_SOURCE(&huart1, UART_IT_RXNE);
-//  if((tmp1 != RESET) && (tmp2 != RESET))
-//  {
-//    RxBuffer[RxBufferHead] = UART_ReceiveData(&huart1);
-//    RxBufferHead = (RxBufferHead + 1) % RX_BUFFER_SIZE;
-//  }
-//}
-
+void USART1_IRQHandler(void)
+{
+  uint8_t tmp1,tmp2;
+  tmp1 = __HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE);
+  tmp2 = __HAL_UART_GET_IT_SOURCE(&huart1, UART_IT_RXNE);
+  if((tmp1 != RESET) && (tmp2 != RESET))
+  {
+    RxBuffer[RxBufferHead] = UART_ReceiveData(&huart1);
+    RxBufferHead = (RxBufferHead + 1) % RX_BUFFER_SIZE;
+  }
+}
+#endif
 
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
