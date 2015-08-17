@@ -153,10 +153,6 @@ void SystemClock_Config(void)
   /* Enable the CRC Module */
   __HAL_RCC_CRC_CLK_ENABLE();
 #endif
-
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-
-  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 }
 
 /* USER CODE BEGIN 4 */
