@@ -90,6 +90,10 @@
 #include "stm32f4_discovery_wifi.h"
 #endif
 
+#ifdef USE_STM32F4_CAN
+#include "stm32f4_discovery_can.h"
+#endif
+
 /* Conditional Checking */
 #if (VCP_SEL && DEVICE_HID_SEL)
   #error Both VCP and HID are active, Only one can work at a time, so remove any definition.
@@ -704,6 +708,32 @@ void USART1_IRQHandler(void)
   }
 }
 #endif
+/*****************************************************************************************/
 
+#ifdef USE_STM32F4_CAN
+/**
+* @brief This function handles CAN1 RX1 interrupt.
+*/
+void CAN1_RX1_IRQHandler(void)
+{
+  HAL_CAN_IRQHandler(&hcan_bsp1);
+}
+
+/**
+* @brief This function handles CAN1 RX0 interrupts.
+*/
+void CAN1_RX0_IRQHandler(void)
+{
+  HAL_CAN_IRQHandler(&hcan_bsp1);
+}
+
+/**
+* @brief This function handles CAN1 TX interrupts.
+*/
+void CAN1_TX_IRQHandler(void)
+{
+  HAL_CAN_IRQHandler(&hcan_bsp1);
+}
+#endif
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
