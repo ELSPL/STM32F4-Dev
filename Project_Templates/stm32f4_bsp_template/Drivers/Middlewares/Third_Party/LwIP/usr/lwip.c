@@ -26,10 +26,10 @@
   * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
   * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
   * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. 
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   ******************************************************************************
   */
-  
+
 /* Includes ------------------------------------------------------------------*/
 #include "lwip.h"
 #include "lwip/init.h"
@@ -59,7 +59,7 @@ uint8_t GATEWAY_ADDRESS[4];
 /* USER CODE END 2 */
 
 /* init function */
-void MX_LWIP_Init(void)
+void BSP_LWIP_Init(void)
 {
   IP_ADDRESS[0] = 192;
   IP_ADDRESS[1] = 168;
@@ -75,17 +75,17 @@ void MX_LWIP_Init(void)
   GATEWAY_ADDRESS[3] = 254;
     /* Initilialize the LwIP stack */
   lwip_init();
- 
- 
+
+
   IP4_ADDR(&ipaddr, IP_ADDRESS[0], IP_ADDRESS[1], IP_ADDRESS[2], IP_ADDRESS[3]);
   IP4_ADDR(&netmask, NETMASK_ADDRESS[0], NETMASK_ADDRESS[1] , NETMASK_ADDRESS[2], NETMASK_ADDRESS[3]);
-  IP4_ADDR(&gw, GATEWAY_ADDRESS[0], GATEWAY_ADDRESS[1], GATEWAY_ADDRESS[2], GATEWAY_ADDRESS[3]);  
-  
+  IP4_ADDR(&gw, GATEWAY_ADDRESS[0], GATEWAY_ADDRESS[1], GATEWAY_ADDRESS[2], GATEWAY_ADDRESS[3]);
+
 
   /* add the network interface */
   netif_add(&gnetif, &ipaddr, &netmask, &gw, NULL, &ethernetif_init, &ethernet_input);
- 
- 
+
+
   /*  Registers the default network interface */
   netif_set_default(&gnetif);
 
@@ -98,8 +98,8 @@ void MX_LWIP_Init(void)
   {
     /* When the netif link is down this function must be called */
        netif_set_down(&gnetif);
-  }  
-  
+  }
+
 
 /* USER CODE BEGIN 3 */
 
@@ -111,21 +111,21 @@ void MX_LWIP_Init(void)
  * ----------------------------------------------------------------------
  * Function given to help user to continue LwIP Initialization
  * Up to user to complete or change this function ...
- * Up to user to call this function in main.c in while (1) of main(void) 
+ * Up to user to call this function in main.c in while (1) of main(void)
  *-----------------------------------------------------------------------
- * Read a received packet from the Ethernet buffers 
+ * Read a received packet from the Ethernet buffers
  * Send it to the lwIP stack for handling
  * Handle timeouts if NO_SYS_NO_TIMERS not set and without RTOS
  */
-void MX_LWIP_Process(void)
+void BSP_LWIP_Process(void)
 {
   ethernetif_input(&gnetif);
-       
+
   /* Handle timeouts */
   #if !NO_SYS_NO_TIMERS && NO_SYS
     sys_check_timeouts();
   #endif
-    
+
 }
 /* USER CODE END 4 */
 

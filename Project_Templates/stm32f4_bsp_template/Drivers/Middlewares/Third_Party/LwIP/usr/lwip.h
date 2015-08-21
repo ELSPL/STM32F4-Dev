@@ -29,7 +29,7 @@
   * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
-  *************************************************************************  
+  *************************************************************************
 
   */
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -61,16 +61,16 @@
 /* Global Variables ----------------------------------------------------------*/
 extern ETH_HandleTypeDef heth;
 
-/* LWIP init function */	
-void MX_LWIP_Init(void);
+/* LWIP init function */
+void BSP_LWIP_Init(void);
 
 /* USER CODE BEGIN 1 */
 /* Function defined in lwip.c to:
- *   - Read a received packet from the Ethernet buffers 
+ *   - Read a received packet from the Ethernet buffers
  *   - Send it to the lwIP stack for handling
  *   - Handle timeouts if NO_SYS_NO_TIMERS not set
- */ 
-void MX_LWIP_Process(void);
+ */
+void BSP_LWIP_Process(void);
 
 /* USER CODE END 1 */
 
