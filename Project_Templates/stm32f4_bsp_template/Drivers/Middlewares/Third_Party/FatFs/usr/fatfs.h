@@ -63,14 +63,14 @@ extern char *args[N_ARGS];
 void MX_FATFS_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void Print_Help(void);
 void show_res (char *mesg, FRESULT rc);
 void show_dir(char *dirname);
 void write_log(char *fname);
 void type_file(char *fname);
 void delete_file(char *fname);
 void scan_args(char *buf, char *args[]);
-
+void FATFS_CMD(void);
 /* USER CODE END Prototypes */
 #ifdef __cplusplus
 }

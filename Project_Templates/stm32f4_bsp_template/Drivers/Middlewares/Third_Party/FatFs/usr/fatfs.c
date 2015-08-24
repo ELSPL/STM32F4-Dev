@@ -45,7 +45,7 @@ FATFS USBH_fatfs;
 char str[STRLEN];
 char line[STRLEN];
 char *args[N_ARGS];
-
+long p2,w1;
 uint8_t Buffer[512]; /* Buffer to store a complete sector */
 
 /* USER CODE BEGIN Variables */
@@ -61,7 +61,7 @@ const char *help_msg[9]={"\r\nCommand List:\r\n",
                           "help           - print this msg\n\r",
 };
 
-void print_help(void)
+void Print_Help(void)
 {
   uint8_t count;
 
@@ -262,7 +262,54 @@ void scan_args(char *buf, char *args[])
     i++;
   }
 }
-
+/**
+ * @brief Fatfs menu function
+ */
+void FATFS_CMD(void)
+{
+  if(strncmp(line, "status", 6)==0)
+  {
+    if (disk_ioctl(0, GET_SECTOR_COUNT, &p2) == RES_OK)
+      { uprintf("Drive size:  %d08 sectors\n\r", p2); }
+    if (disk_ioctl(0, GET_SECTOR_SIZE, &w1) == RES_OK)
+      { uprintf("Sector size: %d08\n\r", w1); }
+    if (disk_ioctl(0, GET_BLOCK_SIZE, &p2) == RES_OK)
+      { uprintf("Erase block: %d08 sectors\n\r", p2); }
+  }
+  else if(strncmp(line, "dir", 3) == 0)
+  {
+    show_dir(args[0]);
+  }
+  else if(strncmp(line, "write", 5) == 0)
+  {
+//      write_file(args[0]);
+  }
+  else if(strncmp(line, "read", 4) == 0)
+  {
+//      read_file(args[0]);
+  }
+  else if(strncmp(line, "log", 3) == 0)
+  {
+    write_log(args[0]);
+  }
+  else if(strncmp(line, "type", 4) == 0)
+  {
+    type_file(args[0]);
+  }
+  else if(strncmp(line, "del", 3) == 0)
+  {
+    delete_file(args[0]);
+  }
+  else if(strncmp(line, "help", 4) == 0)
+  {
+    Print_Help();
+  }
+  else
+  {
+    uprintf("Error: invalid command\n\r");
+    Print_Help();
+  }
+}
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
