@@ -75,7 +75,7 @@ void BSP_USB_HOST_Process()
 /*
  * user callback definition
 */
-#if DISABLE
+#ifndef USE_STM32F4_AUDIO
 static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
 {
   switch (id)
@@ -101,7 +101,7 @@ static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
 }
 #endif
 
-#if ENABLE
+#ifdef USE_STM32F4_AUDIO
 static void USBH_UserProcess(USBH_HandleTypeDef *phost, uint8_t id)
 {
   switch (id)

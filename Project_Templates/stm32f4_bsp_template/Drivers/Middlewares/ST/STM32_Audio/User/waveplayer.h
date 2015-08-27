@@ -78,7 +78,7 @@ void  WavePlayerStop(void);
 void  WavePlayerPauseResume(uint32_t state);
 void  WavePlayerStart(void);
 void  WavePlayer_CallBack(void);
-
+void BSP_Start_Audio(void);
 #endif
 
 #endif /* __WAVEPLAYER_H */

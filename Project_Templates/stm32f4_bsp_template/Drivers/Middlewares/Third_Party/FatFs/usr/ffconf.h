@@ -10,7 +10,7 @@
 #define _FFCONF 8051	/* Revision ID */
 
 /*-----------------------------------------------------------------------------/
-/ Additional user header to be used  
+/ Additional user header to be used
 /-----------------------------------------------------------------------------*/
 
 #include "stm32f4xx_hal.h"
@@ -93,7 +93,7 @@
 /   874  - Thai (OEM, Windows)
 /   1    - ASCII (Valid for only non-LFN configuration) */
 
-#define _USE_LFN     0    /* 0 to 3 */
+#define _USE_LFN     2    /* 0 to 3 */
 #define _MAX_LFN     255  /* Maximum LFN length to handle (12 to 255) */
 /* The _USE_LFN option switches the LFN feature.
 /
@@ -136,14 +136,14 @@
 #define _VOLUMES    2
 /* Number of volumes (logical drives) to be used. */
 
-/* USER CODE BEGIN Volumes */  
+/* USER CODE BEGIN Volumes */
 #define _STR_VOLUME_ID          0	/* 0:Use only 0-9 for drive ID, 1:Use strings for drive ID */
 #define _VOLUME_STRS            "RAM","NAND","CF","SD1","SD2","USB1","USB2","USB3"
 /* When _STR_VOLUME_ID is set to 1, also pre-defined strings can be used as drive
 /  number in the path name. _VOLUME_STRS defines the drive ID strings for each logical
 /  drives. Number of items must be equal to _VOLUMES. Valid characters for the drive ID
 /  strings are: 0-9 and A-Z. */
-/* USER CODE END Volumes */  
+/* USER CODE END Volumes */
 
 #define _MULTI_PARTITION     0 /* 0:Single partition, 1:Multiple partition */
 /* By default(0), each logical drive number is bound to the same physical drive number
@@ -160,7 +160,7 @@
 /  GET_SECTOR_SIZE command must be implemented to the disk_ioctl() function. */
 
 #define _USE_ERASE     0 /* 0:Disable or 1:Enable */
-/* To enable sector erase feature, set _USE_ERASE to 1. Also CTRL_ERASE_SECTOR 
+/* To enable sector erase feature, set _USE_ERASE to 1. Also CTRL_ERASE_SECTOR
 /  command should be added to the disk_ioctl() function. */
 
 #define _FS_NOFSINFO    0 /* 0,1,2 or 3 */
@@ -182,11 +182,11 @@
 /* To enable file lock control feature, set _FS_LOCK to non-zero value.
 /  The value defines how many files/sub-directories can be opened simultaneously
 /  with file lock control. This feature uses bss _FS_LOCK * 12 bytes. */
-   
+
 
 #define _FS_REENTRANT    0  /* 0:Disable or 1:Enable */
 #define _FS_TIMEOUT      1000 /* Timeout period in unit of time ticks */
-#define _SYNC_t          osSemaphoreId 
+#define _SYNC_t          osSemaphoreId
 /* The _FS_REENTRANT option switches the re-entrancy (thread safe) of the FatFs module.
 /
 /   0: Disable re-entrancy. _FS_TIMEOUT and _SYNC_t have no effect.
