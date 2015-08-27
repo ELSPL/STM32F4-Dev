@@ -494,11 +494,100 @@ void BSP_AUDIO_OUT_SetFrequency(uint32_t AudioFreq)
 
 
 /**
+  * @brief  Initializes the Audio Codec audio interface (I2S).
+  * @param  AudioFreq: Audio frequency to be configured for the I2S peripheral.
+  * @retval None
+  */
+void I2S3_Init(uint32_t AudioFreq)
+{
+  /* Initialize the hAudioOutI2s Instance parameter */
+  hAudioOutI2s.Instance         = I2S3;
+
+ /* Disable I2S block */
+  __HAL_I2S_DISABLE(&hAudioOutI2s);
+
+  /* I2S3 peripheral configuration */
+  hAudioOutI2s.Init.AudioFreq   = AudioFreq;
+  hAudioOutI2s.Init.ClockSource = I2S_CLOCK_PLL;
+  hAudioOutI2s.Init.CPOL        = I2S_CPOL_LOW;
+  hAudioOutI2s.Init.DataFormat  = I2S_DATAFORMAT_16B;
+  hAudioOutI2s.Init.MCLKOutput  = I2S_MCLKOUTPUT_ENABLE;
+  hAudioOutI2s.Init.Mode        = I2S_MODE_MASTER_TX;
+  hAudioOutI2s.Init.Standard    = I2S_STANDARD;
+  /* Initialize the I2S peripheral with the structure above */
+  if(HAL_I2S_GetState(&hAudioOutI2s) == HAL_I2S_STATE_RESET)
+  {
+    I2S3_MspInit();
+  }
+
+  HAL_I2S_Init(&hAudioOutI2s);
+}
+
+/**
+  * @brief  Tx Transfer completed callbacks.
+  * @param  hi2s: I2S handle
+  * @retval None
+  */
+void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)
+{
+  if(hi2s->Instance == I2S3)
+  {
+    /* Call the user function which will manage directly transfer complete */
+    BSP_AUDIO_OUT_TransferComplete_CallBack();
+  }
+}
+
+/**
+  * @brief  Tx Half Transfer completed callbacks.
+  * @param  hi2s: I2S handle
+  * @retval None
+  */
+void HAL_I2S_TxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
+{
+  if(hi2s->Instance == I2S3)
+  {
+    /* Manage the remaining file size and new address offset: This function should
+       be coded by user (its prototype is already declared in stm32f4_discovery_audio.h) */
+    BSP_AUDIO_OUT_HalfTransfer_CallBack();
+  }
+}
+
+/**
+  * @brief  Manages the DMA full Transfer complete event.
+  * @param  None
+  * @retval None
+  */
+__weak void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
+{
+}
+
+/**
+  * @brief  Manages the DMA Half Transfer complete event.
+  * @param  None
+  * @retval None
+  */
+__weak void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
+{
+}
+
+/**
+  * @brief  Manages the DMA FIFO error event.
+  * @param  None
+  * @retval None
+  */
+__weak void BSP_AUDIO_OUT_Error_CallBack(void)
+{
+}
+
+/*******************************************************************************
+                            Static Functions
+*******************************************************************************/
+/**
   * @brief  AUDIO OUT I2S MSP Init.
   * @param  None
   * @retval None
   */
-void I2S3_MspInit(void)
+static void I2S3_MspInit(void)
 {
   static DMA_HandleTypeDef hdma_i2sTx;
   GPIO_InitTypeDef  GPIO_InitStruct;
@@ -562,97 +651,6 @@ void I2S3_MspInit(void)
   /* I2S DMA IRQ Channel configuration */
   HAL_NVIC_SetPriority(I2S3_DMAx_IRQ, AUDIO_OUT_IRQ_PREPRIO, 0);
   HAL_NVIC_EnableIRQ(I2S3_DMAx_IRQ);
-}
-
-/**
-  * @brief  Tx Transfer completed callbacks.
-  * @param  hi2s: I2S handle
-  * @retval None
-  */
-void HAL_I2S_TxCpltCallback(I2S_HandleTypeDef *hi2s)
-{
-  if(hi2s->Instance == I2S3)
-  {
-    /* Call the user function which will manage directly transfer complete */
-    BSP_AUDIO_OUT_TransferComplete_CallBack();
-  }
-}
-
-/**
-  * @brief  Tx Half Transfer completed callbacks.
-  * @param  hi2s: I2S handle
-  * @retval None
-  */
-void HAL_I2S_TxHalfCpltCallback(I2S_HandleTypeDef *hi2s)
-{
-  if(hi2s->Instance == I2S3)
-  {
-    /* Manage the remaining file size and new address offset: This function should
-       be coded by user (its prototype is already declared in stm32f4_discovery_audio.h) */
-    BSP_AUDIO_OUT_HalfTransfer_CallBack();
-  }
-}
-
-/**
-  * @brief  Manages the DMA full Transfer complete event.
-  * @param  None
-  * @retval None
-  */
-__weak void BSP_AUDIO_OUT_TransferComplete_CallBack(void)
-{
-}
-
-/**
-  * @brief  Manages the DMA Half Transfer complete event.
-  * @param  None
-  * @retval None
-  */
-__weak void BSP_AUDIO_OUT_HalfTransfer_CallBack(void)
-{
-}
-
-/**
-  * @brief  Manages the DMA FIFO error event.
-  * @param  None
-  * @retval None
-  */
-__weak void BSP_AUDIO_OUT_Error_CallBack(void)
-{
-}
-
-/*******************************************************************************
-                            Static Functions
-*******************************************************************************/
-
-
-/**
-  * @brief  Initializes the Audio Codec audio interface (I2S).
-  * @param  AudioFreq: Audio frequency to be configured for the I2S peripheral.
-  * @retval None
-  */
-static void I2S3_Init(uint32_t AudioFreq)
-{
-  /* Initialize the hAudioOutI2s Instance parameter */
-  hAudioOutI2s.Instance         = I2S3;
-
- /* Disable I2S block */
-  __HAL_I2S_DISABLE(&hAudioOutI2s);
-
-  /* I2S3 peripheral configuration */
-  hAudioOutI2s.Init.AudioFreq   = AudioFreq;
-  hAudioOutI2s.Init.ClockSource = I2S_CLOCK_PLL;
-  hAudioOutI2s.Init.CPOL        = I2S_CPOL_LOW;
-  hAudioOutI2s.Init.DataFormat  = I2S_DATAFORMAT_16B;
-  hAudioOutI2s.Init.MCLKOutput  = I2S_MCLKOUTPUT_ENABLE;
-  hAudioOutI2s.Init.Mode        = I2S_MODE_MASTER_TX;
-  hAudioOutI2s.Init.Standard    = I2S_STANDARD;
-  /* Initialize the I2S peripheral with the structure above */
-  if(HAL_I2S_GetState(&hAudioOutI2s) == HAL_I2S_STATE_RESET)
-  {
-    I2S3_MspInit();
-  }
-
-  HAL_I2S_Init(&hAudioOutI2s);
 }
 
 /**
