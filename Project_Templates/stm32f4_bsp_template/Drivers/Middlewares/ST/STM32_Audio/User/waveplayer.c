@@ -27,6 +27,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "waveplayer.h"
+//#include "stm32f4_discovery_audio.h"
 
 /** @addtogroup STM32F4-Discovery_Audio_Player_Recorder
 * @{
@@ -327,6 +328,108 @@ void WavePlayerStart(void)
 
       /* Play the Wave */
       WavePlayBack(waveformat.SampleRate);
+    }
+  }
+}
+
+void BSP_Start_Audio(void)
+{
+  UINT bytesread = 0;
+  char path[] = "0:/";
+  char* wavefilename = NULL;
+  WAVE_FormatTypeDef waveformat;
+  uint32_t WaveDataLength = 0;
+  uint8_t wave_file[255];
+
+  /* Get the read out protection status */
+  if(f_opendir(&Directory, path) == FR_OK)
+  {
+    BSP_UART_Init(115200);
+    uprintf("Enter The Wave file name \n\r");
+    uget_line(wave_file,sizeof(wave_file));
+    uprintf("\n\r");
+
+    wavefilename = wave_file;
+
+    /* Open the Wave file to be played */
+    if(f_open(&FileRead, wavefilename , FA_READ) == FR_OK)
+    {
+      HAL_Delay(1);
+      /* Read sizeof(WaveFormat) from the selected file */
+      f_read (&FileRead, &waveformat, sizeof(waveformat), &bytesread);
+
+      /* Set WaveDataLenght to the Speech Wave length */
+      WaveDataLength = waveformat.FileSize;
+
+      /* Play */
+
+      /* Initialize  I2S */
+      I2S3_Init(waveformat.SampleRate);
+      /* Initialize Wave player (Codec, DMA, I2C) */
+      if(WavePlayerInit(waveformat.SampleRate) != 0)
+      {
+        while(1);
+      }
+      /* Get Data from USB Flash Disk */
+      f_lseek(&FileRead, 0);
+      f_read (&FileRead, &Audio_Buffer[0], AUDIO_BUFFER_SIZE, &bytesread);
+      AudioRemSize = WaveDataLength - bytesread;
+
+      /* Start playing Wave */
+      BSP_AUDIO_OUT_Play((uint16_t*)&Audio_Buffer[0], AUDIO_BUFFER_SIZE);
+      PauseResumeStatus = RESUME_STATUS;
+      PressCount = 0;
+
+      /* Check if the device is connected.*/
+      while((AudioRemSize != 0) && (Appli_state != APPLICATION_IDLE))
+      {
+        /* Test on the command: Playing */
+        if(CmdIndex == CMD_PLAY)
+        {
+          if(PauseResumeStatus == PAUSE_STATUS)
+          {
+            /* Stop Toggling LED2 to signal Pause */
+            /* Pause playing Wave */
+            WavePlayerPauseResume(PauseResumeStatus);
+            PauseResumeStatus = IDLE_STATUS;
+          }
+          else if(PauseResumeStatus == RESUME_STATUS)
+          {
+            /* Toggling LED6 to signal Play */
+            /* Resume playing Wave */
+            WavePlayerPauseResume(PauseResumeStatus);
+            PauseResumeStatus = IDLE_STATUS;
+          }
+
+          bytesread = 0;
+
+          if(buffer_offset == BUFFER_OFFSET_HALF)
+          {
+            f_read(&FileRead,&Audio_Buffer[0],
+                   AUDIO_BUFFER_SIZE/2,(void *)&bytesread);
+            buffer_offset = BUFFER_OFFSET_NONE;
+          }
+
+          if(buffer_offset == BUFFER_OFFSET_FULL)
+          {
+            f_read(&FileRead,&Audio_Buffer[AUDIO_BUFFER_SIZE/2],
+                   AUDIO_BUFFER_SIZE/2,(void *)&bytesread);
+            buffer_offset = BUFFER_OFFSET_NONE;
+          }
+          if(AudioRemSize > (AUDIO_BUFFER_SIZE / 2))
+          {
+            AudioRemSize -= bytesread;
+          }
+          else
+          {
+            /* Stop playing Wave */
+            WavePlayerStop();
+            f_close(&FileRead);
+            HAL_I2S_DeInit(&hAudioOutI2s);
+            break;
+          }
+        }
+      }
     }
   }
 }
