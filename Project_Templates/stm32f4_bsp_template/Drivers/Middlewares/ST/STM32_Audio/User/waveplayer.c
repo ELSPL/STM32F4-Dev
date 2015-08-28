@@ -332,24 +332,18 @@ void WavePlayerStart(void)
   }
 }
 
-void BSP_Start_Audio(void)
+void BSP_Start_Audio(uint8_t filename[255])
 {
   UINT bytesread = 0;
   char path[] = "0:/";
   char* wavefilename = NULL;
   WAVE_FormatTypeDef waveformat;
   uint32_t WaveDataLength = 0;
-  uint8_t wave_file[255];
 
   /* Get the read out protection status */
   if(f_opendir(&Directory, path) == FR_OK)
   {
-    BSP_UART_Init(115200);
-    uprintf("Enter The Wave file name \n\r");
-    uget_line(wave_file,sizeof(wave_file));
-    uprintf("\n\r");
-
-    wavefilename = wave_file;
+    wavefilename = filename;
 
     /* Open the Wave file to be played */
     if(f_open(&FileRead, wavefilename , FA_READ) == FR_OK)
