@@ -61,10 +61,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   /* Initialize and Start DAC conversion */
-  BSP_DAC_Init(DAC_CHANNEL_1, DAC_TRIGGER_NONE);   
-  HAL_DAC_SetValue(&hdac_bsp,DAC_Channel_1,DAC_ALIGN_12B_R,0xFFF);          //12-bit right alignment
-  // HAL_DAC_SetValue(&hdac_bsp,DAC_Channel_1,DAC_ALIGN_12B_L,0xFFF0);          //12-bit left alignment
-  // HAL_DAC_SetValue(&hdac_bsp,DAC_Channel_1,DAC_ALIGN_8B_R,0xFF);           //8-bit right alignment
+  BSP_DAC_Init(DAC_CHANNEL_1, DAC_TRIGGER_NONE);
+  HAL_DAC_SetValue(&hdac_bsp,DAC_CHANNEL_1,DAC_ALIGN_12B_R,0xFFF);          //12-bit right alignment
+  // HAL_DAC_SetValue(&hdac_bsp,DAC_CHANNEL_1,DAC_ALIGN_12B_L,0xFFF0);          //12-bit left alignment
+  // HAL_DAC_SetValue(&hdac_bsp,DAC_CHANNEL_1,DAC_ALIGN_8B_R,0xFF);           //8-bit right alignment
   /* USER CODE END 2 */
 
   /* Infinite loop */
