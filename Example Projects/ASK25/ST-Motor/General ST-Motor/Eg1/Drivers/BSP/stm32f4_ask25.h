@@ -23,6 +23,7 @@
 #include "stm32f4_ask25_lcd.h"
 #include "stm32f4_ask25_at24c16.h"
 #include "stm32f4_ask25_25aa160a.h"
+
 /** @addtogroup BSP
   * @{
   */
@@ -147,8 +148,8 @@ typedef enum
 /******************************************************************************/
 /*                      Stepper Motor Selection                               */
 /******************************************************************************/
-#define GENERAL_SM_SEL           ENABLE
-#define STM_601_SEL              DISABLE
+#define GENERAL_SM_SEL           DISABLE
+#define STM_601_SEL              ENABLE
 
 /**
   * @}

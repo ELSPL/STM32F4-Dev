@@ -148,8 +148,8 @@ typedef enum
 /******************************************************************************/
 /*                      Stepper Motor Selection                               */
 /******************************************************************************/
-#define GENERAL_SM_SEL           ENABLE
-#define STM_601_SEL              DISABLE
+#define GENERAL_SM_SEL           DISABLE
+#define STM_601_SEL              ENABLE
 
 /**
   * @}
