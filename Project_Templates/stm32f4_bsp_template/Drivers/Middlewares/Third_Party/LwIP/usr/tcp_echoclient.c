@@ -1,30 +1,12 @@
 /**
   ******************************************************************************
-  * @file    LwIP/LwIP_TCP_Echo_Client/Src/tcp_echoclient.c
-  * @author  MCD Application Team
-  * @version V1.2.2
-  * @date    25-May-2015
+  * @file    tcp_echoclient.c
+  * @author  Dwijay.Edutech Learning Solutions
+  * @version V1.0
+  * @date    06-April-2015
   * @brief   tcp echoclient application using LwIP RAW API
   ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
-  ******************************************************************************
   */
-
 /* Includes ------------------------------------------------------------------*/
 #include "tcp_echoclient.h"
 #include "lwip/debug.h"
@@ -34,11 +16,36 @@
 #include <stdio.h>
 #include <string.h>
 
+/** @addtogroup STM32F4_DISCOVERY_ETH
+  * @{
+  */
+
+/** @defgroup STM32F4_DISCOVERY_ETH
+  * @brief This file provides set of firmware functions for TCP protocol
+  *
+  * @{
+  */
+
+
+/** @defgroup STM32F4_DISCOVERY_ETH_Exported_Handle
+ * @{
+ */
+
+/**
+  * @}
+  */
+
+
+
 #if LWIP_TCP
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+
+/** @defgroup STM32F4_DISCOVERY_ETH_Private variables
+ * @{
+ */
 
 u8_t  recev_buf[50];
 __IO uint32_t message_count=0;
@@ -66,8 +73,15 @@ struct echoclient
   struct pbuf *p_tx;            /* pointer on pbuf to be transmitted */
 };
 
+/**
+  * @}
+  */
 
 /* Private function prototypes -----------------------------------------------*/
+
+/** @defgroup STM32F4_DISCOVERY_ETH_Private function prototypes
+ * @{
+ */
 static err_t tcp_echoclient_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err);
 static void tcp_echoclient_connection_close(struct tcp_pcb *tpcb, struct echoclient * es);
 static err_t tcp_echoclient_poll(void *arg, struct tcp_pcb *tpcb);
@@ -75,8 +89,14 @@ static err_t tcp_echoclient_sent(void *arg, struct tcp_pcb *tpcb, u16_t len);
 static void tcp_echoclient_send(struct tcp_pcb *tpcb, struct echoclient * es);
 static err_t tcp_echoclient_connected(void *arg, struct tcp_pcb *tpcb, err_t err);
 
+/**
+  * @}
+  */
 /* Private functions ---------------------------------------------------------*/
 
+/** @defgroup STM32F4_DISCOVERY_ETH_Private function
+ * @{
+ */
 
 /**
 * @brief  Connects to the TCP echo server
@@ -377,7 +397,17 @@ static void tcp_echoclient_connection_close(struct tcp_pcb *tpcb, struct echocli
   tcp_close(tpcb);
 
 }
+/**
+  * @}
+  */
 
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
 #endif /* LWIP_TCP */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

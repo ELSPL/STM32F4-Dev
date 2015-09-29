@@ -1,45 +1,32 @@
 /**
- * Copyright (c) 2001-2004 Swedish Institute of Computer Science.
- * All rights reserved. 
- * 
- * Redistribution and use in source and binary forms, with or without modification, 
- * are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 3. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission. 
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED 
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF 
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT 
- * SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT 
- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING 
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
- * OF SUCH DAMAGE.
- *
- * This file is part of and a contribution to the lwIP TCP/IP stack.
- *
- * Credits go to Adam Dunkels (and the current maintainers) of this software.
- *
- * Christiaan Simons rewrote this file to get a more stable echo application.
- *
- **/
-
- /* This file was modified by ST */
-
+  ******************************************************************************
+  * @file    tcp_echoserver.c
+  * @author  Bhavin.Edutech Learning Solutions
+  * @version V1.0
+  * @date    29-September-2015
+  * @brief   tcp echoserver application using LwIP RAW API
+  ******************************************************************************
+  */
 
 #include "lwip/debug.h"
 #include "lwip/stats.h"
 #include "lwip/tcp.h"
 
 #if LWIP_TCP
+
+/** @addtogroup STM32F4_DISCOVERY_ETH
+  * @{
+  */
+
+/** @defgroup STM32F4_DISCOVERY_ETH
+  * @brief This file provides set of firmware functions for TCP protocol
+  *
+  * @{
+  */
+
+/** @defgroup STM32F4_DISCOVERY_ETH_Private variables
+ * @{
+ */
 
 static struct tcp_pcb *tcp_echoserver_pcb;
 
@@ -52,7 +39,7 @@ enum tcp_echoserver_states
   ES_CLOSING
 };
 
-/* structure for maintaing connection infos to be passed as argument 
+/* structure for maintaing connection infos to be passed as argument
    to LwIP callbacks*/
 struct tcp_echoserver_struct
 {
@@ -61,6 +48,13 @@ struct tcp_echoserver_struct
   struct pbuf *p;         /* pointer on the received/to be transmitted pbuf */
 };
 
+/**
+  * @}
+  */
+
+/** @defgroup STM32F4_DISCOVERY_ETH_Private function prototypes
+ * @{
+ */
 
 static err_t tcp_echoserver_accept(void *arg, struct tcp_pcb *newpcb, err_t err);
 static err_t tcp_echoserver_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err);
@@ -70,6 +64,13 @@ static err_t tcp_echoserver_sent(void *arg, struct tcp_pcb *tpcb, u16_t len);
 static void tcp_echoserver_send(struct tcp_pcb *tpcb, struct tcp_echoserver_struct *es);
 static void tcp_echoserver_connection_close(struct tcp_pcb *tpcb, struct tcp_echoserver_struct *es);
 
+/**
+  * @}
+  */
+
+/** @defgroup STM32F4_DISCOVERY_ETH_Functions
+  * @{
+  */
 
 /**
   * @brief  Initializes the tcp echo server
@@ -84,19 +85,19 @@ void tcp_echoserver_init(void)
   if (tcp_echoserver_pcb != NULL)
   {
     err_t err;
-    
+
     /* bind echo_pcb to port 7 (ECHO protocol) */
     err = tcp_bind(tcp_echoserver_pcb, IP_ADDR_ANY, 7);
-    
+
     if (err == ERR_OK)
     {
       /* start tcp listening for echo_pcb */
       tcp_echoserver_pcb = tcp_listen(tcp_echoserver_pcb);
-      
+
       /* initialize LwIP tcp_accept callback function */
       tcp_accept(tcp_echoserver_pcb, tcp_echoserver_accept);
     }
-    else 
+    else
     {
       /* deallocate the pcb */
       memp_free(MEMP_TCP_PCB, tcp_echoserver_pcb);
@@ -105,10 +106,20 @@ void tcp_echoserver_init(void)
 }
 
 /**
+  * @}
+  */
+
+/* Private functions ---------------------------------------------------------*/
+
+/** @defgroup STM32F4_DISCOVERY_ETH_Private function
+ * @{
+ */
+
+/**
   * @brief  This function is the implementation of tcp_accept LwIP callback
   * @param  arg: not used
   * @param  newpcb: pointer on tcp_pcb struct for the newly created tcp connection
-  * @param  err: not used 
+  * @param  err: not used
   * @retval err_t: error status
   */
 static err_t tcp_echoserver_accept(void *arg, struct tcp_pcb *newpcb, err_t err)
@@ -129,19 +140,19 @@ static err_t tcp_echoserver_accept(void *arg, struct tcp_pcb *newpcb, err_t err)
     es->state = ES_ACCEPTED;
     es->pcb = newpcb;
     es->p = NULL;
-    
+
     /* pass newly allocated es structure as argument to newpcb */
     tcp_arg(newpcb, es);
-    
-    /* initialize lwip tcp_recv callback function for newpcb  */ 
+
+    /* initialize lwip tcp_recv callback function for newpcb  */
     tcp_recv(newpcb, tcp_echoserver_recv);
-    
+
     /* initialize lwip tcp_err callback function for newpcb  */
     tcp_err(newpcb, tcp_echoserver_error);
-    
+
     /* initialize lwip tcp_poll callback function for newpcb */
     tcp_poll(newpcb, tcp_echoserver_poll, 1);
-    
+
     ret_err = ERR_OK;
   }
   else
@@ -151,7 +162,7 @@ static err_t tcp_echoserver_accept(void *arg, struct tcp_pcb *newpcb, err_t err)
     /* return memory error */
     ret_err = ERR_MEM;
   }
-  return ret_err;  
+  return ret_err;
 }
 
 
@@ -169,9 +180,9 @@ static err_t tcp_echoserver_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p
   err_t ret_err;
 
   LWIP_ASSERT("arg != NULL",arg != NULL);
-  
+
   es = (struct tcp_echoserver_struct *)arg;
-  
+
   /* if we receive an empty tcp frame from client => close connection */
   if (p == NULL)
   {
@@ -187,12 +198,12 @@ static err_t tcp_echoserver_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p
       /* we're not done yet */
       /* acknowledge received packet */
       tcp_sent(tpcb, tcp_echoserver_sent);
-      
+
       /* send remaining data*/
       tcp_echoserver_send(tpcb, es);
     }
     ret_err = ERR_OK;
-  }   
+  }
   /* else : a non empty frame was received from client but for some reason err != ERR_OK */
   else if(err != ERR_OK)
   {
@@ -208,16 +219,16 @@ static err_t tcp_echoserver_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p
   {
     /* first data chunk in p->payload */
     es->state = ES_RECEIVED;
-    
+
     /* store reference to incoming pbuf (chain) */
     es->p = p;
-    
+
     /* initialize LwIP tcp_sent callback function */
     tcp_sent(tpcb, tcp_echoserver_sent);
-    
+
     /* send back the received data (echo) */
     tcp_echoserver_send(tpcb, es);
-    
+
     ret_err = ERR_OK;
   }
   else if (es->state == ES_RECEIVED)
@@ -226,7 +237,7 @@ static err_t tcp_echoserver_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p
     if(es->p == NULL)
     {
       es->p = p;
-  
+
       /* send back received data */
       tcp_echoserver_send(tpcb, es);
     }
@@ -240,13 +251,13 @@ static err_t tcp_echoserver_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p
     }
     ret_err = ERR_OK;
   }
-  
+
   /* data received when connection already closed */
   else
   {
     /* Acknowledge data reception */
     tcp_recved(tpcb, p->tot_len);
-    
+
     /* free pbuf and do nothing */
     es->p = NULL;
     pbuf_free(p);
@@ -257,8 +268,8 @@ static err_t tcp_echoserver_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p
 
 /**
   * @brief  This function implements the tcp_err callback function (called
-  *         when a fatal tcp_connection error occurs. 
-  * @param  arg: pointer on argument parameter 
+  *         when a fatal tcp_connection error occurs.
+  * @param  arg: pointer on argument parameter
   * @param  err: not used
   * @retval None
   */
@@ -317,7 +328,7 @@ static err_t tcp_echoserver_poll(void *arg, struct tcp_pcb *tpcb)
 
 /**
   * @brief  This function implements the tcp_sent LwIP callback (called when ACK
-  *         is received from remote host for sent data) 
+  *         is received from remote host for sent data)
   * @param  None
   * @retval None
   */
@@ -328,7 +339,7 @@ static err_t tcp_echoserver_sent(void *arg, struct tcp_pcb *tpcb, u16_t len)
   LWIP_UNUSED_ARG(len);
 
   es = (struct tcp_echoserver_struct *)arg;
-  
+
   if(es->p != NULL)
   {
     /* still got pbufs to send */
@@ -354,33 +365,33 @@ static void tcp_echoserver_send(struct tcp_pcb *tpcb, struct tcp_echoserver_stru
 {
   struct pbuf *ptr;
   err_t wr_err = ERR_OK;
- 
+
   while ((wr_err == ERR_OK) &&
-         (es->p != NULL) && 
+         (es->p != NULL) &&
          (es->p->len <= tcp_sndbuf(tpcb)))
   {
-    
+
     /* get pointer on pbuf from es structure */
     ptr = es->p;
 
     /* enqueue data for transmission */
     wr_err = tcp_write(tpcb, ptr->payload, ptr->len, 1);
-    
+
     if (wr_err == ERR_OK)
     {
       u16_t plen;
 
       plen = ptr->len;
-     
+
       /* continue with next pbuf in chain (if any) */
       es->p = ptr->next;
-      
+
       if(es->p != NULL)
       {
         /* increment reference count for es->p */
         pbuf_ref(es->p);
       }
-      
+
       /* free pbuf: will free pbufs up to es->p (because es->p has a reference count > 0) */
       pbuf_free(ptr);
 
@@ -408,22 +419,33 @@ static void tcp_echoserver_send(struct tcp_pcb *tpcb, struct tcp_echoserver_stru
   */
 static void tcp_echoserver_connection_close(struct tcp_pcb *tpcb, struct tcp_echoserver_struct *es)
 {
-  
+
   /* remove all callbacks */
   tcp_arg(tpcb, NULL);
   tcp_sent(tpcb, NULL);
   tcp_recv(tpcb, NULL);
   tcp_err(tpcb, NULL);
   tcp_poll(tpcb, NULL, 0);
-  
+
   /* delete es structure */
   if (es != NULL)
   {
     mem_free(es);
-  }  
-  
+  }
+
   /* close tcp connection */
   tcp_close(tpcb);
 }
 
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
 #endif /* LWIP_TCP */
