@@ -1,27 +1,10 @@
 /**
   ******************************************************************************
-  * @file    LwIP/LwIP_UDP_Echo_Client/Src/udp_echoclient.c
-  * @author  MCD Application Team
-  * @version V1.2.2
-  * @date    25-May-2015
-  * @brief   UDP echo client
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
+  * @file    udp_echoclient.c
+  * @author  Dwijay.Edutech Learning Solutions
+  * @version V1.0
+  * @date    29-September-2015
+  * @brief   UDP protocol initialization(client)
   ******************************************************************************
   */
 
@@ -33,19 +16,40 @@
 #include <string.h>
 #include <stdio.h>
 
+/** @addtogroup STM32F4_DISCOVERY_ETH
+  * @{
+  */
+
+/** @defgroup STM32F4_DISCOVERY_ETH
+  * @brief This file provides set of firmware functions for UDP protocol
+  *
+  * @{
+  */
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
+
+/** @defgroup STM32F4_DISCOVERY_ETH_Private_function_prototypes
+ * @{
+ */
+
 void udp_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, struct ip_addr *addr, u16_t port);
 
 u8_t   data[100];
 __IO uint32_t message_count1 = 0;
 struct udp_pcb *upcb;
 
+/**
+  * @}
+  */
 
 /* Private functions ---------------------------------------------------------*/
+/** @defgroup STM32F4_DISCOVERY_ETH_Private_functions
+ * @{
+ */
 
 /**
   * @brief  Connect to UDP echo server
@@ -126,4 +130,15 @@ void udp_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, struc
   pbuf_free(p);
 }
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+

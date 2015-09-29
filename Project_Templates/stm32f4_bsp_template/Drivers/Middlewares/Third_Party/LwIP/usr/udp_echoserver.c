@@ -1,27 +1,10 @@
 /**
   ******************************************************************************
-  * @file    LwIP/LwIP_UDP_Echo_Server/Src/udp_echoserver.c
-  * @author  MCD Application Team
-  * @version V1.2.2
-  * @date    25-May-2015
-  * @brief   UDP echo server
-  ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
-  *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  *
+  * @file    udp_echoserver.c
+  * @author  Dwijay.Edutech Learning Solutions
+  * @version V1.0
+  * @date    29-September-2015
+  * @brief   UDP protocol initialization(server)
   ******************************************************************************
   */
 
@@ -33,10 +16,29 @@
 #include <string.h>
 #include <stdio.h>
 
+/** @addtogroup STM32F4_DISCOVERY_ETH
+  * @{
+  */
+
+/** @defgroup STM32F4_DISCOVERY_ETH
+  * @brief This file provides set of firmware functions for UDP protocol
+  *
+  * @{
+  */
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
+
+/** @defgroup STM32F4_DISCOVERY_ETH_Private_define
+ * @{
+ */
+
 #define UDP_SERVER_PORT    7   /* define the UDP local connection port */
 #define UDP_CLIENT_PORT    7   /* define the UDP remote connection port */
+
+/**
+  * @}
+  */
 
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
@@ -44,6 +46,11 @@
 void udp_echoserver_receive_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, struct ip_addr *addr, u16_t port);
 
 /* Private functions ---------------------------------------------------------*/
+
+/** @defgroup STM32F4_DISCOVERY_ETH_Private_functions
+ * @{
+ */
+
 
 /**
   * @brief  Initialize the server application.
@@ -98,4 +105,14 @@ void udp_echoserver_receive_callback(void *arg, struct udp_pcb *upcb, struct pbu
 
 }
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
