@@ -1,0 +1,17 @@
+Enable Camera
+stps:
+ 1. Open proprties of the Project 
+ 2. Expand the C/C++ General option in left side window
+ 3. click on Paths and Symbols
+ 4. click on Symbols on the right side window
+ 5. select languages GNU C
+ 6. click on ADD  
+ 7. New window will open "Add Symbol"
+ 8. Add Name "USE_STM32F4_CAMERA"
+ 9. click ok, Do not Rebuild the project
+ 10. click Apply 
+ 11. click ok
+ 12. Enable "CAMERA_TSC_SEL" and disable "AUDIO_SEL" in stm32f4_discovery.h file
+ 13. Right click on the project
+ 14. Go to index and click on "Freshen all files"
+
