@@ -54,6 +54,7 @@ typedef struct{
    int16_t  yOffset;
 }Adjust_Struct;
 
+extern Point_Struct left_upper_point,right_upper_point,left_down_point,right_down_point,tst_point;
 
 #ifdef LCD_TOUCH_CALIBRATION_MODULE
     #define LCD_TOUCH_CALIBRATION_EXT
