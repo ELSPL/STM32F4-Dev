@@ -239,14 +239,14 @@ void BSP_TS_Cal_Init(MATRIX_Type *matrixPtr)
 {
   uint8_t n;
   MATRIX_Type matrix[4],avgmatrix;
-  TS_StateTypeDef RTouch;
+  TS_StateTypeDef RTouch,T_State;
   TS_StateTypeDef screenSample[5];
   TS_StateTypeDef displaySample[5] =  {
-      {  20,  20 },
-      { 300,  20 },
-      { 300, 220 },
-      {  20, 220 },
-      { 160, 120 },
+      { 0, 20, 20, 0 },
+      { 0, 300,  20, 0 },
+      { 0, 300, 220, 0 },
+      { 0, 20, 220, 0 },
+      { 0, 160, 120, 0 },
   };
 
   TS_StateTypeDef displaytriangle1[3] = {displaySample[0],displaySample[4],displaySample[1]};
@@ -289,15 +289,18 @@ void BSP_TS_Cal_Init(MATRIX_Type *matrixPtr)
         break;
     }
 
-    while(TReady == FALSE);
-    HAL_Delay(2000);
+    HAL_Delay(1000);
+    T_State.x = 0;
+    T_State.y = 0;
+    while((T_State.x == 0) && (T_State.y == 0))
+    {
+      BSP_TS_GetState(&T_State);
+      HAL_Delay(100);
+    }
 
-    screenSample[n].x = gTouch.x;
-    screenSample[n].y = gTouch.y;
-    TReady = FALSE;
+    screenSample[n].x = T_State.x;
+    screenSample[n].y = T_State.y;
   }
-
-  CalTouch=FALSE;
 
   TS_StateTypeDef screentriangle1[3] = {screenSample[0],screenSample[4],screenSample[1]};
   TS_StateTypeDef screentriangle2[3] = {screenSample[1],screenSample[4],screenSample[2]};
