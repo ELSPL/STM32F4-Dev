@@ -306,7 +306,10 @@ uint8_t ugetche(TRANSFER_BLOCK_Type mode)
       status = UART_Receive(key, 1, 1);
     }
   }
-
+  else if(mode == TIME_BLOCKING)
+  {
+    status = UART_Receive(key, 1, 100);
+  }
   /* Got some data */
   if(status == HAL_OK)
   {
