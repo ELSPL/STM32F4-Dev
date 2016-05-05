@@ -319,6 +319,81 @@ void BSP_Set_UnprivilegeMode(void)
 {
   __set_CONTROL((priviledge_status & THREAD_PRIVILEDGED_MASK)|THREAD_UNPRIVILEGED);
 }
+
+/**
+ * @brief This function is used to over-clock the CPU frequency
+ * @param freq enter the freq
+ *        @arg SYSCLK_42_MHZ
+ *        @arg SYSCLK_84_MHZ
+ *        @arg SYSCLK_168_MHZ
+ *        @arg SYSCLK_200_MHZ
+ *        @arg SYSCLK_240_MHZ
+ *        @arg SYSCLK_250_MHZ
+ */
+void BSP_RCC_Set_Frequency(Sysclk_Freq_Typedef freq)
+{
+    RCC_OscInitTypeDef RCC_OscInitStruct;
+    RCC_ClkInitTypeDef RCC_ClkInitStruct;
+
+    int freqs[]   = {42, 84, 168, 200, 240, 250};
+
+    /* USB freqs: 42MHz, 42Mhz, 48MHz, 50MHz, 48MHz */
+    int pll_div[] = {2, 4, 7, 10, 10, 11};
+
+    /* PLL_VCO = (HSE_VALUE / PLL_M) * PLL_N */
+    /* SYSCLK = PLL_VCO / PLL_P */
+    /* USB OTG FS, SDIO and RNG Clock =  PLL_VCO / PLLQ */
+
+    HAL_RCC_DeInit();
+
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+    RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+    RCC_OscInitStruct.PLL.PLLM = (HSE_VALUE/1000000);
+    RCC_OscInitStruct.PLL.PLLN = freqs[freq] * 2;
+    RCC_OscInitStruct.PLL.PLLP = 2;
+    RCC_OscInitStruct.PLL.PLLQ = pll_div[freq];
+
+    HAL_RCC_OscConfig(&RCC_OscInitStruct);
+
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1
+                                    |RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+
+    /* Set APBx clock dividers */
+    switch (freq) {
+        /* Max freq APB1: 42MHz APB2: 84MHz */
+        case SYSCLK_42_MHZ:
+            RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1; /* 42MHz */
+            RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1; /* 42MHz */
+            break;
+        case SYSCLK_84_MHZ:
+            RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2; /* 42MHz */
+            RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1; /* 84MHz */
+            break;
+        case SYSCLK_168_MHZ:
+            RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4; /* 42MHz */
+            RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2; /* 84MHz */
+            break;
+        case SYSCLK_200_MHZ:
+            RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4; /* 50MHz */
+            RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2; /* 100MHz */
+            break;
+        case SYSCLK_240_MHZ:
+            RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4; /* 60MHz */
+            RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2; /* 120MHz */
+            break;
+        case SYSCLK_250_MHZ:
+            RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  /* 62.5MHz */
+            RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  /* 125MHz */
+    }
+
+    HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+}
+
+
 /**
  * @} GLOBAL_Public_Functions End
  */
