@@ -324,6 +324,16 @@ typedef void (*PFV)();
 /** Pointer to Function returning int32_t (any number of parameters) */
 typedef int32_t(*PFI)();
 
+/** CPU overclock */
+typedef enum {
+    SYSCLK_42_MHZ=0,
+    SYSCLK_84_MHZ,
+    SYSCLK_168_MHZ,
+    SYSCLK_200_MHZ,
+    SYSCLK_240_MHZ,
+    SYSCLK_250_MHZ,
+}Sysclk_Freq_Typedef;
+
 /**
  * @}
  */
