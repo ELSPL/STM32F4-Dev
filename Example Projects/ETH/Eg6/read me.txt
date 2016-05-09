@@ -1,0 +1,1 @@
+To run the program open the web browser and type the ip address 192.168.0.10 and press enter key. It will load stm32f4 page.

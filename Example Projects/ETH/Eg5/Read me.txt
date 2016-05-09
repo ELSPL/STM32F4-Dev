@@ -1,0 +1,7 @@
+wireshark use
+
+1. Open wireshark
+2. Click on start
+3. It may ask for the interface selection, select ethernet
+4. Now it will start capturing the oncoming and outgoing traffic from the ethernet port
+5. Our packet will be shown in white color with source and destination mac address and 0x6400 protocol

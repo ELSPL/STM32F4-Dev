@@ -192,14 +192,29 @@ static void BSP_ADC_MspInit(ADC_HandleTypeDef* hadc,ADC_PortPin_Typedef ADC_pin)
 /**
  * @brief DMA initialization for ADC
  */
-static void BSP_ADC_DMA_Init(void)
+static void BSP_ADC_DMA_Init(ADC_HandleTypeDef* hadc)
 {
   /* DMA controller clock enable */
   __DMA2_CLK_ENABLE();
 
-  /* DMA interrupt init */
-  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 1, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+  if(hadc == &hadc_bsp1)
+  {
+    /* DMA interrupt init */
+    HAL_NVIC_SetPriority(DMA2_Stream4_IRQn, 1, 0);
+    HAL_NVIC_EnableIRQ(DMA2_Stream4_IRQn);
+  }
+  else if(hadc == &hadc_bsp2)
+  {
+    /* DMA interrupt init */
+    HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 1, 0);
+    HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
+  }
+  else if(hadc == &hadc_bsp3)
+  {
+    /* DMA interrupt init */
+    HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 1, 0);
+    HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
+  }
 }
 
 
@@ -311,7 +326,7 @@ void BSP_ADC_Init(ADC_HandleTypeDef* hadc, ADC_PortPin_Typedef ADC_channel, uint
 
     if (multimode_type == Dual_Mode_REGSIMULT || multimode_type == Dual_Mode_INTERL || multimode_type == Triple_Mode_INTERL)
     {
-      BSP_ADC_DMA_Init();   // Initialize DMA Clock and interrupt
+      BSP_ADC_DMA_Init(hadc);   // Initialize DMA Clock and interrupt
     }
     BSP_ADC_MspInit(hadc,ADC_channel);
     HAL_ADC_Init(hadc);
@@ -379,7 +394,7 @@ void BSP_ADC_Init(ADC_HandleTypeDef* hadc, ADC_PortPin_Typedef ADC_channel, uint
 
     if (multimode_type == Dual_Mode_REGSIMULT || multimode_type == Dual_Mode_INTERL || multimode_type == Triple_Mode_INTERL)
     {
-      BSP_ADC_DMA_Init();   // Initialize DMA Clock and interrupt
+      BSP_ADC_DMA_Init(hadc);   // Initialize DMA Clock and interrupt
     }
     BSP_ADC_MspInit(hadc,ADC_channel);
     HAL_ADC_Init(hadc);
