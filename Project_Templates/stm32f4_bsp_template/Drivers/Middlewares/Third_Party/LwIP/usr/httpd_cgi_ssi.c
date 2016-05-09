@@ -129,11 +129,11 @@ const char * LEDS_CGI_Handler(int iIndex, int iNumParams, char *pcParam[], char 
       {
         /* switch led1 ON if 1 */
         if(strcmp(pcValue[i], "1") ==0)
-          BSP_LED_On(LED3);
+          BSP_LED_On(LED4);
 
         /* switch led2 ON if 2 */
         else if(strcmp(pcValue[i], "2") ==0)
-          BSP_LED_On(LED4);
+          BSP_LED_On(LED3);
 
         /* switch led3 ON if 3 */
         else if(strcmp(pcValue[i], "3") ==0)
