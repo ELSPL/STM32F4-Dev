@@ -43,25 +43,31 @@
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
-osThreadId defaultTaskHandle;
+#if VCP_DEBUG
+osThreadId vcpDebugHandle;
+#endif
+//osMessageQId myQueue01Handle;
+//osTimerId myTimer01Handle;
+//osMutexId myMutex01Handle;
+//osMutexId myRecursiveMutex01Handle;
+//osSemaphoreId myBinarySem01Handle;
+//osSemaphoreId myCountingSem01Handle;
 
-/* USER CODE BEGIN Variables */
-
-/* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
-void StartDefaultTask(void const * argument);
+#if VCP_DEBUG
+void vDebug_Task(void const * argument);
+#endif
+//void Callback01(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
-/* USER CODE BEGIN FunctionPrototypes */
-
-/* USER CODE END FunctionPrototypes */
 
 /* Hook prototypes */
 void configureTimerForRunTimeStats(void);
 unsigned long getRunTimeCounterValue(void);
 void vApplicationIdleHook(void);
+void vApplicationTickHook(void);
 void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName);
 void vApplicationMallocFailedHook(void);
 
@@ -97,6 +103,41 @@ void vApplicationIdleHook( void )
 }
 /* USER CODE END 2 */
 
+/* USER CODE BEGIN 3 */
+void vApplicationTickHook( void )
+{
+   /* This function will be called by each tick interrupt if
+   configUSE_TICK_HOOK is set to 1 in FreeRTOSConfig.h. User code can be
+   added here, but the tick hook is called from an interrupt context, so
+   code must not attempt to block, and only the interrupt safe FreeRTOS API
+   functions can be used (those that end in FromISR()). */
+  static unsigned long ulTicksSinceLastDisplay = 0;
+
+    /* Called from every tick interrupt as described in the comments at the top
+    of this file.
+
+    Have enough ticks passed to make it time to perform our health status
+    check again? */
+    ulTicksSinceLastDisplay++;
+    if( ulTicksSinceLastDisplay >= 500 )
+    {
+      /* Reset the counter so these checks run again in mainCHECK_DELAY
+      ticks time. */
+      ulTicksSinceLastDisplay = 0;
+
+      /* Has an error been found in any task? */
+    /*  if( xAreGenericQueueTasksStillRunning() != pdTRUE )
+      {
+        pcStatusMessage = "An error has been detected in the Generic Queue test/demo.";
+      }
+      else if( xAreQueuePeekTasksStillRunning() != pdTRUE )
+      {
+        pcStatusMessage = "An error has been detected in the Peek Queue test/demo.";
+      }*/
+    }
+}
+/* USER CODE END 3 */
+
 /* USER CODE BEGIN 4 */
 void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
 {
@@ -131,41 +172,53 @@ void vApplicationMallocFailedHook(void)
 /* Init FreeRTOS */
 
 void MX_FREERTOS_Init(void) {
-  /* USER CODE BEGIN Init */
+  /* Create the mutex(es) */
+  /* definition and creation of myMutex01 */
+//  osMutexDef(myMutex01);
+//  myMutex01Handle = osMutexCreate(osMutex(myMutex01));
 
-  /* USER CODE END Init */
+  /* Create the recursive mutex(es) */
+  /* definition and creation of myRecursiveMutex01 */
+//  osMutexDef(myRecursiveMutex01);
+//  myRecursiveMutex01Handle = osRecursiveMutexCreate(osMutex(myRecursiveMutex01));
 
-  /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
-  /* USER CODE END RTOS_MUTEX */
 
-  /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
-  /* USER CODE END RTOS_SEMAPHORES */
+  /* Create the semaphores(s) */
+  /* definition and creation of myBinarySem01 */
+//  osSemaphoreDef(myBinarySem01);
+//  myBinarySem01Handle = osSemaphoreCreate(osSemaphore(myBinarySem01), 1);
 
-  /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
-  /* USER CODE END RTOS_TIMERS */
+
+  /* definition and creation of myCountingSem01 */
+//  osSemaphoreDef(myCountingSem01);
+//  myCountingSem01Handle = osSemaphoreCreate(osSemaphore(myCountingSem01), 2);
+
+
+  /* Create the timer(s) */
+  /* definition and creation of myTimer01 */
+//  osTimerDef(myTimer01, Callback01);
+//  myTimer01Handle = osTimerCreate(osTimer(myTimer01), osTimerPeriodic, NULL);
+
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 512);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+#if VCP_DEBUG
+  /* definition and creation of vcpDebug */
+  osThreadDef(vcpDebug, vDebug_Task, osPriorityNormal, 0, 512);
+  vcpDebugHandle = osThreadCreate(osThread(vcpDebug), NULL);
+#endif
 
-  /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
-  /* USER CODE END RTOS_THREADS */
-
-  /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
-  /* USER CODE END RTOS_QUEUES */
+  /* Create the queue(s) */
+  /* definition and creation of myQueue01 */
+//  osMessageQDef(myQueue01, 16, uint16_t);
+//  myQueue01Handle = osMessageCreate(osMessageQ(myQueue01), NULL);
 }
 
-/* StartDefaultTask function */
-void StartDefaultTask(void const * argument)
+#if VCP_DEBUG
+/* vDebug_Task function */
+void vDebug_Task(void const * argument)
 {
 
-  /* USER CODE BEGIN StartDefaultTask */
+  /* USER CODE BEGIN vDebug_Task */
   static portCHAR buff[900] = {0};
   unsigned portCHAR ch=0;
   uint8_t flag = 0;
@@ -190,6 +243,7 @@ void StartDefaultTask(void const * argument)
     switch(ch)
     {
     case '1':
+//      vTraceUserEvent(xTraceOpenLabel("Task State Opened"));
       vTaskList( (signed char *) buff );
       vuprintf("\x1b[1;1H\n\rThe current task list is as follows....");
       vuprintf("\n\r----------------------------------------------");
@@ -199,9 +253,11 @@ void StartDefaultTask(void const * argument)
       vuprintf("\n\r----------------------------------------------\n\r");
       vuprintf("Press ESC key to escape functionality\n\r");
       flag = 1;
+//      vTraceUserEvent(xTraceOpenLabel("Task State Closed"));
       break;
 
     case '2':
+//      vTraceUserEvent(xTraceOpenLabel("Run Time Stats Opened"));
       vTaskGetRunTimeStats((signed char *) buff);
       vuprintf("\x1b[1;1H\n\rThe current task list is as follows....");
       vuprintf("\n\r----------------------------------------------");
@@ -211,6 +267,7 @@ void StartDefaultTask(void const * argument)
       vuprintf("\n\r----------------------------------------------\n\r");
       vuprintf("Press ESC key to escape functionality\n\r");
       flag = 1;
+//      vTraceUserEvent(xTraceOpenLabel("Run Time Stats Closed"));
       break;
 
     default:
@@ -229,8 +286,19 @@ void StartDefaultTask(void const * argument)
     }
     osDelay(400);  // should be less than other tasks execution
   }
-  /* USER CODE END StartDefaultTask */
+  /* USER CODE END vDebug_Task */
 }
+#endif
+
+#if 0
+/* Callback01 function */
+void Callback01(void const * argument)
+{
+  /* USER CODE BEGIN Callback01 */
+
+  /* USER CODE END Callback01 */
+}
+#endif
 
 /* USER CODE BEGIN Application */
 
