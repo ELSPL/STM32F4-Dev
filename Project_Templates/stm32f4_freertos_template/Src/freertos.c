@@ -203,7 +203,7 @@ void MX_FREERTOS_Init(void) {
   /* Create the thread(s) */
 #if VCP_DEBUG
   /* definition and creation of vcpDebug */
-  osThreadDef(vcpDebug, vDebug_Task, osPriorityNormal, 0, 512);
+  osThreadDef(vcpDebug, vDebug_Task, osPriorityIdle, 0, 512);
   vcpDebugHandle = osThreadCreate(osThread(vcpDebug), NULL);
 #endif
 
