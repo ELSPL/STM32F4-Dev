@@ -39,7 +39,7 @@
 #include "stm32f4_global.h"
 #include "stm32f4_discovery_uart.h"
 #include "stm32f4_discovery_vcp.h"
-//#include "stm32f4_discovery.h"
+#include "stm32f4_discovery.h"
 //#include "stm32f4_ask25.h"
 
 
@@ -88,12 +88,17 @@ int main(void)
 
   /* initialize the UART and VCP */
 //  BSP_UART_Init(115200);
+  BSP_LED_Init(LED3);
+  BSP_LED_Init(LED4);
+//  BSP_LED_Init(LED5);
+#if VCP_DEBUG
   BSP_VCP_Init();
   vgetche(BLOCKING);      // Dummy read to get the VCP Connected
+#endif
 
   vTraceInitTraceData ();
   if (!uiTraceStart())
-     vuprintf("Could not start recorder!\n\r");
+    trace_printf("Could not start recorder!\n\r");
 
   /* USER CODE END 2 */
 
