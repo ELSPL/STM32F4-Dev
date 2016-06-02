@@ -88,8 +88,7 @@ int main(void)
 
   /* initialize the UART and VCP */
 //  BSP_UART_Init(115200);
-  BSP_LED_Init(LED3);
-  BSP_LED_Init(LED4);
+
 //  BSP_LED_Init(LED5);
 #if VCP_DEBUG
   BSP_VCP_Init();

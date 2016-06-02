@@ -39,6 +39,7 @@
 /* USER CODE BEGIN Includes */
 #include "stm32f4_discovery_timer.h"
 #include "stm32f4_discovery_vcp.h"
+#include "stm32f4_discovery.h"
 
 /* USER CODE END Includes */
 
@@ -46,7 +47,10 @@
 #if VCP_DEBUG
 osThreadId vcpDebugHandle;
 #endif
-//osMessageQId myQueue01Handle;
+
+osThreadId myTask01Handle;
+osThreadId myTask02Handle;
+osMessageQId myQueue01Handle;
 //osTimerId myTimer01Handle;
 //osMutexId myMutex01Handle;
 //osMutexId myRecursiveMutex01Handle;
@@ -58,6 +62,9 @@ osThreadId vcpDebugHandle;
 #if VCP_DEBUG
 void vDebug_Task(void const * argument);
 #endif
+void vSender(void const * argument);
+void vReceiver(void const * argument);
+
 //void Callback01(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -207,10 +214,22 @@ void MX_FREERTOS_Init(void) {
   vcpDebugHandle = osThreadCreate(osThread(vcpDebug), NULL);
 #endif
 
+  /* definition and creation of myTask1 */
+  osThreadDef(myTask1, vSender, osPriorityNormal, 0, 256);
+  myTask01Handle = osThreadCreate(osThread(myTask1), NULL);
+
+  /* definition and creation of myTask2 */
+  osThreadDef(myTask2, vReceiver, osPriorityNormal, 0, 256); // Same Priority
+//  osThreadDef(myTask2, vReceiver, osPriorityAboveNormal, 0, 100); // Diff Priority
+  myTask02Handle = osThreadCreate(osThread(myTask2), NULL);
+
   /* Create the queue(s) */
   /* definition and creation of myQueue01 */
-//  osMessageQDef(myQueue01, 16, uint16_t);
-//  myQueue01Handle = osMessageCreate(osMessageQ(myQueue01), NULL);
+  osMessageQDef(myQueue01, 3, uint16_t);
+  myQueue01Handle = osMessageCreate(osMessageQ(myQueue01), NULL);
+#if (configQUEUE_REGISTRY_SIZE > 0)
+  vQueueAddToRegistry(myQueue01Handle, "BlockQ #1");
+#endif
 }
 
 #if VCP_DEBUG
@@ -301,6 +320,43 @@ void Callback01(void const * argument)
 #endif
 
 /* USER CODE BEGIN Application */
+/* vTask1 function */
+void vSender(void const * argument)
+{
+  uint16_t i = 0;
+
+  while(1)
+  {
+    vuprintf("send %d03 to receiver task\n\r", i);
+    vTraceUserEvent(xTraceOpenLabel("tx() send to queue"));
+    if(!xQueueSend(myQueue01Handle, &i, 1000))
+    {
+      vuprintf("failed to send to queue\n\r");
+      vTraceUserEvent(xTraceOpenLabel("failed to send to queue"));
+    }
+
+    ++i;
+    osDelay(2000);
+  }
+}
+
+/* vTask2 function */
+void vReceiver(void const * argument)
+{
+  uint16_t rx_int = 0;
+  while(1)
+  {
+    if (xQueueReceive(myQueue01Handle, &rx_int, 1000)) {
+      vuprintf("Received %d03\n\r",rx_int);
+      vTraceUserEvent(xTraceOpenLabel("rx() Got item from queue"));
+    }
+    else
+    {
+      vuprintf("failed to receive data from queue\n\r");
+      vTraceUserEvent(xTraceOpenLabel("rx() failed to get an item within 1000 ticks"));
+    }
+  }
+}
 
 /* USER CODE END Application */
 
