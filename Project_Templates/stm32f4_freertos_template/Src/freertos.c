@@ -126,7 +126,7 @@ void vApplicationTickHook( void )
     Have enough ticks passed to make it time to perform our health status
     check again? */
     ulTicksSinceLastDisplay++;
-    if( ulTicksSinceLastDisplay >= 500 )
+    if( ulTicksSinceLastDisplay >= mainCHECK_DELAY )
     {
       /* Reset the counter so these checks run again in mainCHECK_DELAY
       ticks time. */

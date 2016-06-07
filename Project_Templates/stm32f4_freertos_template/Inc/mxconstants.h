@@ -41,7 +41,14 @@
 
 /* USER CODE BEGIN Private defines */
 #define VCP_DEBUG ENABLE
+
+/* The time between cycles of the 'check' functionality (defined within the
+tick hook. */
+#define mainCHECK_DELAY           ( ( TickType_t ) 5000 / portTICK_PERIOD_MS )
+
 /* USER CODE END Private defines */
+
+
 
 /**
   * @}
