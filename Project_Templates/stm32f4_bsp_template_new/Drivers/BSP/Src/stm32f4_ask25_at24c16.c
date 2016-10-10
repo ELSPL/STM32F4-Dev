@@ -201,6 +201,7 @@ HAL_StatusTypeDef ASK25_AT24C16_Write (uint16_t eep_address, uint8_t* byte_data,
     }
 
     status = HAL_I2C_Mem_Write_IT(&hi2c1_at24c16, (E2P24C16_ID|(set_addr<<1)), (uint16_t)(eep_address & 0xFF), I2C_MEMADD_SIZE_8BIT, I2C_Tx_Buf, length);
+    HAL_Delay(5); 
     return(status);
   }
   return(status);
