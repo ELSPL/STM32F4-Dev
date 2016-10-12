@@ -451,7 +451,7 @@ void BSP_ADC_Init(ADC_HandleTypeDef* hadc, ADC_PortPin_Typedef ADC_channel, uint
     hadc->Init.DMAContinuousRequests = ENABLE;
     hadc->Init.EOCSelection = EOC_SEQ_CONV;
 
-    BSP_ADC_DMA_Init();   // Initialize DMA Clock and interrupt
+    BSP_ADC_DMA_Init(hadc); //Initialize DMA Clock and interrupt
     BSP_ADC_MspInit(hadc,ADC_channel);
     HAL_ADC_Init(hadc);
 
