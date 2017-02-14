@@ -117,7 +117,7 @@ int _write(int file, char *ptr, int len)
   static unsigned char gdb_cmd[128];
   (void)file;
 
-  trace_printf("dump binary memory 0x%08x 0x%08x",(uint32_t)ptr,(uint32_t)(ptr+len));
+  trace_printf("dump binary memory filename.gcda 0x%08x 0x%08x",(uint32_t)ptr,(uint32_t)(ptr+len));
   return 0;
 }
 
