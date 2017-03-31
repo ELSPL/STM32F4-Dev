@@ -63,8 +63,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
   BSP_UART_Init(115200);
 
-
-
   BSP_VCP_Init();
 
   vgetche(BLOCKING); // Dummy read to get the VCP Connected
