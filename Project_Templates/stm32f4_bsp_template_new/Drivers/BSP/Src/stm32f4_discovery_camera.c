@@ -11,7 +11,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4_discovery_camera.h"
-
+#include "stm32f4_discovery_lcd.h"
 /** @addtogroup BSP
   * @{
   */
@@ -326,6 +326,8 @@ void BSP_CAMERA_Suspend(void)
   */
 void BSP_CAMERA_Resume(void)
 {
+  BSP_CAMERA_Suspend();
+  BSP_LCD_Clear(Black);
   /* Enable the DCMI */
   __HAL_DCMI_ENABLE(&hdcmi_camera);
   /* Enable the DMA */
