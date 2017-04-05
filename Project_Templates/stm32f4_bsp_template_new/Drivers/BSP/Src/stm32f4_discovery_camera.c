@@ -326,8 +326,8 @@ void BSP_CAMERA_Suspend(void)
   */
 void BSP_CAMERA_Resume(void)
 {
-  BSP_CAMERA_Suspend();
-  BSP_LCD_Clear(Black);
+  BSP_CAMERA_Suspend();   // if user press the camera button resume again then image is not collepse
+  BSP_LCD_Clear(Black);   // clear the previous DMA buffer
   /* Enable the DCMI */
   __HAL_DCMI_ENABLE(&hdcmi_camera);
   /* Enable the DMA */
