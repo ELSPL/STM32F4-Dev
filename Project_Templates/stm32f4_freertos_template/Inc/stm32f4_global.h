@@ -370,7 +370,7 @@ void MPU_Region_Config(uint8_t region_num, uint32_t addr, uint32_t size, uint32_
 void MPU_Config(void);
 
 /*******************************************************************************//**
-* @brief Low Power mode Function Delcaration
+* @brief Low Power mode Function Declaration
 ***********************************************************************************/
 void BSP_SleepMode(void);
 #ifdef USE_STM32F4_RTC
@@ -380,12 +380,18 @@ void BSP_StandbyMode_PB(void);
 
 
 /*******************************************************************************//**
-* @brief  Mode Privilege Functions Delcaration
+* @brief  Mode Privilege Functions Declaration
 ***********************************************************************************/
 void __SVC();
 void SVC_Handler(void);
 uint8_t BSP_Check_Priviledge_Status(void);
 void BSP_Set_UnprivilegeMode(void);
+
+/************************************************************************************/
+/**@brief Delay function Declaration                                                */
+/************************************************************************************/
+void Delay_Us(__IO uint32_t micros);
+
 /**
  * @} GLOBAL_Public_Functions End
  */

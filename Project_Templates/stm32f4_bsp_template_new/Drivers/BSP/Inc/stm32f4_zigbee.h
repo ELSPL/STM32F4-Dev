@@ -4,7 +4,7 @@
   * @author  Bhavin.Edutech Learning Solutions
   * @version V1.0
   * @date    12-May-2016
-  * @brief   Contains all function for zigbee module library on STM32F4
+  * @brief   Contains all function for zigbee(tarang) module library on STM32F4
   ******************************************************************************
   */
 
@@ -25,16 +25,17 @@
   * @{
   */
 
- extern uint8_t Enter_Cmd_Mode[];    /**< command for entering in command mode*/
- extern uint8_t Default_Conf[];    /**< command for configuring zigbee in default configuration*/
- extern uint8_t Zigbee_Channel[];    /**< command for setting zigbee communication channel*/
- extern uint8_t Zigbee_Baud[];     /**< command for setting zigbee communication baudrate*/
- extern uint8_t Zigbee_Source[];   /**< command for setting source address of zigbee module*/
- extern uint8_t Zigbee_Des[];      /**< command for setting destination address of zigbee module*/
- extern uint8_t Zigbee_Mem[];      /**< command for saving current configuration of zigbee in memory*/
- extern uint8_t Exit_Cmd_Mode[];   /**< command for exiting from command mode*/
- extern uint32_t Src_Addr;     /**< 32 bit source addr*/
- extern uint32_t Des_Addr;     /**< 32 bit dest. addr*/
+ extern uint8_t enter_cmd_mode[];   /**< command for entering in command mode*/
+ extern uint8_t default_conf[];    /**< command for configuring zigbee in default configuration*/
+ extern uint8_t zigbee_channel[];  /**< command for setting zigbee communication channel*/
+ extern uint8_t zigbee_baud[];   /**< command for setting zigbee communication baudrate*/
+ extern uint8_t zigbee_source[];   /**< command for setting source address of zigbee module*/
+ extern uint8_t zigbee_des[];    /**< command for setting destination address of zigbee module*/
+ extern uint8_t zigbee_mem[];    /**< command for saving current configuration of zigbee in memory*/
+ extern uint8_t exit_cmd_mode[];   /**< command for exiting from command mode*/
+ extern uint32_t src_addr;   /**< 32 bit source address */
+ extern uint32_t des_addr;   /**< 32 bit dest. address */
+
 
 /**
  * @} STM32F4_ZIGBEE_Public_Types End

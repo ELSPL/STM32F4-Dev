@@ -393,6 +393,49 @@ void BSP_RCC_Set_Frequency(Sysclk_Freq_Typedef freq)
     HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
 }
 
+/**
+ * @brief Initialize Core Debug feature (DWT).
+ * @return DWT cycle counter value
+ */
+int Delay_Init(void)
+{
+  uint32_t c;
+
+  /* Enable TRC */
+  CoreDebug->DEMCR &= ~0x01000000;
+  CoreDebug->DEMCR |=  0x01000000;
+
+  /* Enable counter */
+  DWT->CTRL &= ~0x00000001;
+  DWT->CTRL |=  0x00000001;
+
+  /* Reset counter */
+  DWT->CYCCNT = 0;
+
+  /* Check if DWT has started */
+  c = DWT->CYCCNT;
+
+  /* 2 dummys */
+  __ASM volatile ("NOP");
+  __ASM volatile ("NOP");
+
+  /* Return difference, if result is zero, DWT has not started */
+  return (DWT->CYCCNT - c);
+}
+
+/**
+ * @brief Delay function using Core Debug feature
+ */
+void Delay_Us(__IO uint32_t micros)
+{
+  uint32_t start = DWT->CYCCNT;
+
+  /* Go to number of cycles for system */
+  micros *= (HAL_RCC_GetHCLKFreq() / 1000000);
+
+  /* Delay till end */
+  while ((DWT->CYCCNT - start) < micros);
+}
 
 /**
  * @} GLOBAL_Public_Functions End

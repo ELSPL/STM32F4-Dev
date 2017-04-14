@@ -747,14 +747,14 @@ void BSP_PWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t f
     else
       sConfigOC.Pulse = (float)(32500/(1000000/pulsewidth_us));
   }
-  else if (freq_hz <=200000) //1KHZ to 200000 KHZ
+  else if (freq_hz <=200000) //1KHZ to 200 KHZ
   {
     if(pwm_mode == PWM_EDGE_ALIGN_MODE)
       sConfigOC.Pulse = (float)(41900000/(1000000/pulsewidth_us));
     else
       sConfigOC.Pulse = (float)(20950000/(1000000/pulsewidth_us));
   }
-  else if (freq_hz <= 2000000) //200000KHZ to 2000000KHZ
+  else if (freq_hz <= 2000000) //200KHZ to 2000KHZ
   {
     if(pwm_mode == PWM_EDGE_ALIGN_MODE)
       sConfigOC.Pulse = (float)(83800000/(1000000/pulsewidth_us));
@@ -832,7 +832,7 @@ void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t
     else
       htim_base->Init.Period = 65000/freq_hz;
   }
-  else if (freq_hz <=200000) //1KHZ to 200000 KHZ
+  else if (freq_hz <=200000) //1KHZ to 200 KHZ
   {
     htim_base->Init.Prescaler = SystemCoreClock/168000000;
 
@@ -841,7 +841,7 @@ void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t
     else
       htim_base->Init.Period = 42000000/freq_hz;
   }
-  else if (freq_hz <= 2000000) //200000KHZ to 2000000KHZ
+  else if (freq_hz <= 2000000) //200KHZ to 2000KHZ
   {
     htim_base->Init.Prescaler = 0;
 
@@ -898,14 +898,14 @@ void BSP_MCPWM_Config(TIM_HandleTypeDef* htim_base, TIM_CH_Type tim_ch, uint32_t
     else
       sConfigOC.Pulse = (float)(65000/(1000000/pulsewidth_us));
   }
-  else if (freq_hz <=200000) //1KHZ to 200000 KHZ
+  else if (freq_hz <=200000) //1KHZ to 200KHZ
   {
     if(pwm_mode == PWM_EDGE_ALIGN_MODE)
       sConfigOC.Pulse = (float)(84000000/(1000000/pulsewidth_us));
     else
       sConfigOC.Pulse = (float)(42000000/(1000000/pulsewidth_us));
   }
-  else if (freq_hz <= 2000000) //200000KHZ to 2000000KHZ
+  else if (freq_hz <= 2000000) //200KHZ to 2000KHZ
   {
     if(pwm_mode == PWM_EDGE_ALIGN_MODE)
       sConfigOC.Pulse = (float)(167600000/(1000000/pulsewidth_us));
