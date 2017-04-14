@@ -4,7 +4,7 @@
   * @author  Bhavin.Edutech Learning Solutions
   * @version V1.0
   * @date    12-May-2016
-  * @brief   Contains all function for zigbee module library on STM32F4
+  * @brief   Contains all function for zigbee(tarang) module library on STM32F4
   ******************************************************************************
   */
 
