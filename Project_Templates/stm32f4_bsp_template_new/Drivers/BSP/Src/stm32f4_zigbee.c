@@ -32,16 +32,16 @@
  * @{
  */
 
-uint8_t Enter_Cmd_Mode[3]="+++";   /**< command for entering in command mode*/
-uint8_t Default_Conf[5]="ATGRD";    /**< command for configuring zigbee in default configuration*/
-uint8_t Zigbee_Channel[8]="ATNCH";  /**< command for setting zigbee communication channel*/
-uint8_t Zigbee_Baud[7]="ATSBD3\r";   /**< command for setting zigbee communication baudrate*/
-uint8_t Zigbee_Source[5]="ATNMY";   /**< command for setting source address of zigbee module*/
-uint8_t Zigbee_Des[5]="ATNDA";    /**< command for setting destination address of zigbee module*/
-uint8_t Zigbee_Mem[5]="ATGWR";    /**< command for saving current configuration of zigbee in memory*/
-uint8_t Exit_Cmd_Mode[5]="ATGEX";   /**< command for exiting from command mode*/
-uint32_t Src_Addr=0x0001;   /**< 32 bit source address */
-uint32_t Des_Addr=0x0002;   /**< 32 bit dest. address */
+uint8_t enter_cmd_mode[3]="+++";   /**< command for entering in command mode*/
+uint8_t default_conf[5]="ATGRD";    /**< command for configuring zigbee in default configuration*/
+uint8_t zigbee_channel[8]="ATNCH";  /**< command for setting zigbee communication channel*/
+uint8_t zigbee_baud[7]="ATSBD3\r";   /**< command for setting zigbee communication baudrate*/
+uint8_t zigbee_source[5]="ATNMY";   /**< command for setting source address of zigbee module*/
+uint8_t zigbee_des[5]="ATNDA";    /**< command for setting destination address of zigbee module*/
+uint8_t zigbee_mem[5]="ATGWR";    /**< command for saving current configuration of zigbee in memory*/
+uint8_t exit_cmd_mode[5]="ATGEX";   /**< command for exiting from command mode*/
+uint32_t src_addr=0x0001;   /**< 32 bit source address */
+uint32_t des_addr=0x0002;   /**< 32 bit dest. address */
 
 /**
  * @} STM32F4_ZIGBEE_Public_Types End
@@ -62,15 +62,15 @@ uint8_t BSP_ZigBee_Enter_Cmd_Mode(void)
 {
   uint8_t i=0,Data[7]={0};
 
-  uprintf("%c",Enter_Cmd_Mode[0]);   /*sending '+'*/
+  uprintf(&huart6,"%c",enter_cmd_mode[0]);   /*sending '+'*/
   HAL_Delay(420);
-  uprintf("%c",Enter_Cmd_Mode[1]);   /*sending '+'*/
+  uprintf(&huart6,"%c",enter_cmd_mode[1]);   /*sending '+'*/
   HAL_Delay(420);
-  uprintf("%c",Enter_Cmd_Mode[2]);   /*sending '+'*/
+  uprintf(&huart6,"%c",enter_cmd_mode[2]);   /*sending '+'*/
 
   for(i=0;i<7;i++)        /*receiving acknowledgment from device*/
   {
-    Data[i] = ugetche(BLOCKING);
+    Data[i] = ugetche(&huart6,BLOCKING);
   }
   if((Data[3]=='O') && (Data[4]=='K'))      /*Checking if response is 'OK' or not*/
     return 1;
@@ -90,9 +90,9 @@ uint8_t BSP_ZigBee_Init(void)
 {
   uint8_t Data[7]={0},i=0;
 
-  uprintf("%s\r",Default_Conf);      /*sending Command to set zigbee on default config.*/
+  uprintf(&huart6,"%s\r",default_conf);      /*sending Command to set zigbee on default config.*/
 
-  uget_line(Data,4);    /*receiving acknowledgment from device*/
+  uget_line(&huart6,Data,4);    /*receiving acknowledgment from device*/
 
   if((Data[0]=='O') && (Data[1]=='K'))      /*Checking if response is 'OK' or not*/
   {
@@ -117,9 +117,9 @@ uint8_t BSP_Zigbee_Ch(uint8_t Ch_No)
 {
   uint8_t Data[7]={0},i=0;
 
-  uprintf("%s",Zigbee_Channel);      /*sending Command to set zigbee channel.*/
-  uprintf("%c\r",Ch_No);
-  uget_line(Data,7);
+  uprintf(&huart6,"%s",zigbee_channel);      /*sending Command to set zigbee channel.*/
+  uprintf(&huart6,"%c\r",Ch_No);
+  uget_line(&huart6,Data,7);
 
   if((Data[1]=='O') && (Data[2]=='K'))      /*Checking if response is 'OK' or not*/
     return 1;
@@ -139,8 +139,8 @@ uint8_t BSP_Zigbee_Baudrate(void)
 {
   uint8_t Data[7]={0},i;
 
-  uprintf("%s",Zigbee_Baud);       /*sending Command to set zigbee communication Baud rate 9600*/
-  uget_line(Data,7);    /*receiving acknowlegerment from device*/
+  uprintf(&huart6,"%s",zigbee_baud);       /*sending Command to set zigbee communication Baud rate 9600*/
+  uget_line(&huart6,Data,7);    /*receiving acknowlegerment from device*/
 
   if((Data[1]=='O') && (Data[2]=='K'))      /*Checking if response is 'OK' or not*/
     return 1;
@@ -161,10 +161,10 @@ uint8_t BSP_Zigbee_Source_Add(void)
 {
   uint8_t Data[7]={0},i;
 
-  uprintf("%s",Zigbee_Source);       /*sending Command to set zigbee module source address*/
-  uprintf("%x04\r",Src_Addr);        /*sending 32 bit Source addr.*/
+  uprintf(&huart6,"%s",zigbee_source);       /*sending Command to set zigbee module source address*/
+  uprintf(&huart6,"%x04\r",src_addr);        /*sending 32 bit Source addr.*/
 
-  uget_line(Data,7);        /*receiving acknowledgment from device*/
+  uget_line(&huart6,Data,7);        /*receiving acknowledgment from device*/
 
   if((Data[1]=='O') && (Data[2]=='K'))        /*Checking if response is 'OK' or not*/
     return 1;
@@ -185,9 +185,9 @@ uint8_t BSP_Zigbee_Dest_Add(void)
 {
   uint8_t Data[7]={0},i;
 
-  uprintf("%s",Zigbee_Des);          /*sending Command to set zigbee module Dest address*/
-  uprintf("%x04\r",Des_Addr);        /*sending 32 bit Destination address*/
-  uget_line(Data,4);                 /*receiving acknowlegerment from device*/
+  uprintf(&huart6,"%s",zigbee_des);          /*sending Command to set zigbee module Dest address*/
+  uprintf(&huart6,"%x04\r",des_addr);        /*sending 32 bit Destination address*/
+  uget_line(&huart6,Data,4);                 /*receiving acknowlegerment from device*/
 
   if((Data[1]=='O') && (Data[2]=='K'))        /*Checking if response is 'OK' or not*/
     return 1;
@@ -207,8 +207,8 @@ uint8_t BSP_Zigbee_Save(void)
 {
   uint8_t Data[7]={0},i=0;
 
-  uprintf("%s\r",Zigbee_Mem);        /*sending Command to store set parameters to memory */
-  uget_line(Data,4);      /*receiving acknowlegerment from device*/
+  uprintf(&huart6,"%s\r",zigbee_mem);        /*sending Command to store set parameters to memory */
+  uget_line(&huart6,Data,4);      /*receiving acknowlegerment from device*/
 
   if((Data[1]=='O') && (Data[2]=='K'))        /*Checking if response is 'OK' or not*/
     return 1;
@@ -228,8 +228,8 @@ uint8_t BSP_ZigBee_Exit(void)
 {
   uint8_t Data[7]={0},i=0;
 
-  uprintf("%s\r",Exit_Cmd_Mode);       /*sending Command to Exit from command */
-  uget_line(Data,7);      /*receiving acknowlegerment from device*/
+  uprintf(&huart6,"%s\r",exit_cmd_mode);       /*sending Command to Exit from command */
+  uget_line(&huart6,Data,7);      /*receiving acknowlegerment from device*/
 
   if((Data[1]=='E') && (Data[2]=='X') && (Data[3]=='I') && (Data[4]=='T'))
                             /*Checking if response is 'EXIT or not*/
