@@ -406,11 +406,21 @@ void ASK25_LCD_CGRAM_CharGen (uint8_t loc,uint8_t *p)
 
 
 
-void ASK25_LCD_Display_Decimal (uint16_t VarData, uint8_t Row, uint8_t Col)
+void ASK25_LCD_Display_Decimal (uint32_t VarData, uint8_t Row, uint8_t Col)
 {
-  uint8_t Character[17]={"0123456789"};
-  uint16_t DivValue=1000;
+  uint8_t i=0,Character[10]={"0123456789"};
+  uint32_t width_dec[6]={1,10,100,1000,10000,100000};
+  uint32_t data = VarData;
   uint8_t BaseValue=10;
+  while(data)
+  {
+      data /=BaseValue;
+      if(data>=1)
+      {
+          i++;
+      }
+  }
+  uint32_t DivValue =  width_dec[i];
   while(DivValue)
   {
     ASK25_LCD_Display_Character(Character[VarData/DivValue],Row,Col++,Off);
