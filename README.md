@@ -5,26 +5,26 @@ This repository is to Capture Framework Design and Templating with approach of f
 ## Setup Pre-requisite Changed
 
 #### Programming:
-Eclipse >= Luna (For templating and debugging to work properly)
-arm-none-eabi-gcc
+- Eclipse >= Luna (For templating and debugging to work properly)
+- arm-none-eabi-gcc
 
 #### Flashing and Debugging:
-Linux -> stlink flash command line utility
-Win -> STM32 ST-LINK Utility
-OpenOCD for stlink-v1 and v2
+- Linux -> stlink flash command line utility
+- Win -> STM32 ST-LINK Utility
+- OpenOCD for stlink-v1 and v2
 
 #### Configuration:
-STM32CubeMX -> Standalone and Eclipse Plugin
-X-CUBE-AI (STM32Cube.AI)
-X-CUBE-BLE1
-X-CUBE-MEMS1
-X-CUBE-NFC4
-TouchGFXDesigner -> TouchGFX graphic design and code generation tool
-STemWin -> Professional graphical stack library enabling the building up of GUIs
+- STM32CubeMX -> Standalone and Eclipse Plugin
+- STemWin -> Professional graphical stack library enabling the building up of GUIs
+- X-CUBE-AI (STM32Cube.AI) (Not Started)
+- X-CUBE-BLE1 (Not Started)
+- X-CUBE-MEMS1 (Not Started)
+- X-CUBE-NFC4 (Not Started)
+- TouchGFXDesigner -> TouchGFX graphic design and code generation tool (Not Started)
 
 #### Miscellaneous
-Doxygen
-Graphviz
+- Doxygen
+- Graphviz
 
 ---
 ## Requirements for Software Framework (Template)
