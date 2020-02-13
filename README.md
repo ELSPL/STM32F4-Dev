@@ -83,7 +83,7 @@ This framework design is inspired from following Sources:
     - Filesystem and CLI support
 - RTC Timer for Date and Time stamps
     - Printf implementable
-- BSP Driver Files for Custom Modular Driver Development (Refer book `)`
+- BSP Driver Files for Custom Modular Driver Development (Refer book)
     - It avoids modification to vendor default drivers (HAL or Legacy)
     - This will be using HAL drivers for everything
     - Modular drivers lets us manage hardware conflict and service conflict
